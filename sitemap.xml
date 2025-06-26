@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://marta-seq.github.io/solr/</loc>
+         <lastmod>2025-06-26</lastmod>
+    </url>
+    <url>
+         <loc>https://marta-seq.github.io/solr/applications/</loc>
+         <lastmod>2025-06-26</lastmod>
+    </url>
+    <url>
+         <loc>https://marta-seq.github.io/solr/book/</loc>
+         <lastmod>2025-06-26</lastmod>
+    </url>
+    <url>
+         <loc>https://marta-seq.github.io/solr/datasets/</loc>
+         <lastmod>2025-06-26</lastmod>
+    </url>
+    <url>
+         <loc>https://marta-seq.github.io/solr/methods/</loc>
+         <lastmod>2025-06-26</lastmod>
+    </url>
+</urlset>
