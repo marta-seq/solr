@@ -1,0 +1,9 @@
+2025-06-26 01:05:36,829 - INFO - Logging initialized for Weak Annotator.
+2025-06-26 01:05:36,829 - INFO - Log file: ../../data/logging_weak_annotator/weak_annotation_log_20250626_010536.log
+2025-06-26 01:05:36,829 - INFO - Gemini LLM model 'models/gemini-pro' configured.
+2025-06-26 01:05:36,829 - INFO - 
+--- Starting weak annotation process (Force re-annotate: False) ---
+2025-06-26 01:05:36,906 - INFO - Loaded 7808 articles from the main DOI pool.
+2025-06-26 01:05:36,906 - INFO - Loaded 0 DOIs from weak annotation pool.
+2025-06-26 01:05:36,909 - INFO - Found 7807 articles to process for weak annotation via LLM.
+2025-06-26 01:05:36,909 - INFO - Processing (1/7808 total in main pool): 10.1371/journal.pcbi.1008887 - MAUI (MBI Analysis User Interface)-An image processing pipeline for Multiplexed Mass Based Imaging.

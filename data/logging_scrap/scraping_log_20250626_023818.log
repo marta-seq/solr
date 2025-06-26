@@ -1,0 +1,23 @@
+2025-06-26 02:38:18,042 - INFO - Logging initialized.
+2025-06-26 02:38:18,043 - INFO - Log file: ../../data/logging_scrap/scraping_log_20250626_023818.log
+2025-06-26 02:38:18,043 - INFO - 
+--- Initializing DOI pool with curated DOIs from text file ---
+2025-06-26 02:38:18,043 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41467-024-48870-5
+2025-06-26 02:38:21,248 - INFO -     Added full details for 10.1038/s41467-024-48870-5 to initial add list.
+2025-06-26 02:38:21,748 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41592-024-02408-1
+2025-06-26 02:38:23,178 - INFO -     Added full details for 10.1038/s41592-024-02408-1 to initial add list.
+2025-06-26 02:38:23,679 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41467-023-43120-6
+2025-06-26 02:38:25,091 - INFO -     Added full details for 10.1038/s41467-023-43120-6 to initial add list.
+2025-06-26 02:38:25,591 - INFO -   Processing curated DOI not yet in pool: 10.1101/2021.10.27.466045
+2025-06-26 02:38:25,994 - WARNING -     PMID not found in PubMed for curated DOI: 10.1101/2021.10.27.466045. Adding basic entry.
+2025-06-26 02:38:26,495 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41467-023-37123-6
+2025-06-26 02:38:27,898 - INFO -     Added full details for 10.1038/s41467-023-37123-6 to initial add list.
+2025-06-26 02:38:28,398 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41596-024-01137-1
+2025-06-26 02:38:29,800 - INFO -     Added full details for 10.1038/s41596-024-01137-1 to initial add list.
+2025-06-26 02:38:30,300 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41467-022-29439-6
+2025-06-26 02:38:31,761 - INFO -     Added full details for 10.1038/s41467-022-29439-6 to initial add list.
+2025-06-26 02:38:32,262 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41592-020-01018-x
+2025-06-26 02:38:33,652 - INFO -     Added full details for 10.1038/s41592-020-01018-x to initial add list.
+2025-06-26 02:38:34,152 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41587-021-01044-w
+2025-06-26 02:38:35,682 - INFO -     Added full details for 10.1038/s41587-021-01044-w to initial add list.
+2025-06-26 02:38:36,183 - INFO -   Processing curated DOI not yet in pool: 10.1038/s41467-017-01689-9

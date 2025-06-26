@@ -1,0 +1,500 @@
+2025-06-26 01:48:20,171 - INFO - Logging initialized for Weak Annotator.
+2025-06-26 01:48:20,171 - INFO - Log file: ../../data/logging_weak_annotator/weak_annotation_log_20250626_014820.log
+2025-06-26 01:48:20,538 - INFO - Available Gemini models:
+2025-06-26 01:48:20,538 - INFO - Selected LLM model: models/gemini-2.5-flash-preview-04-17
+2025-06-26 01:48:20,538 - INFO -   - models/embedding-gecko-001 (Does NOT support generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.0-pro-vision-latest (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-pro-vision (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-pro-latest (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-pro-002 (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-pro (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-flash-latest (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-flash (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-flash-002 (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-flash-8b (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-flash-8b-001 (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-1.5-flash-8b-latest (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-2.5-pro-exp-03-25 (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-2.5-pro-preview-03-25 (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-2.5-flash-preview-04-17 (Supports generateContent)
+2025-06-26 01:48:20,538 - INFO -   - models/gemini-2.5-flash-preview-05-20 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-flash (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-flash-preview-04-17-thinking (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-flash-lite-preview-06-17 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-pro-preview-05-06 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-pro-preview-06-05 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-pro (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-exp (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-001 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-lite-001 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-lite (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-lite-preview-02-05 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-lite-preview (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-pro-exp (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-pro-exp-02-05 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-exp-1206 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-thinking-exp-01-21 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-thinking-exp (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-thinking-exp-1219 (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-flash-preview-tts (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-pro-preview-tts (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/learnlm-2.0-flash-experimental (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemma-3-1b-it (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemma-3-4b-it (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemma-3-12b-it (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemma-3-27b-it (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemma-3n-e4b-it (Supports generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/embedding-001 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/text-embedding-004 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-embedding-exp-03-07 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-embedding-exp (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/aqa (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/imagen-3.0-generate-002 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/imagen-4.0-generate-preview-06-06 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/imagen-4.0-ultra-generate-preview-06-06 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/veo-2.0-generate-001 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-flash-preview-native-audio-dialog (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.5-flash-exp-native-audio-thinking-dialog (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-2.0-flash-live-001 (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO -   - models/gemini-live-2.5-flash-preview (Does NOT support generateContent)
+2025-06-26 01:48:20,539 - INFO - 
+--- Starting weak annotation process (Force re-annotate: False) ---
+2025-06-26 01:48:20,615 - INFO - Loaded 7808 articles from the main DOI pool.
+2025-06-26 01:48:20,615 - INFO - Loaded 0 DOIs from weak annotation pool.
+2025-06-26 01:48:20,619 - INFO - Found 7807 articles to process for weak annotation via LLM.
+2025-06-26 01:48:20,619 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:48:20,619 - INFO - Processing (1/7808 total in main pool): 10.1371/journal.pcbi.1008887 - MAUI (MBI Analysis User Interface)-An image processing pipeline for Multiplexed Mass Based Imaging.
+2025-06-26 01:48:20,619 - INFO - Attempt 1/3 for LLM API call for DOI 10.1371/journal.pcbi.1008887 (LLM Call: 1/70)
+2025-06-26 01:48:25,246 - INFO - Attempt 1/3 for LLM API call for DOI 10.1371/journal.pcbi.1008887 (LLM Call: 2/70)
+2025-06-26 01:48:31,160 - INFO - Successfully wrote weak annotation for DOI 10.1371/journal.pcbi.1008887 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:48:31,160 - INFO - Updated relevance_score for DOI 10.1371/journal.pcbi.1008887 in main pool to: highly_relevant
+2025-06-26 01:48:36,161 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:48:36,161 - INFO - Processing (2/7808 total in main pool): 10.1016/j.cell.2020.07.005 - Coordinated Cellular Neighborhoods Orchestrate Antitumoral Immunity at the Colorectal Cancer Invasive Front.
+2025-06-26 01:48:36,161 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cell.2020.07.005 (LLM Call: 3/70)
+2025-06-26 01:48:46,993 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cell.2020.07.005 (LLM Call: 4/70)
+2025-06-26 01:48:56,823 - INFO - Successfully wrote weak annotation for DOI 10.1016/j.cell.2020.07.005 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:48:56,823 - INFO - Updated relevance_score for DOI 10.1016/j.cell.2020.07.005 in main pool to: relevant
+2025-06-26 01:49:01,823 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:49:01,823 - INFO - Processing (3/7808 total in main pool): 10.1038/s41467-024-48870-5 - Deep cell phenotyping and spatial analysis of multiplexed imaging with TRACERx-PHLEX.
+2025-06-26 01:49:01,823 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-024-48870-5 (LLM Call: 5/70)
+2025-06-26 01:49:07,595 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-024-48870-5 (LLM Call: 6/70)
+2025-06-26 01:49:13,426 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-024-48870-5 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:49:13,427 - INFO - Updated relevance_score for DOI 10.1038/s41467-024-48870-5 in main pool to: highly_relevant
+2025-06-26 01:49:18,427 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:49:18,427 - INFO - Processing (4/7808 total in main pool): 10.1038/s41592-020-01018-x - Cellpose: a generalist algorithm for cellular segmentation.
+2025-06-26 01:49:18,427 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41592-020-01018-x (LLM Call: 7/70)
+2025-06-26 01:49:23,579 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41592-020-01018-x (LLM Call: 8/70)
+2025-06-26 01:49:30,946 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41592-020-01018-x to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:49:30,946 - INFO - Updated relevance_score for DOI 10.1038/s41592-020-01018-x in main pool to: highly_relevant
+2025-06-26 01:49:35,946 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:49:35,946 - INFO - Processing (5/7808 total in main pool): 10.1038/s42003-024-06480-3 - A point cloud segmentation framework for image-based spatial transcriptomics.
+2025-06-26 01:49:35,946 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s42003-024-06480-3 (LLM Call: 9/70)
+2025-06-26 01:49:43,705 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s42003-024-06480-3 (LLM Call: 10/70)
+2025-06-26 01:49:49,090 - INFO - Successfully wrote weak annotation for DOI 10.1038/s42003-024-06480-3 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:49:49,090 - INFO - Updated relevance_score for DOI 10.1038/s42003-024-06480-3 in main pool to: highly_relevant
+2025-06-26 01:49:54,090 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:49:54,090 - INFO - Processing (6/7808 total in main pool): 10.1038/s41587-022-01467-z - Modeling intercellular communication in tissues using spatial graphs of cells.
+2025-06-26 01:49:54,090 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41587-022-01467-z (LLM Call: 11/70)
+2025-06-26 01:49:58,178 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41587-022-01467-z (LLM Call: 12/70)
+2025-06-26 01:50:02,517 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41587-022-01467-z to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:50:02,517 - INFO - Updated relevance_score for DOI 10.1038/s41587-022-01467-z in main pool to: highly_relevant
+2025-06-26 01:50:07,517 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:50:07,518 - INFO - Processing (7/7808 total in main pool): 10.1093/bioinformatics/btab164 - sepal: identifying transcript profiles with spatial patterns by diffusion-based modeling.
+2025-06-26 01:50:07,518 - INFO - Attempt 1/3 for LLM API call for DOI 10.1093/bioinformatics/btab164 (LLM Call: 13/70)
+2025-06-26 01:50:12,728 - INFO - Attempt 1/3 for LLM API call for DOI 10.1093/bioinformatics/btab164 (LLM Call: 14/70)
+2025-06-26 01:50:18,015 - ERROR - Failed to parse LLM JSON response for DOI 10.1093/bioinformatics/btab164: Expecting value: line 1 column 1 (char 0). Response snippet: ```json
+    {
+        "paper_type": "method",
+        "relevance_score_llm": "highly_relevant",
+        "biological_context": "N/A",
+        "data_modalities_used": [
+            "spatial transcriptomics"
+        ],
+        "weak_annotations": {
+            "is_method_paper": true,
+            "is_method_comparison_paper": false,
+            "review_type": "N/A",
+            "methodology_type": "tool",
+            "covered_analysis_steps": [
+                "Spatial Gene Expression Analysis"
+   ...
+Traceback (most recent call last):
+  File "/home/martinha/PycharmProjects/phd/review/src/get_papers/weak_annotator.py", line 340, in parse_llm_response
+    parsed_data = json.loads(json_str)
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2025-06-26 01:50:18,016 - ERROR - Could not parse LLM response for DOI 10.1093/bioinformatics/btab164. Skipping annotation for this entry.
+2025-06-26 01:50:23,016 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:50:23,017 - INFO - Processing (8/7808 total in main pool): 10.1002/cyto.a.24480 - Semi-automated background removal limits data loss and normalizes imaging mass cytometry data.
+2025-06-26 01:50:23,017 - INFO - Attempt 1/3 for LLM API call for DOI 10.1002/cyto.a.24480 (LLM Call: 15/70)
+2025-06-26 01:50:26,964 - INFO - Attempt 1/3 for LLM API call for DOI 10.1002/cyto.a.24480 (LLM Call: 16/70)
+2025-06-26 01:50:31,262 - INFO - Successfully wrote weak annotation for DOI 10.1002/cyto.a.24480 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:50:31,262 - INFO - Updated relevance_score for DOI 10.1002/cyto.a.24480 in main pool to: highly_relevant
+2025-06-26 01:50:36,262 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:50:36,262 - INFO - Processing (9/7808 total in main pool): 10.1186/s13059-021-02404-0 - SPARK-X: non-parametric modeling enables scalable and robust detection of spatial expression patterns for large spatial transcriptomic studies.
+2025-06-26 01:50:36,262 - INFO - Attempt 1/3 for LLM API call for DOI 10.1186/s13059-021-02404-0 (LLM Call: 17/70)
+2025-06-26 01:50:40,688 - INFO - Attempt 1/3 for LLM API call for DOI 10.1186/s13059-021-02404-0 (LLM Call: 18/70)
+2025-06-26 01:50:47,063 - INFO - Successfully wrote weak annotation for DOI 10.1186/s13059-021-02404-0 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:50:47,063 - INFO - Updated relevance_score for DOI 10.1186/s13059-021-02404-0 in main pool to: highly_relevant
+2025-06-26 01:50:52,064 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:50:52,064 - INFO - Processing (10/7808 total in main pool): 10.1038/s41467-023-39608-w - SpatialDM for rapid identification of spatially co-expressed ligand-receptor and revealing cell-cell communication patterns.
+2025-06-26 01:50:52,064 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-39608-w (LLM Call: 19/70)
+2025-06-26 01:50:56,728 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-39608-w (LLM Call: 20/70)
+2025-06-26 01:51:01,170 - ERROR - Failed to parse LLM JSON response for DOI 10.1038/s41467-023-39608-w: Expecting value: line 1 column 1 (char 0). Response snippet: ```json
+    {
+        "paper_type": "method",
+        "relevance_score_llm": "highly_relevant",
+        "biological_context": "Melanoma, Ventricular-Subventricular Zone, Intestine",
+        "data_modalities_used": [
+            "spatial transcriptomics",
+            "single-cell transcriptomics"
+        ],
+        "weak_annotations": {
+            "is_method_paper": true,
+            "is_method_comparison_paper": false,
+            "review_type": "N/A",
+            "methodology_type": "tool",
+  ...
+Traceback (most recent call last):
+  File "/home/martinha/PycharmProjects/phd/review/src/get_papers/weak_annotator.py", line 340, in parse_llm_response
+    parsed_data = json.loads(json_str)
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2025-06-26 01:51:01,170 - ERROR - Could not parse LLM response for DOI 10.1038/s41467-023-39608-w. Skipping annotation for this entry.
+2025-06-26 01:51:06,170 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:51:06,170 - INFO - Processing (11/7808 total in main pool): 10.1038/nmeth.4636 - SpatialDE: identification of spatially variable genes.
+2025-06-26 01:51:06,171 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/nmeth.4636 (LLM Call: 21/70)
+2025-06-26 01:51:12,315 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/nmeth.4636 (LLM Call: 22/70)
+2025-06-26 01:51:18,426 - ERROR - Failed to parse LLM JSON response for DOI 10.1038/nmeth.4636: Expecting value: line 1 column 1 (char 0). Response snippet: ```json
+    {
+        "paper_type": "method",
+        "relevance_score_llm": "highly_relevant",
+        "biological_context": "N/A",
+        "data_modalities_used": [
+            "multiplexed imaging",
+            "spatial RNA-sequencing"
+        ],
+        "weak_annotations": {
+            "is_method_paper": true,
+            "is_method_comparison_paper": false,
+            "review_type": "N/A",
+            "methodology_type": "tool",
+            "covered_analysis_steps": [
+                "Spa...
+Traceback (most recent call last):
+  File "/home/martinha/PycharmProjects/phd/review/src/get_papers/weak_annotator.py", line 340, in parse_llm_response
+    parsed_data = json.loads(json_str)
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2025-06-26 01:51:18,427 - ERROR - Could not parse LLM response for DOI 10.1038/nmeth.4636. Skipping annotation for this entry.
+2025-06-26 01:51:23,427 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:51:23,427 - INFO - Processing (13/7808 total in main pool): 10.1038/s41467-023-36796-3 - Spatially informed clustering, integration, and deconvolution of spatial transcriptomics with GraphST.
+2025-06-26 01:51:23,427 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-36796-3 (LLM Call: 23/70)
+2025-06-26 01:51:27,990 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-36796-3 (LLM Call: 24/70)
+2025-06-26 01:51:33,272 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-023-36796-3 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:51:33,273 - INFO - Updated relevance_score for DOI 10.1038/s41467-023-36796-3 in main pool to: highly_relevant
+2025-06-26 01:51:38,273 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:51:38,273 - INFO - Processing (14/7808 total in main pool): 10.1038/s41587-021-00935-2 - Spatial transcriptomics at subspot resolution with BayesSpace.
+2025-06-26 01:51:38,273 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41587-021-00935-2 (LLM Call: 25/70)
+2025-06-26 01:51:44,034 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41587-021-00935-2 (LLM Call: 26/70)
+2025-06-26 01:51:48,555 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41587-021-00935-2 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:51:48,555 - INFO - Updated relevance_score for DOI 10.1038/s41587-021-00935-2 in main pool to: highly_relevant
+2025-06-26 01:51:53,555 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:51:53,555 - INFO - Processing (15/7808 total in main pool): 10.1111/febs.15572 - Spage2vec: Unsupervised representation of localized spatial gene expression signatures.
+2025-06-26 01:51:53,555 - INFO - Attempt 1/3 for LLM API call for DOI 10.1111/febs.15572 (LLM Call: 27/70)
+2025-06-26 01:51:58,235 - INFO - Attempt 1/3 for LLM API call for DOI 10.1111/febs.15572 (LLM Call: 28/70)
+2025-06-26 01:52:04,001 - INFO - Successfully wrote weak annotation for DOI 10.1111/febs.15572 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:52:04,001 - INFO - Updated relevance_score for DOI 10.1111/febs.15572 in main pool to: highly_relevant
+2025-06-26 01:52:09,001 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:52:09,002 - INFO - Processing (16/7808 total in main pool): 10.1038/s41588-025-02120-6 - Quantitative characterization of cell niches in spatially resolved omics data.
+2025-06-26 01:52:09,002 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41588-025-02120-6 (LLM Call: 29/70)
+2025-06-26 01:52:14,798 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41588-025-02120-6 (LLM Call: 30/70)
+2025-06-26 01:52:20,165 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41588-025-02120-6 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:52:20,165 - INFO - Updated relevance_score for DOI 10.1038/s41588-025-02120-6 in main pool to: highly_relevant
+2025-06-26 01:52:25,165 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:52:25,165 - INFO - Processing (17/7808 total in main pool): 10.1186/s13059-022-02663-5 - Explainable multiview framework for dissecting spatial relationships from highly multiplexed data.
+2025-06-26 01:52:25,165 - INFO - Attempt 1/3 for LLM API call for DOI 10.1186/s13059-022-02663-5 (LLM Call: 31/70)
+2025-06-26 01:52:29,822 - INFO - Attempt 1/3 for LLM API call for DOI 10.1186/s13059-022-02663-5 (LLM Call: 32/70)
+2025-06-26 01:52:37,328 - INFO - Successfully wrote weak annotation for DOI 10.1186/s13059-022-02663-5 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:52:37,328 - INFO - Updated relevance_score for DOI 10.1186/s13059-022-02663-5 in main pool to: highly_relevant
+2025-06-26 01:52:42,328 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:52:42,328 - INFO - Processing (18/7808 total in main pool): 10.1038/s41467-023-42343-x - NeST: nested hierarchical structure identification in spatial transcriptomic data.
+2025-06-26 01:52:42,329 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-42343-x (LLM Call: 33/70)
+2025-06-26 01:52:47,010 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-42343-x (LLM Call: 34/70)
+2025-06-26 01:52:51,855 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-023-42343-x to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:52:51,856 - INFO - Updated relevance_score for DOI 10.1038/s41467-023-42343-x in main pool to: highly_relevant
+2025-06-26 01:52:56,856 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:52:56,856 - INFO - Processing (19/7808 total in main pool): 10.1038/nbt.4260 - Identification of spatially associated subpopulations by combining scRNAseq and sequential fluorescence in situ hybridization data.
+2025-06-26 01:52:56,856 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/nbt.4260 (LLM Call: 35/70)
+2025-06-26 01:53:03,518 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/nbt.4260 (LLM Call: 36/70)
+2025-06-26 01:53:08,652 - INFO - Successfully wrote weak annotation for DOI 10.1038/nbt.4260 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:53:08,652 - INFO - Updated relevance_score for DOI 10.1038/nbt.4260 in main pool to: highly_relevant
+2025-06-26 01:53:13,652 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:53:13,652 - INFO - Processing (20/7808 total in main pool): 10.1038/s41596-024-01137-1 - CellPhoneDB v5: inferring cell-cell communication from single-cell multiomics data.
+2025-06-26 01:53:13,653 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41596-024-01137-1 (LLM Call: 37/70)
+2025-06-26 01:53:19,308 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41596-024-01137-1 (LLM Call: 38/70)
+2025-06-26 01:53:25,140 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41596-024-01137-1 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:53:25,140 - INFO - Updated relevance_score for DOI 10.1038/s41596-024-01137-1 in main pool to: relevant
+2025-06-26 01:53:30,141 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:53:30,141 - INFO - Processing (21/7808 total in main pool): 10.1038/s41467-017-01689-9 - Visual analysis of mass cytometry data by hierarchical stochastic neighbour embedding reveals rare cell types.
+2025-06-26 01:53:30,141 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-017-01689-9 (LLM Call: 39/70)
+2025-06-26 01:53:36,643 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-017-01689-9 (LLM Call: 40/70)
+2025-06-26 01:53:43,062 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-017-01689-9 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:53:43,062 - INFO - Updated relevance_score for DOI 10.1038/s41467-017-01689-9 in main pool to: relevant
+2025-06-26 01:53:48,062 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:53:48,062 - INFO - Processing (22/7808 total in main pool): 10.1038/s41467-022-32111-8 - Knowledge-graph-based cell-cell communication inference for spatially resolved transcriptomic data with SpaTalk.
+2025-06-26 01:53:48,062 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-022-32111-8 (LLM Call: 41/70)
+2025-06-26 01:53:59,003 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-022-32111-8 (LLM Call: 42/70)
+2025-06-26 01:54:04,156 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-022-32111-8 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:54:04,156 - INFO - Updated relevance_score for DOI 10.1038/s41467-022-32111-8 in main pool to: highly_relevant
+2025-06-26 01:54:09,156 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:54:09,156 - INFO - Processing (23/7808 total in main pool): 10.1093/bioadv/vbac048 - Sparcle: assigning transcripts to cells in multiplexed images.
+2025-06-26 01:54:09,156 - INFO - Attempt 1/3 for LLM API call for DOI 10.1093/bioadv/vbac048 (LLM Call: 43/70)
+2025-06-26 01:54:15,299 - INFO - Attempt 1/3 for LLM API call for DOI 10.1093/bioadv/vbac048 (LLM Call: 44/70)
+2025-06-26 01:54:24,202 - INFO - Successfully wrote weak annotation for DOI 10.1093/bioadv/vbac048 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:54:24,202 - INFO - Updated relevance_score for DOI 10.1093/bioadv/vbac048 in main pool to: highly_relevant
+2025-06-26 01:54:29,202 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:54:29,202 - INFO - Processing (24/7808 total in main pool): 10.1038/s41467-023-44560-w - BIDCell: Biologically-informed self-supervised learning for segmentation of subcellular spatial transcriptomics data.
+2025-06-26 01:54:29,203 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-44560-w (LLM Call: 45/70)
+2025-06-26 01:54:35,392 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-44560-w (LLM Call: 46/70)
+2025-06-26 01:54:40,059 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-023-44560-w to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:54:40,059 - INFO - Updated relevance_score for DOI 10.1038/s41467-023-44560-w in main pool to: highly_relevant
+2025-06-26 01:54:45,059 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:54:45,060 - INFO - Processing (25/7808 total in main pool): 10.1016/j.media.2022.102384 - NaroNet: Discovery of tumor microenvironment elements from highly multiplexed images.
+2025-06-26 01:54:45,060 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.media.2022.102384 (LLM Call: 47/70)
+2025-06-26 01:54:50,491 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.media.2022.102384 (LLM Call: 48/70)
+2025-06-26 01:54:57,278 - INFO - Successfully wrote weak annotation for DOI 10.1016/j.media.2022.102384 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:54:57,278 - INFO - Updated relevance_score for DOI 10.1016/j.media.2022.102384 in main pool to: highly_relevant
+2025-06-26 01:55:02,279 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:55:02,279 - INFO - Processing (26/7808 total in main pool): 10.1038/s41592-024-02408-1 - Mapping cellular interactions from spatially resolved transcriptomics data.
+2025-06-26 01:55:02,279 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41592-024-02408-1 (LLM Call: 49/70)
+2025-06-26 01:55:06,459 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41592-024-02408-1 (LLM Call: 50/70)
+2025-06-26 01:55:11,187 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41592-024-02408-1 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:55:11,187 - INFO - Updated relevance_score for DOI 10.1038/s41592-024-02408-1 in main pool to: highly_relevant
+2025-06-26 01:55:16,187 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:55:16,187 - INFO - Processing (27/7808 total in main pool): 10.1101/2020.10.27.357640 - Unknown Title (from curated_dois.txt)
+2025-06-26 01:55:16,187 - WARNING - Abstract missing for 10.1101/2020.10.27.357640. LLM annotation quality may be reduced.
+2025-06-26 01:55:16,187 - INFO - Attempt 1/3 for LLM API call for DOI 10.1101/2020.10.27.357640 (LLM Call: 51/70)
+2025-06-26 01:55:19,457 - INFO - Attempt 1/3 for LLM API call for DOI 10.1101/2020.10.27.357640 (LLM Call: 52/70)
+2025-06-26 01:55:23,105 - INFO - Successfully wrote weak annotation for DOI 10.1101/2020.10.27.357640 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:55:23,105 - INFO - Updated relevance_score for DOI 10.1101/2020.10.27.357640 in main pool to: irrelevant
+2025-06-26 01:55:23,105 - INFO - DOI 10.1101/2020.10.27.357640 (Title: Unknown Title (from curated_dois.txt)) marked as 'irrelevant' by LLM. No further detailed weak annotation for this paper.
+2025-06-26 01:55:28,106 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:55:28,106 - INFO - Processing (28/7808 total in main pool): 10.1038/s41596-023-00881-0 - An end-to-end workflow for multiplexed image processing and analysis.
+2025-06-26 01:55:28,106 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41596-023-00881-0 (LLM Call: 53/70)
+2025-06-26 01:55:33,148 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41596-023-00881-0 (LLM Call: 54/70)
+2025-06-26 01:55:38,590 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41596-023-00881-0 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:55:38,591 - INFO - Updated relevance_score for DOI 10.1038/s41596-023-00881-0 in main pool to: highly_relevant
+2025-06-26 01:55:43,591 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:55:43,591 - INFO - Processing (29/7808 total in main pool): 10.1016/j.cell.2015.05.047 - Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis.
+2025-06-26 01:55:43,591 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cell.2015.05.047 (LLM Call: 55/70)
+2025-06-26 01:55:49,855 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cell.2015.05.047 (LLM Call: 56/70)
+2025-06-26 01:55:55,407 - INFO - Successfully wrote weak annotation for DOI 10.1016/j.cell.2015.05.047 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:55:55,408 - INFO - Updated relevance_score for DOI 10.1016/j.cell.2015.05.047 in main pool to: low_relevance
+2025-06-26 01:56:00,408 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:56:00,408 - INFO - Processing (30/7808 total in main pool): 10.1038/s41556-024-01469-w - LIANA+ provides an all-in-one framework for cell-cell communication inference.
+2025-06-26 01:56:00,408 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41556-024-01469-w (LLM Call: 57/70)
+2025-06-26 01:56:06,624 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41556-024-01469-w (LLM Call: 58/70)
+2025-06-26 01:56:11,379 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41556-024-01469-w to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:56:11,379 - INFO - Updated relevance_score for DOI 10.1038/s41556-024-01469-w in main pool to: highly_relevant
+2025-06-26 01:56:16,379 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:56:16,379 - INFO - Processing (31/7808 total in main pool): 10.1016/j.cels.2018.02.010 - Compensation of Signal Spillover in Suspension and Imaging Mass Cytometry.
+2025-06-26 01:56:16,380 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cels.2018.02.010 (LLM Call: 59/70)
+2025-06-26 01:56:23,257 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cels.2018.02.010 (LLM Call: 60/70)
+2025-06-26 01:56:28,556 - INFO - Successfully wrote weak annotation for DOI 10.1016/j.cels.2018.02.010 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:56:28,556 - INFO - Updated relevance_score for DOI 10.1016/j.cels.2018.02.010 in main pool to: highly_relevant
+2025-06-26 01:56:33,556 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:56:33,556 - INFO - Processing (32/7808 total in main pool): 10.1101/2021.10.27.466045 - Unknown Title (from curated_dois.txt)
+2025-06-26 01:56:33,556 - WARNING - Abstract missing for 10.1101/2021.10.27.466045. LLM annotation quality may be reduced.
+2025-06-26 01:56:33,557 - INFO - Attempt 1/3 for LLM API call for DOI 10.1101/2021.10.27.466045 (LLM Call: 61/70)
+2025-06-26 01:56:37,338 - INFO - Attempt 1/3 for LLM API call for DOI 10.1101/2021.10.27.466045 (LLM Call: 62/70)
+2025-06-26 01:56:40,872 - INFO - Successfully wrote weak annotation for DOI 10.1101/2021.10.27.466045 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:56:40,872 - INFO - Updated relevance_score for DOI 10.1101/2021.10.27.466045 in main pool to: irrelevant
+2025-06-26 01:56:40,872 - INFO - DOI 10.1101/2021.10.27.466045 (Title: Unknown Title (from curated_dois.txt)) marked as 'irrelevant' by LLM. No further detailed weak annotation for this paper.
+2025-06-26 01:56:45,872 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:56:45,872 - INFO - Processing (33/7808 total in main pool): 10.1038/s41467-023-37123-6 - IMC-Denoise: a content aware denoising pipeline to enhance Imaging Mass Cytometry.
+2025-06-26 01:56:45,873 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-37123-6 (LLM Call: 63/70)
+2025-06-26 01:56:52,400 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-023-37123-6 (LLM Call: 64/70)
+2025-06-26 01:56:58,564 - ERROR - Failed to parse LLM JSON response for DOI 10.1038/s41467-023-37123-6: Expecting value: line 1 column 1 (char 0). Response snippet: ```json
+    {
+        "paper_type": "method",
+        "relevance_score_llm": "highly_relevant",
+        "biological_context": "Human bone marrow (diseased and potentially healthy) and patient tissue specimens from multiple pathologies",
+        "data_modalities_used": [
+            "Imaging Mass Cytometry",
+            "multiplexed imaging"
+        ],
+        "weak_annotations": {
+            "is_method_paper": true,
+            "is_method_comparison_paper": false,
+            "review_type": "N/...
+Traceback (most recent call last):
+  File "/home/martinha/PycharmProjects/phd/review/src/get_papers/weak_annotator.py", line 340, in parse_llm_response
+    parsed_data = json.loads(json_str)
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/martinha/miniconda3/envs/live_review/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2025-06-26 01:56:58,564 - ERROR - Could not parse LLM response for DOI 10.1038/s41467-023-37123-6. Skipping annotation for this entry.
+2025-06-26 01:57:03,565 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:57:03,565 - INFO - Processing (34/7808 total in main pool): 10.1038/nmeth.4391 - histoCAT: analysis of cell phenotypes and interactions in multiplex image cytometry data.
+2025-06-26 01:57:03,565 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/nmeth.4391 (LLM Call: 65/70)
+2025-06-26 01:57:09,971 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/nmeth.4391 (LLM Call: 66/70)
+2025-06-26 01:57:14,705 - INFO - Successfully wrote weak annotation for DOI 10.1038/nmeth.4391 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:57:14,706 - INFO - Updated relevance_score for DOI 10.1038/nmeth.4391 in main pool to: highly_relevant
+2025-06-26 01:57:19,706 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:57:19,706 - INFO - Processing (35/7808 total in main pool): 10.1038/s41467-022-29439-6 - Deciphering spatial domains from spatially resolved transcriptomics with an adaptive graph attention auto-encoder.
+2025-06-26 01:57:19,706 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-022-29439-6 (LLM Call: 67/70)
+2025-06-26 01:57:24,202 - INFO - Attempt 1/3 for LLM API call for DOI 10.1038/s41467-022-29439-6 (LLM Call: 68/70)
+2025-06-26 01:57:30,540 - INFO - Successfully wrote weak annotation for DOI 10.1038/s41467-022-29439-6 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:57:30,541 - INFO - Updated relevance_score for DOI 10.1038/s41467-022-29439-6 in main pool to: highly_relevant
+2025-06-26 01:57:35,541 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:57:35,541 - INFO - Processing (36/7808 total in main pool): 10.1016/j.cels.2021.09.012 - Tissue schematics map the specialization of immune tissue motifs and their appropriation by tumors.
+2025-06-26 01:57:35,541 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cels.2021.09.012 (LLM Call: 69/70)
+2025-06-26 01:57:42,562 - INFO - Attempt 1/3 for LLM API call for DOI 10.1016/j.cels.2021.09.012 (LLM Call: 70/70)
+2025-06-26 01:57:50,292 - INFO - Successfully wrote weak annotation for DOI 10.1016/j.cels.2021.09.012 to ../../data/weak_annotation_pool.jsonl.
+2025-06-26 01:57:50,292 - INFO - Updated relevance_score for DOI 10.1016/j.cels.2021.09.012 in main pool to: highly_relevant
+2025-06-26 01:57:55,293 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:57:55,293 - INFO - Processing (37/7808 total in main pool): 10.1038/s41592-019-0667-5 - NicheNet: modeling intercellular communication by linking ligands to target genes.
+2025-06-26 01:57:55,293 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:57:55,293 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:57:55,294 - ERROR - LLM API call returned empty response for DOI 10.1038/s41592-019-0667-5. Skipping annotation.
+2025-06-26 01:58:00,294 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:00,294 - INFO - Processing (38/7808 total in main pool): 10.1101/2023.06.13.544751 - Unknown Title (from curated_dois.txt)
+2025-06-26 01:58:00,294 - WARNING - Abstract missing for 10.1101/2023.06.13.544751. LLM annotation quality may be reduced.
+2025-06-26 01:58:00,294 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:00,294 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:00,294 - ERROR - LLM API call returned empty response for DOI 10.1101/2023.06.13.544751. Skipping annotation.
+2025-06-26 01:58:05,294 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:05,294 - INFO - Processing (39/7808 total in main pool): 10.1016/j.csbj.2024.10.048 - PENGUIN: A rapid and efficient image preprocessing tool for multiplexed spatial proteomics.
+2025-06-26 01:58:05,294 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:05,294 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:05,294 - ERROR - LLM API call returned empty response for DOI 10.1016/j.csbj.2024.10.048. Skipping annotation.
+2025-06-26 01:58:10,295 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:10,295 - INFO - Processing (40/7808 total in main pool): 10.1038/s41596-021-00550-0 - Analyzing high-dimensional cytometry data using FlowSOM.
+2025-06-26 01:58:10,295 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:10,296 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:10,296 - ERROR - LLM API call returned empty response for DOI 10.1038/s41596-021-00550-0. Skipping annotation.
+2025-06-26 01:58:15,296 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:15,296 - INFO - Processing (41/7808 total in main pool): 10.48550/arxiv.1806.03535 - Unknown Title (from curated_dois.txt)
+2025-06-26 01:58:15,296 - WARNING - Abstract missing for 10.48550/arxiv.1806.03535. LLM annotation quality may be reduced.
+2025-06-26 01:58:15,296 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:15,296 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:15,296 - ERROR - LLM API call returned empty response for DOI 10.48550/arxiv.1806.03535. Skipping annotation.
+2025-06-26 01:58:20,296 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:20,296 - INFO - Processing (42/7808 total in main pool): 10.1038/s41467-021-23807-4 - Cell segmentation-free inference of cell types from in situ transcriptomics data.
+2025-06-26 01:58:20,296 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:20,296 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:20,296 - ERROR - LLM API call returned empty response for DOI 10.1038/s41467-021-23807-4. Skipping annotation.
+2025-06-26 01:58:25,297 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:25,297 - INFO - Processing (43/7808 total in main pool): 10.1016/j.patter.2023.100829 - S<sup>3</sup>-CIMA: Supervised spatial single-cell image analysis for identifying disease-associated cell-type compositions in tissue.
+2025-06-26 01:58:25,297 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:25,298 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:25,298 - ERROR - LLM API call returned empty response for DOI 10.1016/j.patter.2023.100829. Skipping annotation.
+2025-06-26 01:58:30,298 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:30,298 - INFO - Processing (44/7808 total in main pool): 10.1038/s41467-021-26044-x - ClusterMap for multi-scale clustering analysis of spatial gene expression.
+2025-06-26 01:58:30,298 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:30,298 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:30,298 - ERROR - LLM API call returned empty response for DOI 10.1038/s41467-021-26044-x. Skipping annotation.
+2025-06-26 01:58:35,298 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:35,298 - INFO - Processing (45/7808 total in main pool): 10.1186/s13059-020-02214-w - GCNG: graph convolutional networks for inferring gene interaction from spatial transcriptomics data.
+2025-06-26 01:58:35,298 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:35,298 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:35,298 - ERROR - LLM API call returned empty response for DOI 10.1186/s13059-020-02214-w. Skipping annotation.
+2025-06-26 01:58:40,299 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:40,299 - INFO - Processing (46/7808 total in main pool): 10.1038/nmeth.4634 - Identification of spatial expression trends in single-cell gene expression data.
+2025-06-26 01:58:40,299 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:40,299 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:40,299 - ERROR - LLM API call returned empty response for DOI 10.1038/nmeth.4634. Skipping annotation.
+2025-06-26 01:58:45,299 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:45,299 - INFO - Processing (47/7808 total in main pool): 10.1186/s12915-021-01043-y - MATISSE: a method for improved single cell segmentation in imaging mass cytometry.
+2025-06-26 01:58:45,299 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:45,299 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:45,299 - ERROR - LLM API call returned empty response for DOI 10.1186/s12915-021-01043-y. Skipping annotation.
+2025-06-26 01:58:50,300 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:50,300 - INFO - Processing (48/7808 total in main pool): 10.1038/s41592-024-02415-2 - FICTURE: scalable segmentation-free analysis of submicron-resolution spatial transcriptomics.
+2025-06-26 01:58:50,300 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:50,300 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:50,300 - ERROR - LLM API call returned empty response for DOI 10.1038/s41592-024-02415-2. Skipping annotation.
+2025-06-26 01:58:55,301 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:58:55,301 - INFO - Processing (49/7808 total in main pool): 10.1038/s41587-021-01094-0 - Whole-cell segmentation of tissue images with human-level performance using large-scale data annotation and deep learning.
+2025-06-26 01:58:55,301 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:55,301 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:58:55,301 - ERROR - LLM API call returned empty response for DOI 10.1038/s41587-021-01094-0. Skipping annotation.
+2025-06-26 01:59:00,301 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:00,301 - INFO - Processing (50/7808 total in main pool): 10.1038/s41592-021-01255-8 - SpaGCN: Integrating gene expression, spatial location and histology to identify spatial domains and spatially variable genes by graph convolutional network.
+2025-06-26 01:59:00,301 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:00,301 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:00,301 - ERROR - LLM API call returned empty response for DOI 10.1038/s41592-021-01255-8. Skipping annotation.
+2025-06-26 01:59:05,302 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:05,302 - INFO - Processing (51/7808 total in main pool): 10.1038/s41592-021-01308-y - MCMICRO: a scalable, modular image-processing pipeline for multiplexed tissue imaging.
+2025-06-26 01:59:05,302 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:05,302 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:05,303 - ERROR - LLM API call returned empty response for DOI 10.1038/s41592-021-01308-y. Skipping annotation.
+2025-06-26 01:59:10,303 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:10,303 - INFO - Processing (52/7808 total in main pool): 10.1038/s41587-024-02193-4 - The covariance environment defines cellular niches for spatial inference.
+2025-06-26 01:59:10,303 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:10,304 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:10,304 - ERROR - LLM API call returned empty response for DOI 10.1038/s41587-024-02193-4. Skipping annotation.
+2025-06-26 01:59:15,304 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:15,304 - INFO - Processing (53/7808 total in main pool): 10.1016/j.celrep.2019.08.077 - Modeling Cell-Cell Interactions from Spatial Molecular Data with Spatial Variance Component Analysis.
+2025-06-26 01:59:15,304 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:15,304 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:15,304 - ERROR - LLM API call returned empty response for DOI 10.1016/j.celrep.2019.08.077. Skipping annotation.
+2025-06-26 01:59:20,304 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:20,305 - INFO - Processing (54/7808 total in main pool): 10.1016/j.cell.2021.12.023 - Transition to invasive breast cancer is associated with progressive changes in the structure and composition of tumor stroma.
+2025-06-26 01:59:20,305 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:20,305 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:20,305 - ERROR - LLM API call returned empty response for DOI 10.1016/j.cell.2021.12.023. Skipping annotation.
+2025-06-26 01:59:25,306 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:25,306 - INFO - Processing (55/7808 total in main pool): 10.1038/s41467-022-33182-3 - Identification of spatially variable genes with graph cuts.
+2025-06-26 01:59:25,306 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:25,306 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:25,306 - ERROR - LLM API call returned empty response for DOI 10.1038/s41467-022-33182-3. Skipping annotation.
+2025-06-26 01:59:30,307 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:30,307 - INFO - Processing (56/7808 total in main pool): 10.1038/s41467-021-21246-9 - Inference and analysis of cell-cell communication using CellChat.
+2025-06-26 01:59:30,307 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:30,307 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:30,307 - ERROR - LLM API call returned empty response for DOI 10.1038/s41467-021-21246-9. Skipping annotation.
+2025-06-26 01:59:35,307 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:35,308 - INFO - Processing (57/7808 total in main pool): 10.1038/s41587-021-01044-w - Cell segmentation in imaging-based spatial transcriptomics.
+2025-06-26 01:59:35,308 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:35,308 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:35,308 - ERROR - LLM API call returned empty response for DOI 10.1038/s41587-021-01044-w. Skipping annotation.
+2025-06-26 01:59:40,308 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:40,308 - INFO - Processing (58/7808 total in main pool): 10.1038/s41592-019-0631-4 - Probabilistic cell typing enables fine mapping of closely related cell types in situ.
+2025-06-26 01:59:40,308 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:40,308 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:40,308 - ERROR - LLM API call returned empty response for DOI 10.1038/s41592-019-0631-4. Skipping annotation.
+2025-06-26 01:59:45,309 - INFO - Absolute path to WEAK_ANNOTATION_POOL_FILE: /home/martinha/PycharmProjects/phd/review/data/weak_annotation_pool.jsonl
+2025-06-26 01:59:45,309 - INFO - Processing (59/7808 total in main pool): 10.1038/s41592-022-01728-4 - Screening cell-cell communication in spatial transcriptomics via collective optimal transport.
+2025-06-26 01:59:45,309 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:45,309 - ERROR - Daily free tier quota (70 calls) for LLM API has been reached. Please wait 24 hours or enable billing. Skipping further annotations.
+2025-06-26 01:59:45,309 - ERROR - LLM API call returned empty response for DOI 10.1038/s41592-022-01728-4. Skipping annotation.

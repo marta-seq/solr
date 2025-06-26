@@ -1,0 +1,53 @@
+2025-06-26 02:38:39,763 - INFO - Logging initialized for Weak Annotator.
+2025-06-26 02:38:39,763 - INFO - Log file: ../../data/logging_weak_annotator/weak_annotation_log_20250626_023839.log
+2025-06-26 02:38:40,122 - INFO - Available Gemini models supporting 'generateContent':
+2025-06-26 02:38:40,122 - INFO -   - models/gemini-1.0-pro-vision-latest
+2025-06-26 02:38:40,122 - INFO -   - models/gemini-pro-vision
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-pro-latest
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-pro-002
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-pro
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-flash-latest
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-flash
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-flash-002
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-flash-8b
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-flash-8b-001
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-1.5-flash-8b-latest
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-pro-exp-03-25
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-pro-preview-03-25
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-flash-preview-04-17
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-flash-preview-05-20
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-flash
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-flash-preview-04-17-thinking
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-flash-lite-preview-06-17
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-pro-preview-05-06
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-pro-preview-06-05
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-pro
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-exp
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-001
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-lite-001
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-lite
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-lite-preview-02-05
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-lite-preview
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-pro-exp
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-pro-exp-02-05
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-exp-1206
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-thinking-exp-01-21
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-thinking-exp
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.0-flash-thinking-exp-1219
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-flash-preview-tts
+2025-06-26 02:38:40,123 - INFO -   - models/gemini-2.5-pro-preview-tts
+2025-06-26 02:38:40,123 - INFO -   - models/learnlm-2.0-flash-experimental
+2025-06-26 02:38:40,123 - INFO -   - models/gemma-3-1b-it
+2025-06-26 02:38:40,123 - INFO -   - models/gemma-3-4b-it
+2025-06-26 02:38:40,123 - INFO -   - models/gemma-3-12b-it
+2025-06-26 02:38:40,123 - INFO -   - models/gemma-3-27b-it
+2025-06-26 02:38:40,123 - INFO -   - models/gemma-3n-e4b-it
+2025-06-26 02:38:40,123 - INFO - Attempting to switch from current model: None
+2025-06-26 02:38:40,124 - INFO - Successfully switched LLM model to: models/gemini-2.5-flash-preview-04-17
+2025-06-26 02:38:40,124 - INFO - 
+--- Starting weak annotation process (Force re-annotate: False) ---
+2025-06-26 02:38:40,124 - INFO - Loaded 0 articles from the main DOI pool.
+2025-06-26 02:38:40,125 - INFO - Loaded 188 DOIs from weak annotation pool.
+2025-06-26 02:38:40,125 - INFO - Found 0 articles to process for weak annotation via LLM.
+2025-06-26 02:38:40,125 - INFO - No new articles require weak annotation.

@@ -1,0 +1,25 @@
+site_name: Spatial omics live review
+# mkdocs.yml in your docs-site/ directory
+
+site_name: Spatial Omics Live Review # Your project's name
+site_url: # Leave empty for GitHub Pages if you're using user/org pages, or fill with custom domain
+site_description: A live review and exploration of Spatial Omics literature and data.
+
+theme:
+  name: material # Using the mkdocs-material theme
+  features:
+    - navigation.tabs # Enable top-level tabs for main sections
+    - navigation.sections # Enable collapsible sections in the side navigation
+    - toc.integrate # Integrate Table of Contents into main content area
+  palette:
+    # Optional: Customize colors
+    - scheme: default
+      primary: 'indigo'
+      accent: 'light blue'
+
+nav:
+  - Home: index.md # This is your main landing page
+  - Book: book/index.md # This will be the main page for your book
+  - Spatial Omics Datasets: datasets/index.md # Main page for datasets
+  - Spatial Omics Methods: methods/index.md # Main page for methods
+  - Spatial Omics Applications: applications/index.md # Main page for applications

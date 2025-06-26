@@ -1,0 +1,77 @@
+2025-06-26 22:50:02,463 - INFO - Logging initialized for Annotation Statistics.
+2025-06-26 22:50:02,463 - INFO - Log file: ../../data/logging_weak_annotator/stats_log_20250626_225002.log
+2025-06-26 22:50:02,463 - INFO - 
+--- Starting Annotation Statistics Generation ---
+2025-06-26 22:50:02,463 - INFO - Created directory: ../../data/analysis_reports
+2025-06-26 22:50:02,490 - INFO - Loaded 3385 entries from ../../data/weak_annotation_pool.jsonl.
+2025-06-26 22:50:02,497 - INFO - --- Annotation Statistics Report (2025-06-26 22:50:02) ---
+Total weakly annotated papers: 3385
+
+--- Overall LLM Metrics ---
+LLM Models Used (count by model):
+{'models/gemini-2.5-flash-preview-04-17': 419, 'models/gemini-2.5-flash-lite-preview-06-17': 2003, 'models/gemini-2.0-flash-exp': 103, 'models/gemini-2.0-flash': 403, 'models/gemini-2.0-flash-lite-001': 404, 'models/gemini-1.5-flash-latest': 53}
+
+--- Relevance Scores ---
+Breakdown of 'relevance_score_llm':
+- relevant: 1695 (50.07%)
+- highly_relevant: 899 (26.56%)
+- low_relevance: 520 (15.36%)
+- irrelevant: 271 (8.01%)
+
+--- Paper Types ---
+Breakdown of 'paper_type':
+- application: 1505 (44.46%)
+- method: 1266 (37.40%)
+- review: 472 (13.94%)
+- other: 88 (2.60%)
+- method_comparison: 54 (1.60%)
+
+--- General Weak Annotation Flags ---
+'is_method_paper' counts: {'True': 1270, 'False': 2115}
+'is_method_comparison_paper' counts: {'False': 3261, 'True': 124}
+
+--- Data Modalities Used (across all papers) ---
+Top data modalities mentioned:
+- spatial transcriptomics: 1927
+- histology images: 548
+- single-cell RNA sequencing: 296
+- spatial proteomics: 242
+- scRNA-seq: 173
+- single-cell transcriptomics: 156
+- snRNA-seq: 153
+- sequencing: 147
+- multiplexed imaging: 124
+- immunohistochemistry: 95
+- spatial metabolomics: 82
+- Visium: 80
+- spatial omics: 75
+- proteomics: 74
+- HE-stained images: 68
+
+--- Methodology Details (for 'method' / 'method_comparison' papers) ---
+Methodology Types:
+{'pipeline': 240, 'algorithm': 535, 'framework': 196, 'workflow': 66, 'tool': 194, 'other_methodology': 47, 'dataset': 1, 'N/A': 40, 'method': 1}
+Top Covered Analysis Steps:
+- Spatial Gene Expression Analysis: 378
+- Cell Segmentation: 292
+- Spatial Domain Identification: 271
+- Clustering: 238
+- Visualization: 204
+- Preprocessing: 186
+- Cell-Cell Interaction Analysis: 142
+- Integration with other omics: 96
+- Denoising: 92
+- Deconvolution: 79
+- Dimension Reduction: 56
+- Classification: 52
+- Feature Extraction: 41
+- Normalization: 38
+- Trajectory Inference: 35
+Code Availability Status:
+{'Not mentioned': 1117, 'GitHub link provided': 168, 'Other': 18, 'Available on CRAN/Bioconductor': 10, 'Open source': 1, 'N/A': 3, 'Open-source software': 1, 'Upon request': 1, 'Proprietary': 1}
+
+--- Review Type Details (for 'review' papers) ---
+Review Types:
+{'disease_specific_review': 210, 'application_review': 57, 'methods_review': 73, 'N/A': 1, 'general_review': 39, 'technology_review': 92}
+2025-06-26 22:50:02,497 - INFO - Statistics report saved to: ../../data/analysis_reports/weak_annotation_stats_20250626_225002.txt
+2025-06-26 22:50:02,497 - INFO - --- Annotation Statistics Generation Complete ---
