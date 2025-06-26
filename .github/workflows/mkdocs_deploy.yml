@@ -1,0 +1,37 @@
+# .github/workflows/mkdocs_deploy.yml
+
+name: Deploy MkDocs Site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # This workflow will run whenever you push to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Use an Ubuntu runner for the job
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Action to check out your repository code
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Use any Python 3 version
+
+      - name: Install MkDocs and Material Theme
+        run: |
+          pip install mkdocs mkdocs-material # Install the necessary packages
+
+      - name: Build MkDocs Site
+        run: mkdocs build -f docs-site/mkdocs.yml # IMPORTANT: Tell MkDocs where your config file is
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3 # Action specifically designed for deploying to gh-pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Automatically provided token for GitHub Actions
+          publish_dir: ./site # The default output directory for MkDocs build
+          # The 'publish_dir' is ./site because the 'mkdocs build' command,
+          # when run with -f docs-site/mkdocs.yml from the repo root,
+          # will output the built site to ./site/ by default.
