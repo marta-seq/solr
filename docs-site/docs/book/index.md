@@ -1,4 +1,4 @@
-### The Spatial Omics Technical Overview
+# The Spatial Omics Technical Overview
 Welcome to this theoretical text section. This technical overview specifically 
 focuses on single-molecule or single-cell resolution approaches.
 

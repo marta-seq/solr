@@ -15,12 +15,12 @@ theme:
 
 nav:
   - Home: index.md
-  - Book:
+  - Spatial Omics theoretic overview:
       - Introduction: book/index.md  # Your book's introduction
-      - Chapter 1: book/chapter1.md
-      - Chapter 2: book/chapter2.md
-      - Chapter 3: book/chapter3.md
-      - References: book/references.md
+      - Spatially Resolved Omics Techniques: book/chapter1.md
+      - Analytical Frameworks for Spatial Omics Data: book/chapter2.md
+#      - Chapter 3: book/chapter3.md
+#      - References: book/references.md
 
       # You can nest further for sections within chapters:
       # - Chapter 4:
