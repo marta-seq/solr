@@ -1,0 +1,943 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A live review and exploration of Spatial Omics literature and data.">
+      
+      
+      
+        <link rel="canonical" href="https://marta-seq.github.io/solr/book/chapter1/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../chapter2/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Chapter 1 - Spatial Omics Live Review</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Spatial Omics Live Review" class="md-header__button md-logo" aria-label="Spatial Omics Live Review" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Spatial Omics Live Review
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="light-blue"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Book
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../datasets/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Spatial Omics Datasets
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../methods/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Spatial Omics Methods
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../applications/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Spatial Omics Applications
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Spatial Omics Live Review" class="md-nav__button md-logo" aria-label="Spatial Omics Live Review" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Spatial Omics Live Review
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Book
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Book
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    References
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial Omics Datasets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial Omics Methods
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial Omics Applications
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Chapter 1</h1>
+
+<p><strong>2.3 Spatially resolved techniques /(left just techniques)/to unveil
+tumour microenvironment/ cancer study</strong></p>
+<p>The essence of spatial omics lies in its aptitude for the simultaneous
+detection of molecular constituents at exact spatial coordinates (35).
+Spatial molecular profiling vary in resolution, scale and molecular
+complexity (36).</p>
+<p><strong>2.3.1 Spatial proteomics</strong></p>
+<p>Spatial proteomics encompasses technologies that enable the in-situ
+profiling of proteins within tissues, preserving their spatial
+localization. Most spatial proteomics techniques detect proteins using
+antibodies tagged with fluorophores, metals, or DNA barcodes. These tags
+are then read using technologies such as fluorescence microscopy, mass
+spectrometry, or DNA-based imaging to map the spatial distribution of
+proteins within tissues (35,37--39). A summary of key features across
+these technologies is provided in Table 1.</p>
+<p>Immunohistochemistry (IHC) is one of the most established clinical tools
+for protein detection [CITATION]. It uses enzyme-linked antibodies to
+generate a chromogenic signal visible under brightfield microscopy.
+While widely available and routinely used in diagnostics, traditional
+IHC is generally limited to detecting one or a few markers per tissue
+section, making it unsuitable for high-dimensional spatial profiling.</p>
+<p>Among the fluorescence-based approaches, immunofluorescence (IF)
+[CITATION] is widely used but limited in multiplexing. More advanced
+cyclic immunofluorescence methods---such as tissue-based cyclic
+immunofluorescence (t-CyCIF) (40) and iterative bleaching extends
+multiplexity (IBEX) (41) - use iterative staining and imaging cycles to
+overcome spectral limitations, enabling the detection of 40--60+ markers
+with spatial resolution down to 200--300 nm.</p>
+<p>DNA-barcoded approaches such as co-detection by indexing (CODEX) (42)
+and immunostaining with signal amplification by exchange reaction
+(Immuno-SABER) further enhance multiplexing. CODEX utilizes DNA-barcoded
+antibodies and sequential hybridization of fluorescent probes, achieving
+high multiplexing (up to 60 proteins) with single-cell resolution (\~500
+nm) in a single imaging plane (43). Immuno-SABER employs orthogonal DNA
+concatemers for signal amplification ADD RESOLUTION AND PLEX (44).</p>
+<p>Mass spectrometry-based approaches---notably Imaging Mass Cytometry
+(IMC) (45) and multiplexed ion beam imaging by time of flight (MIBI-TOF)
+(46)---use antibodies conjugated to isotopically pure lanthanide metals,
+which are detected using laser ablation (IMC) or ion beams (MIBI). These
+methods avoid fluorescence background and allow simultaneous
+quantification of 40--50 proteins per tissue section. IMC offers spatial
+resolution of approximately 1 μm, while MIBI achieves higher resolution
+(\~300 nm), albeit with more complex instrumentation.</p>
+<p>Table 1 -- Comparison table of key features of spatial proteomics
+profiling methods</p>
+<p>+--------+----------+--------------+---------+--------------+-------+
+| Method | Tag type | Detection    | Multi   | Resolution   | Refe  |
+|        |          |              | plexing |              | rence |
+|        |          |              | c       |              |       |
+|        |          |              | apacity |              |       |
++========+==========+==============+=========+==============+=======+
+| IHC    | Enzyme   | Brightfield  | 1-2     |   ---------  |       |
+|        | (ch      | Microscopy   |         |              |       |
+|        | romogen) |              |         |   ---------  |       |
+|        |          |              |         |              |       |
+|        |          |              |         |   ---------  |       |
+|        |          |              |         |   \~1--5 µm  |       |
+|        |          |              |         |   ---------  |       |
+|        |          |              |         |              |       |
+|        |          |              |         |   ---------  |       |
++--------+----------+--------------+---------+--------------+-------+
+| IF     | Flu      | Fluorescence | 4-7     | \~200--500   |       |
+|        | orophore | Microscopy   |         | nm           |       |
++--------+----------+--------------+---------+--------------+-------+
+| cyCIF  | Flu      | Cyclic       | &gt;60    | \~250 nm     |       |
+| / 4i / | orophore | Fluorescence |         |              |       |
+| IBEX   | (it      | Imaging      |         |              |       |
+|        | erative) |              |         |              |       |
++--------+----------+--------------+---------+--------------+-------+
+| CODEX  | DNA      | Fluorescence | &gt;      | \~250 nm     |       |
+|        | Barcode  | Microscopy   | 40--60+ |              |       |
++--------+----------+--------------+---------+--------------+-------+
+| Immuno | DNA      | Fluorescence | &gt;50+   | \~200--300   |       |
+| -SABER | Barcode  | Microscopy   |         | nm           |       |
+|        | (conc    |              |         |              |       |
+|        | atemers) |              |         |              |       |
++--------+----------+--------------+---------+--------------+-------+
+| IMC    | Metal    | Laser        | \~40    | \~1 µm       |       |
+|        | Isotopes | Ablation +   |         |              |       |
+|        |          | MS           |         |              |       |
++--------+----------+--------------+---------+--------------+-------+
+| MIBI   | Metal    | Ion Beam +   | \~40    | \~300 nm     |       |
+|        | Isotopes | MS           |         |              |       |
++--------+----------+--------------+---------+--------------+-------+</p>
+<p>Together, these spatial proteomics platforms offer complementary
+advantages in terms of marker throughput, resolution, and sensitivity,
+enabling comprehensive characterization of the tumour microenvironment,
+immune cell infiltration, and cellular architecture in situ.</p>
+<p><strong>2.3.2 Spatial transcriptomics</strong></p>
+<p>Spatial transcriptomics enables the study of gene expression within the
+tissue architecture, preserving spatial context at cellular or
+subcellular resolution. These platforms can be broadly divided into two
+main categories based on detection strategy: imaging-based
+methods---including <em>In Situ Hybridization</em> (ISH) and <em>In Situ
+Sequencing</em> (ISS)---and spatial barcoding methods, which rely on
+capture-based approaches followed by sequencing. Each approach presents
+trade-offs in terms of resolution, transcriptome coverage, throughput,
+and tissue compatibility (35,47--49) (Table 2).</p>
+<p><em>[In Situ Hybridization Imaging-Based Approaches]{.underline}</em></p>
+<p>ISH-based techniques use fluorescently labelled probes that hybridize
+directly to target RNA molecules in fixed tissue sections. These methods
+are highly accurate and can offer single-molecule and single-cell
+resolution, but typically have limitations in multiplexing capacity
+unless cyclic imaging or barcode strategies are used.</p>
+<p>Basic single molecule FISH (<em>smFISH)</em> can detect individual transcripts
+with high spatial precision but is limited in the number of genes
+detectable due to the finite number of distinguishable fluorophores
+[citation].</p>
+<p>Advanced multiplexed methods, such as MERFISH, and seqFISH+, overcome
+these limits by iterative cycles of hybridization and imaging, enabling
+detection of hundreds to thousands of genes. Multiplexed error-robust
+FISH (MERFISH) (50) uses combinatorial labelling and error-correcting
+barcodes to detect thousands of RNA species in single cells. Sequential
+fluorescence in situ hybridization (seqFISH+) (51) leverages sequential
+rounds of hybridization with an expanded pseudo-color palette, enabling
+detection of over 10,000 genes at subcellular resolution.</p>
+<p>Commercial platforms such as CosMx (52), MERscope (Vizgen) [citation],
+and Xenium (10x Genomics) (54) implement these strategies to achieve
+high-resolution imaging of hundreds to thousands of RNA species, often
+with optional co-detection of proteins.</p>
+<p><em>[In situ sequencing Imaging-Based Approaches]{.underline}</em></p>
+<p>ISS techniques sequence RNA molecules directly within tissues,
+preserving both spatial context and nucleotide identity. Unlike ISH, ISS
+provides sequence information, enabling mutation and splice isoform
+detection.</p>
+<p>STARmap (55) improves detection efficiency by using DNA nanostructures
+and hydrogel-tissue chemistry, while FISSEQ (56), enables untargeted,
+whole-transcriptome analysis through in situ reverse transcription and
+random-hexamer priming. These methods retain spatial localization while
+offering a more detailed molecular readout than hybridization alone.</p>
+<p>Both ISH and ISS require fluorescence microscopy for imaging readouts
+and are collectively referred to as imaging-based spatial
+transcriptomics.</p>
+<p><em>[Spatial Barcoding and Sequencing-Based Methods]{.underline}</em></p>
+<p>Unlike imaging methods, spatial barcoding techniques rely on
+sequencing-based detection. They use spatially encoded oligonucleotides
+(barcodes) fixed to a surface (e.g., slide, bead, or grid) to capture
+RNA from overlying tissue. After RNA capture, reverse transcription and
+sequencing are performed, and spatial information is reconstructed based
+on barcode identity.</p>
+<p>Prominent examples include Visium (10X Genomics) (57), which captures
+RNA on slide-mounted barcoded spots (\~55 µm resolution), and it's new
+version, Visium HD [citation], that offers spatial resolution to
+\~2--5 µm. Slide-seq (58) and Slide-seqV2 (59) use barcoded beads with
+known spatial locations (\~10 µm resolution).</p>
+<p>These methods offer broader transcriptomic coverage---often approaching
+the whole transcriptome---and are scalable to larger tissue sections.
+However, they typically offer lower spatial resolution than
+imaging-based platforms and may not reach single-cell or subcellular
+detail.</p>
+<p>.</p>
+<p>Table 2 - Comparison table of key features of spatial transcriptomics
+profiling methods</p>
+<p>+---------------+------------+----------------+------------+---------+
+| Method        | Category   | Resolution     | Transcript | Re      |
+|               |            |                | coverage   | ference |
++===============+============+================+============+=========+
+| smFISH        | ISH        | \~200--300 nm  | Low (1--10 |         |
+|               | (Imag      | (subcellular)  | genes)     |         |
+|               | ing-based) |                |            |         |
++---------------+------------+----------------+------------+---------+
+| MERFISH       | ISH        | \~100--300 nm  | High       |         |
+|               | (Imag      |                | (1,000+    |         |
+|               | ing-based) | (subcellular)  | genes)     |         |
++---------------+------------+----------------+------------+---------+
+| seqFISH /     | ISH        | \~200 nm       | Very High  |         |
+| seqFISH+      | (Imag      |                | (&gt;10,000  |         |
+|               | ing-based) | (subcellular)  | genes)     |         |
++---------------+------------+----------------+------------+---------+
+| CosMx         | ISH /      | \~250 nm       | Up to      |         |
+| (NanoString)  | smFISH     | (subcellular)  | \~1,000    |         |
+|               |            |                | genes      |         |
++---------------+------------+----------------+------------+---------+
+| MERscope      | MER        | \~300 nm       | \~         |         |
+| (Vizgen)      | FISH-based |                | 500--1,000 |         |
+|               | (ISH)      | (subcellular)  | genes      |         |
++---------------+------------+----------------+------------+---------+
+| Xenium (10x   | sm         | \~280 nm       | \~300--400 |         |
+| Genomics)     | FISH-based | (subcellular)  | genes      |         |
+|               | (ISH)      |                |            |         |
++---------------+------------+----------------+------------+---------+
+| STARmap       | ISS        | \~2--3 µm (3D) | \~1,000    |         |
+|               |            |                | genes      |         |
+|               |            | (Single-cell)  |            |         |
++---------------+------------+----------------+------------+---------+
+| FISSEQ        | ISS (In    | \~300 nm -- 1  | Whole      |         |
+|               | Situ       | µm             | tra        |         |
+|               | S          |                | nscriptome |         |
+|               | equencing) | (Single-cell/  |            |         |
+|               |            | subcellular)   |            |         |
++---------------+------------+----------------+------------+---------+
+| Visium (10x   | Spatial    | \~55 µm (spot  | Whole      |         |
+| Genomics)     | Barcoding  | diameter)      | tra        |         |
+|               | (Slide)    |                | nscriptome |         |
++---------------+------------+----------------+------------+---------+
+| Visium HD     | Spatial    | \~2--5 µm      | Whole      |         |
+|               | Barcoding  |                | tra        |         |
+|               | (Slide)    | (close         | nscriptome |         |
+|               |            | single-cell)   |            |         |
++---------------+------------+----------------+------------+---------+
+| Slide-seq     | Spatial    | \~10 µm (bead  | Whole      |         |
+|               | Barcoding  | diameter)      | tra        |         |
+|               | (Beads)    |                | nscriptome |         |
++---------------+------------+----------------+------------+---------+
+| Slide-seqV2   | Spatial    | \~10 µm        | Whole      |         |
+|               | Barcoding  | (higher        | tra        |         |
+|               | (Beads)    | sensitivity)   | nscriptome |         |
++---------------+------------+----------------+------------+---------+</p>
+<p><strong>2.3.3 Spatial metabolomics</strong></p>
+<p>Spatial metabolomics explores the spatial distribution of metabolites
+directly in tissue sections, providing insight into biochemical activity
+within the anatomical context (60). The field is largely driven by
+Matrix-Assisted Laser Desorption/Ionization Mass Spectrometry Imaging
+(MALDI-MSI) (61), a label-free, untargeted technique capable of
+detecting a wide range of small molecules including lipids,
+neurotransmitters, and drugs.</p>
+<p>In MALDI-MSI, tissue sections are coated with a matrix that facilitates
+ionization when hit by a laser. The resulting ions are analysed by mass
+spectrometry to reconstruct spatial metabolite maps. MALDI-MSI offers
+spatial resolution in the range of 10--50 µm, with coverage of hundreds
+to thousands of metabolites, depending on the tissue and matrix.</p>
+<p><strong>2.3.4 Spatial multi-omics</strong></p>
+<p>Spatial multi-omics technologies (Table 3) enable the simultaneous or
+integrative profiling of multiple molecular layers---such as RNA,
+proteins, and metabolites---within their spatial tissue context,
+offering a more comprehensive understanding of cellular states and
+interactions.</p>
+<p>One of the most established platforms, GeoMx Digital Spatial Profiler
+(DSP) (NanoString) (62), allows for high-plex profiling of both RNA and
+proteins within defined regions of interest using oligonucleotide-tagged
+probes and UV-directed barcode collection, though at limited spatial
+resolution (\~10--100 μm). Other advanced methods, such as deterministic
+barcoding in tissue for spatial omics sequencing (DBiT-seq) (63),
+achieve co-detection of RNA and proteins through microfluidic-based
+spatial barcoding on the same section, offering high spatial resolution
+(\~10 μm) and true multimodal readouts. Similarly, Spatial-CITE-seq (64)
+adapts co-indexing of transcriptomes and epitopes (CITE) to the spatial
+dimension, enabling the capture of transcriptomes alongside surface
+protein markers.</p>
+<p>Furthermore, MALDI-MSI have been successfully combined on the same slide
+with both IMC (65) and spatial transcriptomics platforms like 10x Visium
+(66).</p>
+<p>Table 3 - Comparison table of key features of spatial multiomics methods</p>
+<p>+---------+----------+--------------+---------+--------------+-------+
+| Method  | Spatial  | RNA Targets  | Protein | Metabolite   | Refe  |
+|         | Re       |              | Targets | Coverage     | rence |
+|         | solution |              |         |              |       |
++=========+==========+==============+=========+==============+=======+
+| GeoMx   | \~10     | Up to        | \~100+  | --           |       |
+| DSP     | --100 µm | \~18,000     | (a      |              |       |
+| (Nano   | (RO      | (targeted    | ntibody |              |       |
+| String) | I-based) | panels)      | panels) |              |       |
++---------+----------+--------------+---------+--------------+-------+
+| D       |   -      | \~6          | \~      | --           |       |
+| BiT-seq | -------- | ,000--10,000 | 30--100 |              |       |
+|         |          |              |         |              |       |
+|         |  \~10 µm |              |         |              |       |
+|         |   -      |              |         |              |       |
+|         | -------- |              |         |              |       |
+|         |          |              |         |              |       |
+|         |   -      |              |         |              |       |
+|         | -------- |              |         |              |       |
+|         |          |              |         |              |       |
+|         |   -----  |              |         |              |       |
+|         |          |              |         |              |       |
+|         |   -----  |              |         |              |       |
++---------+----------+--------------+---------+--------------+-------+
+| Sp      | \~2      | \~5          | \~1     | --           |       |
+| atial-C | 0--50 µm | ,000--10,000 | 00--200 |              |       |
+| ITE-seq |          |              |         |              |       |
++---------+----------+--------------+---------+--------------+-------+
+| MALD    | \~       | --           | \       | 100s to      |       |
+| I-MSI + | 1--10 µm |              | ~30--50 | 1,000s       |       |
+| IMC     |          |              |         |              |       |
++---------+----------+--------------+---------+--------------+-------+
+| MALD    | \~1      | \~18,000     | --      | 100s to      |       |
+| I-MSI + | 0--50 µm |              |         | 1,000s       |       |
+| Visium  | (MALDI); |              |         |              |       |
+|         | 55 µm    |              |         |              |       |
+|         | (ST)     |              |         |              |       |
++---------+----------+--------------+---------+--------------+-------+</p>
+<p>While this overview focuses on representative technologies, detailed
+descriptions and additional methods and recent innovations are
+extensively reviewed elsewhere.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1196 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A live review and exploration of Spatial Omics literature and data.">
+      
+      
+      
+        <link rel="canonical" href="https://marta-seq.github.io/solr/book/chapter3/">
+      
+      
+        <link rel="prev" href="../chapter2/">
+      
+      
+        <link rel="next" href="../references/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Chapter 3 - Spatial Omics Live Review</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Spatial Omics Live Review" class="md-header__button md-logo" aria-label="Spatial Omics Live Review" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Spatial Omics Live Review
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 3
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="light-blue"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Book
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../datasets/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Spatial Omics Datasets
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../methods/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Spatial Omics Methods
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../applications/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Spatial Omics Applications
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Spatial Omics Live Review" class="md-nav__button md-logo" aria-label="Spatial Omics Live Review" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Spatial Omics Live Review
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Book
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Book
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    References
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial Omics Datasets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial Omics Methods
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial Omics Applications
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Chapter 3</h1>
+
+<p><strong>2.5 Analytical Frameworks for Spatial Omics Data / Computational
+Methods for Spatial Omics Analysis / Tools and Methods for Spatial Data
+Analysis/</strong></p>
+<p>The increasing availability of high-resolution spatial omics
+data---particularly at subcellular resolution---brings new computational
+challenges, including those related to the spatial dimension, increased
+data complexity, and multiplexing. This chapter focuses on the analysis
+of single-molecule spatial transcriptomics and proteomics, where each
+detected molecule is mapped with precise spatial coordinates. While the
+field is rapidly evolving, with a growing number of specialized tools
+and packages emerging at a fast pace, this work will centre on the core
+analytical pipeline common to most imaging-based platforms. Methods
+specific to certain technologies---such as deconvolution approaches
+designed for lower-resolution platforms like 10x Visium---or complex
+multimodal integration strategies with single-cell data will not be
+covered here.</p>
+<p>[put image here if time of the schematics pipeline]</p>
+<p><strong>2.5.1 Data preprocessing</strong></p>
+<p>Both spatial proteomics and spatial transcriptomics require dedicated
+preprocessing steps to mitigate technical noise and artifacts that may
+obscure true biological signals. These preprocessing strategies differ
+significantly, reflecting the distinct nature of the underlying
+technologies.</p>
+<p>[Spatial proteomics]{.underline}</p>
+<p>For spatial proteomics noise sources can vary based on the antibodies,
+detection channels, and tissue types used, and may manifest as artifacts
+such as hot pixels, shot noise, background noise and channel crosstalk
+(72--74) and may also exhibit low signal-to-noise ratios (75).</p>
+<p>Channel crosstalk, where signals from one channel interfere with
+adjacent channels, can be mitigated through well-designed antibody
+panels (75) or correction methods like CATALYST (74), which uses
+pre-acquisition compensation matrices, as well as post-processing
+techniques (73,76).</p>
+<p>Beyond crosstalk, other sources of noise---such as hot pixels,
+background signal, and shot noise---require distinct computational
+strategies. Some studies have employed adjacent approaches, including
+those implemented in Steinbock (77) and MAUI (MBI analysis interface)
+(73), while others have developed "homebrew" methods based on
+traditional image filtering techniques (76,78,79). However, these
+methods are often insufficient for fully addressing complex noise
+patterns.</p>
+<p>Tools like Ilastik (80) provide supervised pixel classification to
+distinguish background noise from true signal on a per-marker basis
+(77,80,81). Although this approach requires extensive manual annotation,
+it is currently considered state-of-the-art, as it effectively removes
+background noise and improves signal normalization and batch effect
+reduction across samples (80). More recently, IMC-Denoise (82) has been
+introduced as a two-step pipeline combining traditional algorithms with
+a self-supervised deep learning model based on Noise2Void (83).</p>
+<p>To note this thesis contributes to this specific challenge, as discussed
+in Chapter 3.</p>
+<p>[Spatial transcriptomics]{.underline}</p>
+<p>For spatial transcriptomics, preprocessing aims to reduce technical
+noise introduced during tissue handling, permeabilization, probe
+hybridization, and sequencing. One of the first steps involves removing
+low-quality spatial barcodes or transcript reads, which can arise from
+ambient RNA contamination, incomplete permeabilization, or sequencing
+artifacts. In some commercial platforms (such as Xenium), quality scores
+or confidence values are assigned to individual transcripts; Transcripts
+below a defined threshold can be excluded to avoid false positives. To
+further refine the dataset, transcripts detected at extremely low
+frequency across the tissue may be removed.</p>
+<p><strong>2.5.2 Cell segmentation</strong></p>
+<p>A central challenge in spatial omics is the accurate assignment of
+molecular measurements---transcripts or proteins---to individual cells.
+This process, known as cell segmentation, is essential for translating
+spatial data into single-cell level insights and directly influences
+downstream biological interpretation.</p>
+<p>[Spatial proteomics]{.underline}</p>
+<p>In spatial proteomics, cell segmentation is typically performed using
+the imaging data generated during acquisition. These multiplexed images
+often include nuclear stains (e.g., DAPI) to identify nuclei and
+membrane markers (e.g., β-catenin, Vimentin) to delineate cell
+boundaries. These signals are combined into RGB or multi-channel images
+and processed using image analysis pipelines.</p>
+<p>Traditional image segmentation approaches, such as thresholding, edge
+detection, and the watershed algorithm, are commonly employed. These
+methods are implemented in established tools like CellProfiler (84,85)
+and ImageJ/Fiji (86), which allow customization of segmentation
+pipelines using scripting interfaces. In recent years, DL models have
+gained prominence due to their improved accuracy, generalizability, and
+community availability (87). Notably, Mesmer, part of the DeepCell
+framework, DL-based model specifically trained on spatial proteomics
+datasets, leveraging TissueNet, a large annotated dataset (88). Another
+widely adopted method is Cellpose, a generalist DL segmentation tool
+that predicts vector flows to delineate cell boundaries instead of
+relying on direct pixel-wise classification. Though originally trained
+on a broad array of microscopy images, Cellpose also offers specialist
+models, including those fine-tuned on TissueNet subsets to enhance
+performance on spatial proteomics images (89,90).</p>
+<p>Segmentation strategies in spatial proteomics range from nucleus-based
+expansion methods, which approximate cell outlines from DAPI staining,
+to full-cell segmentation techniques that incorporate both nuclear and
+membrane markers. A growing number of domain-specific models continue to
+emerge, each tailored to address the distinct noise profiles, spatial
+resolution, and multiplexing characteristics of spatial proteomics data
+(91--95).</p>
+<p>[Spatial transcriptomics]{.underline}</p>
+<p>The landscape of spatial transcriptomics segmentation is more varied
+than in proteomics. In subcellular-resolution platforms such as Xenium
+and CosMx, segmentation is often performed using accompanying IF images,
+which typically include nuclear (e.g., DAPI) and membrane markers. These
+images enable the identification of cell boundaries, which are then used
+to assign transcripts to individual cells by overlaying segmentation
+masks with transcript positions.</p>
+<p>Alternatively, several methods bypass image-based segmentation
+altogether. Since transcripts are detected directly as spatial
+coordinates, these approaches aim to infer cell boundaries based solely
+on the spatial distribution and density of transcripts, reducing
+dependency on auxiliary images (96--104).</p>
+<p>A prominent example is Baysor (96), a general probabilistic framework
+implemented in Julia. Based on Markov Random Fields (MRF), Baysor models
+cells by jointly considering spatial proximity and transcriptional
+similarity. It can incorporate prior segmentations, assigning confidence
+scores to them, or operate de novo using only transcript data. Baysor
+functions in both 2D and 3D, optimizing the likelihood that neighbouring
+transcripts originate from the same cell. Notably, it has shown strong
+performance across datasets and has been reported to outperform the
+default segmentation provided in Xenium workflows (105), highlighting
+its practical utility and growing adoption.</p>
+<p><strong>2.5.3 Cell phenotyping</strong></p>
+<p>Cell phenotyping is the process of assigning biological identities to
+individual cells based on their molecular profiles, such as gene or
+protein expression, and serves as a critical step in interpreting
+spatial omics data.</p>
+<p>[Spatial proteomics]{.underline}</p>
+<p>Unlike transcriptomic approaches, spatial proteomics typically profiles
+a pre-selected panel of \~30--50 protein markers, chosen based on the
+biological question. This reduced and curated feature space simplifies
+downstream computational analysis but increases reliance on prior
+biological knowledge for interpreting clusters (77).</p>
+<p>Commonly used clustering algorithms include Cytosplore, a GUI which
+leverages Hierarchical Stochastic Neighbour Embedding (HSNE) (106),
+Phenograph that builds a shared neares neighbor graph and uses Louvain
+algorithm to partition of the graph into communities (107), and FlowSOM
+that applies Self-Organizing Maps (SOM) (108,109).</p>
+<p>In addition to unsupervised clustering, other strategies for phenotyping
+include: Manual gating, where marker thresholds are used to define known
+populations based on expert knowledge; Supervised machine learning
+models, such as Random Forests, which classify cells using labelled
+training data and reference mapping, where new datasets are aligned to
+previously annotated references to infer phenotypes[citation? Remove].</p>
+<p>[Spatial transcriptomics]{.underline}</p>
+<p>Spatial transcriptomics datasets that approach single-cell resolution
+often adopt analysis pipelines developed for single-cell RNA (scRNA).
+This involves several key steps:</p>
+<p>The process begins with data preprocessing, where cells of low quality
+are removed through quality control steps. Following this, normalization
+is applied---most commonly scaling gene counts to 10,000 per cell and
+applying a log-transformation---to standardize data across cells. Since
+these datasets are high-dimensional, dimensionality reduction is used to
+make the data more manageable. Principal Component Analysis (PCA) is
+commonly applied first to identify the most informative gene expression
+patterns. For visualization and further analysis, nonlinear techniques
+like t-SNE and UMAP are used to project the data into two or three
+dimensions while preserving its underlying structure (110).</p>
+<p>Next, clustering algorithms group similar cells together. This is
+usually done by building a K-nearest neighbor (KNN) graph in the
+PCA-reduced space. Each cell is connected to its K most similar
+neighbours, and clustering algorithms such as Louvain (111) and Leiden
+(112), often with better performance (113) are applied to identify
+densely connected communities within the graph. These clusters are
+assumed to represent groups of cells with similar transcriptional
+profiles, often corresponding to distinct cell types or states.</p>
+<p>Once clusters are identified, cell type annotation is performed to
+assign biological identities to the groups of cells. This can be done
+either manually or automatically.</p>
+<p>Manual annotation relies on known marker genes---genes that are
+characteristically expressed in specific cell types. In practice, this
+can be done by checking whether known markers are expressed in each
+cluster or, conversely, by identifying differentially expressed genes
+within clusters and matching them to known biological signatures. While
+manual annotation is transparent and interpretable, it can be
+subjective, labour-intensive, and limited by the availability and
+specificity of known markers (110).</p>
+<p>Alternatively, automated annotation methods are also available, which
+leverage reference gene atlases and machine/deep learning models (e.g.,
+CellTypist (114)), or label transfer approaches (e.g., Symphony (115)) .
+These methods provide faster and more scalable annotation but tend to be
+less interpretable and dependent on the similarity between the reference
+and the query data (110).</p>
+<p>However, automated approaches are not yet standard for spatial
+transcriptomics, particularly in cases where the data is limited by
+lower gene counts, targeted panels, or lower sequencing depth compared
+to single-cell RNA. Additionally, many spatial datasets do not align
+well with existing reference atlases due to differences in tissue
+context, resolution, or platform. As a result, manual annotation remains
+more reliable and commonly used in spatial transcriptomics, particularly
+when high-resolution spatial context and known marker expression are
+available.</p>
+<p><strong>2.5.4 Cellular neighbourhood analysis</strong></p>
+<p>Cellular neighbourhood analysis begins with the construction of a
+spatial connectivity graph that captures the proximity relationships
+between cells within the tissue. This spatial graph serves as the
+backbone for downstream spatial statistics and interaction analyses.
+Different methods can be used to construct such graphs, including
+k-nearest neighbors (KNN), where each cell is connected to a fixed
+number of closest neighbours; radius-based expansion, which connects all
+cells within a given physical distance; and Delaunay triangulation,
+which uses geometric criteria to define adjacency without imposing
+arbitrary thresholds. Importantly, the same principles and methodologies
+for neighbourhood analysis apply across these two modalities, despite
+differences in the underlying molecular readouts (77,110).</p>
+<p>Once a graph is established, it enables the exploration of spatial
+interactions between annotated cell types. A common approach involves
+the computation of neighbourhood enrichment scores, which statistically
+test whether specific cell types are found adjacent to each other more
+or less frequently than expected by chance. These analyses rely on
+permutation-based null models, which shuffle cell-type labels while
+preserving tissue structure, providing a robust statistical framework to
+assess enrichment or depletion of interactions (e.g. histoCAT (116)) .
+Another related method is the computation of co-occurrence scores, which
+estimate how likely it is to observe specific cell-type pairs within
+increasing radii around each cell. These scores reflect the conditional
+probability of observing a certain cell type given the presence of
+another nearby, offering an interpretable measure of spatial association
+across scales (110).</p>
+<p>Alternatively, simple interaction matrices can be computed, summarizing
+the raw counts of neighbouring cell-type pairs (77). Though not
+statistical tests, these matrices are useful for exploratory data
+analysis.</p>
+<p>Beyond pairwise interaction analyses, more integrative approaches aim to
+cluster cells based on the composition of their local neighbourhoods.
+One strategy involves computing, for each cell, the fraction of
+surrounding cell types within its local environment (e.g., 20 nearest
+neighbours). These local composition profiles can then be clustered
+using unsupervised methods such as k-means or Leiden algorithms,
+grouping cells into recurring spatial neighbourhoods. This approach was
+introduced by studies such as Goltsev et al. (42) and Schürch et al.
+(117), which revealed that specific combinations of neighbouring
+discrete cell types are often spatially organized in conserved patterns.</p>
+<p>A related method involves aggregating gene or protein expression
+features across the neighbourhood, effectively capturing a summary of
+the local microenvironment. These aggregated features can then serve as
+the basis for clustering or downstream modelling, this is approach is
+implemented for example in covariance environment (COVET)(118) and
+NicheCompass (Niche Identification based on Cellular grapH Embeddings of
+COMmunication Programs Aligned across Spatial Samples), a graph
+deep-learning approach to identify and quantitatively characterize
+niches by learning cell embeddings encoding signalling events as spatial
+gene program activities (119).</p>
+<p>Through these computational strategies, spatial neighbourhoods can be
+identified and interpreted biologically as spatial niches---localized,
+recurring configurations of cells and their molecular environment that
+reflect functionally relevant tissue microenvironments. Spatial niches
+are particularly informative in contexts such as immuno-oncology, where
+immune-tumour interactions shape the progression or suppression of
+disease.</p>
+<p><strong>2.5.5 Spatial domains</strong></p>
+<p>Closely related to cellular neighbourhoods, spatial domains usually
+refer to broader, tissue-scale regions characterized by coherent gene or
+protein expression patterns and underlying structural organization
+(110). While cellular neighbourhoods capture the immediate
+microenvironment around a cell---defined by local interactions and
+spatial proximity---spatial domains extend this concept to larger
+anatomical or functional areas of tissue. These regions often consist of
+diverse cell types and multiple neighbourhood configurations, working
+together to support complex biological functions.</p>
+<p>Because of the overlap between microenvironmental patterns and larger
+spatial structures, some computational approaches can identify both
+neighbourhoods and domains using similar principles. These methods
+generally integrate molecular profiles with spatial information,
+allowing for the detection of both fine-grained and broader-scale tissue
+organization. A common strategy involves combining a cell's individual
+gene or protein expression with the aggregated expression from its
+surrounding neighbours. This allows the model to capture both intrinsic
+cell identity and the influence of the local microenvironment, which is
+particularly useful in tissues where cells of the same type are
+dispersed rather than spatially clustered.</p>
+<p>A wide range of computational strategies has been developed for domain
+segmentation. Some early methods relied on spatial smoothing techniques,
+such as Markov Random Fields (MRFs), which encourage physically
+proximate cells to be assigned the same label (120,121). This assumes
+that a cell's transcriptome resembles the average of its domain,
+although this may not always hold true in tissues where multiple cell
+types are intermixed. Other approaches employ deep learning,
+particularly graph-based neural networks that can incorporate either
+histological information (122,123) or spatial graphs derived purely from
+molecular and positional data (124--126). These methods offer
+flexibility and can capture complex spatial dependencies, but their
+performance can vary with dataset size and structure.</p>
+<p>More recently, methods introducing hierarchical and multiscale
+representations of spatial structure have emerged. For instance, NeST
+(127) identifies nested co-expression hotspots---spatially contiguous
+regions that co-express subsets of genes---by simultaneously searching
+across gene and spatial dimensions. This approach captures biological
+structure at multiple scales and can reveal overlapping or nested
+domains, without requiring prior assumptions about gene sets or spatial
+resolution. Similarly, the concept of tissue schematics (128) has been
+proposed as a way to abstract spatial organization into higher-order
+motifs, by identifying modular assemblies of cellular neighbourhoods.
+These schematics can be used to represent tissue architecture in both
+healthy and diseased states, offering insights into how local
+interactions scale up to tissue-level functionality.</p>
+<p><strong>2.5.6 Spatially Variable genes</strong></p>
+<p>Spatially variable genes (SVGs) are genes whose expression displays
+significant spatial patterning across a tissue. Identifying SVGs reveals
+insights into tissue architecture, cell--cell communication, and local
+microenvironmental influences, extending beyond what is captured by cell
+types or spatial domains alone. These spatial patterns may arise from
+gradients in signalling molecules, regional functional differences, or
+heterogeneous cell compositions (110). Notably, SVG detection does not
+rely on cell segmentation, making it applicable across different spatial
+omics technologies.</p>
+<p>Several computational methods have been developed to detect SVGs by
+decomposing gene expression variability into spatial and non-spatial
+components. A widely used statistic is Moran's I, which quantifies
+spatial autocorrelation by measuring how similar gene expression is
+between neighbouring spots (129). Model-based approaches like SpatialDE
+(130), trendseek (131), SPARK (132), and SPARK-X (133) use Gaussian
+processes or spatial statistical models to test for spatially structured
+expression while accounting for noise and overdispersion. While these
+tools test each gene independently and return p-values, they often
+overlook spatial domain context, which can limit biological
+interpretability. Other strategies take different modelling
+perspectives: Sepal (134) applies a Gaussian diffusion process, scGCO
+(135) uses graph cuts to detect spatial expression boundaries, and
+SpaGCN (123), defines both domains and SVGs integrating histology and
+spatial proximity through graph convolutional networks.</p>
+<p>Importantly, the identification of SVGs is modality-agnostic and
+applicable to both spatial transcriptomics and spatial proteomics.
+Regardless of whether gene expression or protein abundance is measured,
+spatially variable features represent key molecular signatures of tissue
+structure and function, and form an essential layer of spatial omics
+analysis<strong>. [is it? Actually]</strong></p>
+<p><strong>2.5.7 Functional analysis</strong></p>
+<p>Understanding how spatial context shapes cellular function is an
+increasingly important focus in spatial omics. Beyond identifying cell
+types, neighbourhoods, or spatially variable genes, functional analysis
+aims to reveal how cells operate and interact in situ. This includes
+investigating intracellular signalling pathways, transcription factor
+(TF) activity, and particularly cell--cell communication (CCC)
+events---often inferred from curated interaction networks derived from
+transcriptomics data (136,137).</p>
+<p>A broad landscape of computational tools has emerged for CCC analysis
+(137--146), reflecting the growing complexity and richness of spatial
+omics data. Broadly, these methods fall into two sections: identifying
+pairs of genes that interact, such that expression of the gene in one
+cell influences that of the other gene in others; and identifying pairs
+of cells in which that gene pair interacts (147).</p>
+<p>Most methods for CCC leverage ligand--receptor (L--R) interactions,
+relying heavily on prior biological knowledge, often curated into
+databases such as CellPhoneDB (139), OmniPath (148), and CellChat (140).
+These databases catalog known signalling pathways and interaction pairs
+from the literature. Using such resources, CCC inference can be extended
+to the spatial context by identifying L--R pairs co-expressed in nearby
+cells (137) for example using spatial co-expression (137,143), or
+incorporating different approaches such as optimal transport frameworks
+(142) or Bayesian multiple instance learning (MIL) (146) to more
+precisely link cells by both location and expression.</p>
+<p>Complementing these prior knowledge-driven approaches are data-driven
+methods that model spatial gene expression to discover novel
+interactions. These models, like NCEM (138), GCNG (145) or SVCA (149)
+and Misty (150) (while not specific for CCC), aim to capture
+interactions that explain spatial expression variance across multiple
+genes. They enable inference of new communication patterns not captured
+in curated L--R databases, though their accuracy depends on model design
+and training data.</p>
+<p>Furthermore, some CCC frameworks estimate global co-localization across
+entire tissue sections (138,141,150), and others focus on local
+cell-cell proximity (142,143).</p>
+<p>In parallel, there is increasing interest in inferring intracellular
+functional activity---such as pathway activation, TF activity, or gene
+set enrichment---within individual cells or regions. Tools like decouplR
+(151) apply prior knowledge from pathway perturbation signatures (152)
+or regulatory networks (153) to estimate these functional states at
+single-cell or spot level. As with CCC, these functional scores can then
+be spatially mapped.</p>
+<p>These approaches are currently more mature for spatial transcriptomics,
+where broader gene coverage enables more reliable functional inference.
+In contrast, spatial proteomics remains limited by smaller marker panels
+and less comprehensive prior knowledge, constraining the resolution of
+functional state estimation.</p>
+<p>While spatial omics provides a key advantage over single-cell RNA
+through direct measurement of cell proximity---eliminating the need for
+probabilistic neighbourhood modelling and enabling exclusion of
+implausible, long-range interactions---this often comes with trade-offs.
+Platforms with true cellular resolution (e.g., CosMx, Xenium) may
+capture fewer genes, complicating pathway-level analyses and downstream
+functional interpretation. Moreover, the heavy reliance on curated
+databases across most CCC methods introduces variability and potential
+inconsistencies, as predictions can differ significantly depending on
+the resource used.</p>
+<p>Ultimately, understanding how a cell's functional state is shaped by its
+environment---and how it, in turn, influences surrounding cells---is a
+central and still largely untapped frontier in spatial biology. As
+methods advance, this bidirectional view of cellular function in context
+promises to transform our understanding of tissue organization, disease
+progression, and therapeutic targeting.</p>
+<p><strong>2.5.8 How to distinguish between sample conditions</strong></p>
+<p>Identifying meaningful differences between groups---such as disease
+states, treatment conditions, or tissue types---is a central task in
+spatial and single-cell omics.</p>
+<p><strong>a. summary statistics</strong></p>
+<p>One of the earliest approaches involves aggregating spatial features
+across samples and comparing them using statistical summaries. For
+example, scores for cell--cell communication, number of neighbours, or
+other spatial statistics can be averaged per sample and used to detect
+differences between conditions (137,150,154). However, this strategy is
+often too simplistic, as it can blur important heterogeneity by
+averaging out spatially localized effects.</p>
+<p><strong>b. Matrix factorization methods</strong></p>
+<p>Matrix factorization methods provide a more nuanced alternative. These
+approaches reduce high-dimensional data into a smaller set of latent
+factors that capture major patterns of variation. Classical approaches
+like Principal Component Analysis (PCA) achieve this through linear
+decompositions, but newer tools like Multi-Omics Factor Analysis (MOFA)
+(155--157), MEFISTO (158), and DIALOGUE (159) extend the concept to
+handle multiple data types, structured variation, or intercellular
+coordination. These methods can incorporate spatial information embedded
+in the matrix.</p>
+<p>MOFA and its variants allow joint analysis of multi-omic datasets,
+identifying latent factors that capture both shared and group-specific
+variation. Other tools like DIALOGUE (159) and scITD (160) focus on
+identifying coordinated gene programs across multiple cell types,
+enabling the characterization of multicellular processes in an
+unsupervised fashion.</p>
+<p>Nonnegative Matrix Factorization (NMF) provides a more interpretable,
+parts-based representation, especially useful for identifying additive
+biological signals like distinct cell states or spatial domains.
+Spatially-aware versions of NMF, such as Nonnegative Spatial
+Factorization (NSF), extend this idea by directly incorporating spatial
+coordinates, better capturing localized gene expression patterns (161).</p>
+<p>These matrix-based methods not only enhance the ability to uncover
+biologically relevant spatial and intercellular patterns, but also
+enable unsupervised identification of group-level differences---whether
+driven by disease, environment, or treatment---without requiring
+explicit labels.</p>
+<p><strong>c. Machine Learning and Deep Learning approaches</strong></p>
+<p>Beyond matrix factorization, supervised machine learning (ML) and deep
+learning (DL) methods are increasingly being explored to classify
+samples or predict disease conditions using spatial and single-cell
+omics data. These models are particularly well-suited to capturing
+nonlinear relationships and subtle patterns in high-dimensional
+datasets. However, their application in this domain remains relatively
+limited---mainly due to the scarcity of large, well-annotated datasets
+needed to train robust deep models. While DL approaches typically
+require thousands of samples to achieve generalizability, spatial omics
+datasets have only recently begun to reach that scale.</p>
+<p>It\'s worth noting that DL has been widely adopted in other stages of
+the spatial omics pipeline---such as image preprocessing, segmentation,
+domain identification, phenotyping, and modelling of cell--cell
+communication---but its use for direct classification or outcome
+prediction is still sparse.</p>
+<p>Among early efforts in this direction, NaroNet (162) introduced a patch
+contrastive learning strategy combined with graph representations to
+predict patient outcomes from IMC data. In the same cohort, Fu et al.
+(163) proposed a deep multimodal graph-based network that integrates IMC
+data with clinical variables to predict cancer survival. In another
+example, Risom et al. (164) applied a random forest classifier to a MIBI
+dataset of ductal carcinoma in situ (DCIS), using over 400 spatial
+features---including tissue compartment enrichment and TME
+morphometrics---to distinguish between progressors and non-progressors.</p>
+<p>A more recent and notable advance is S3-CIMA (165), a weakly supervised,
+single-layer convolutional neural network that learns disease-specific
+spatial compositions of the tumour microenvironment. By modelling local
+cell-type organizations from high-dimensional proteomic imaging data
+(IMC and CODEX), it enables the discovery of outcome-associated
+microenvironments in colorectal cancer. Similarly, graph deep learning
+has been used to predict prognosis in gastric cancer, where Cell-Graphs
+built from multiplexed immunohistochemistry (mIHC) data enable prognosis
+prediction from spatial arrangements of cell types (166).</p>
+<p>To note that DL methods are already well-established in computational
+pathology and digital histopathology, where large annotated datasets and
+well-defined visual features have allowed CNNs to thrive in image
+classification, segmentation, and prognosis prediction tasks (167,168).</p>
+<p><strong>2.5.9 Frameworks and tools for spatial omics analysis</strong></p>
+<p>A growing ecosystem of software tools supports the analysis of
+single-cell and spatial omics data. Seurat (R) (169) and Scanpy (Python)
+(170) are widely used for single-cell analysis. Scanpy is built around
+the efficient AnnData structure (171), while Seurat uses its own
+SeuratObject.</p>
+<p>Dedicated spatial omics tools such as Giotto (R) (172) and Squidpy
+(Python) (154) offer integrated workflows for spatial statistics,
+neighbourhood analysis, and visualization with also new data frameworks
+like SpatialData (173) (Python) emerging to better support spatial
+modalities. Napari (174), a general-purpose image viewer, complements
+these tools with interactive, high-dimensional image
+visualization---useful for working with spatial coordinates and tissue
+images.</p>
+<p>Python and R remain the dominant programming languages in this space.
+Python is increasingly favoured for spatial omics due to its speed,
+memory efficiency, and compatibility with deep learning and image
+processing (e.g., PyTorch),while R remains popular for exploratory
+analysis and visualization (49). Meanwhile, Julia is gaining attention
+for its performance, with tools like Baysor (96) highlighting its
+potential in spatial omics analysis (175).</p>
+<p>Given the rapid growth of tools---and the risk of incompatibilities in
+data formats, APIs, and user interfaces---standardization efforts like
+scverse (176) have emerged. These initiatives promote well-maintained,
+interoperable core functionality, supporting a more cohesive and
+collaborative spatial omics software ecosystem.</p>
+<p><strong>2.5.11 closing remarks</strong></p>
+<p><img alt="" src="media/image1.png" />{width="6.268055555555556in"
+height="3.6277777777777778in"}</p>
+<p>Figure 1 - Graph overview of spatial omics methods analysed in this
+review. Each node represents a method included in this review, with the
+colour indicating its role in the spatial omics analysis pipeline (e.g.,
+orange -- Preprocessing, blue -- Cell Segmentation, etc.) and the size
+of the bubble proportional to its citation count, reflecting community
+adoption. Nodes are grouped spatially by conceptual similarity and
+method type. Only full spatial omics methods are shown, excluding
+foundational algorithms or reused modules from unrelated pipelines. This
+layout reveals the landscape and complexity of spatial omics
+development. The interactive version of this graph is available at:
+<a href="https://marta-seq.github.io/SOME/">https://marta-seq.github.io/SOME/</a>. This approach can be extended to
+incorporate newly published methods or customized for other use cases.</p>
+<p>This review has focused on spatial omics methods that operate on the
+basis of cell-defined units. However, it is important to note that many
+of these approaches can also be applied at the transcript level,
+bypassing the need for explicit cell segmentation---this is particularly
+true for tasks such as domain identification. While cell-based analysis
+remains the prevailing standard in spatial omics, alternative strategies
+that complement or replace cell segmentation are gaining ground
+(126,177). This shift is partly driven by the technical difficulty of
+accurately segmenting individual cells, especially in complex tissues
+where cells may be overlapping, densely packed, or poorly defined.</p>
+<p>Furthermore, this review has specifically addressed computational
+methods applicable to single-cell resolution spatial data, and does not
+cover broader-scale approaches such as spatial deconvolution or data
+imputation, which are more relevant to spot-based or lower-resolution
+platforms.</p>
+<p>Even within the focused scope of single-cell approaches, many valuable
+tools and developments could not be fully covered, reflecting the sheer
+volume and velocity of innovation in the field. Figure 1 provides a
+visual overview of the spatial omics methods discussed in this review,
+highlighting the diversity and complexity of the computational
+landscape. Nodes are organized by their functional role in the analysis
+pipeline and scaled by citation count, illustrating both methodological
+clustering and community impact. The increasing availability of
+spatially resolved data across multiple modalities has fuelled an
+avalanche of computational methods, making it increasingly difficult for
+researchers to keep pace and make informed decisions about which tools
+best suit their needs. In this evolving landscape, there is a growing
+need for \"living reviews\"(49), curated repositories, and
+community-driven benchmarking (168) efforts that can adapt to the
+field's rapid progress.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
