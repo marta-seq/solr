@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#the-spatial-omics-book" class="md-skip">
+        <a href="#the-spatial-omics-technical-overview" class="md-skip">
           Skip to content
         </a>
       
@@ -405,8 +405,19 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -419,6 +430,41 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-spatial-omics-technical-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Spatial Omics Technical Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-tissue-complexity-the-journey-to-spatial-omics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Tissue Complexity: The Journey to Spatial Omics
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -478,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="chapter3/" class="md-nav__link">
+      <a href="chapter3.md" class="md-nav__link">
         
   
   
@@ -606,8 +652,61 @@
 
 
 
-<h1 id="the-spatial-omics-book">The Spatial Omics Book</h1>
-<p>Welcome to the theoretical text section. Chapter outlines and content will go here.</p>
+  <h1>Introduction</h1>
+
+<h3 id="the-spatial-omics-technical-overview">The Spatial Omics Technical Overview</h3>
+<p>Welcome to this theoretical text section. This technical overview specifically 
+focuses on single-molecule or single-cell resolution approaches.</p>
+<hr />
+<p>⚠️⚠️⚠️⚠️⚠️⚠️⚠️</p>
+<p>Disclaimer: This overview is a preliminary text written in the context of my PhD research and has not yet undergone peer review. 
+It summarizes my understanding of spatial omics datasets.</p>
+<hr />
+<p>If you find this information useful, please consider acknowledging its source!</p>
+<hr />
+<h3 id="understanding-tissue-complexity-the-journey-to-spatial-omics">Understanding Tissue Complexity: The Journey to Spatial Omics</h3>
+<p>Understanding the intricate organization of tissues in health and disease relies on advanced analytical
+technologies. </p>
+<p>Historically, cancer research has been driven by genomic and transcriptomic approaches. 
+These have effectively revealed key mutations, epigenetic changes, and dysregulated pathways within
+various tumor types.</p>
+<p>More recently, multi-omics strategies (including epigenomics, proteomics, and metabolomics) have
+significantly expanded our understanding of tumor biology by capturing additional layers of molecular
+regulation. Further revolutionizing the field, single-cell technologies have enabled the detailed 
+dissection of intra-tumoral heterogeneity, identifying rare cell populations and lineage trajectories 
+that bulk analyses often obscure. These advancements have even extended to single-cell proteomics and
+metabolomics, offering increasingly comprehensive insights into tumor ecosystems.</p>
+<p>Despite their immense power, a critical limitation of many of these cutting-edge omics methods is
+their lack of spatial context. They tell us what molecular components or cell types are present,
+but not where they are located or how they interact within the intricate tissue microenvironment.
+This spatial information is essential for understanding disease progression and treatment response.</p>
+<p>In clinical settings, spatial information is routinely obtained through methods like histopathological
+staining (e.g., H&amp;E), immunohistochemistry, and radiological imaging. 
+While vital for diagnosis and clinical decision-making, these approaches typically offer 
+spatial resolution at the tissue or organ level. 
+They are inherently limited in molecular detail and throughput, lacking the capacity to resolve 
+cellular heterogeneity or dynamic molecular interactions at a fine scale.</p>
+<p>To overcome these limitations and integrate high-resolution molecular profiling with precise spatial
+localization, spatial omics technologies have emerged. These powerful tools allow for the direct 
+mapping of transcripts, proteins, and metabolites within their native tissue context. 
+By preserving the original architecture of tumors and their microenvironments, spatial 
+omics provides a more complete and insightful picture of biological processes.</p>
+<p>The following chapters aim to provide a comprehensive understanding of spatial omics workflows, 
+covering topics from:</p>
+<ul>
+<li><a href="chapter1/"># Spatially Resolved Omics Techniques</a></li>
+<li><a href="technical_overview.md">Technical Overview</a><ul>
+<li><a href="technical_overview/preprocessing.md">Preprocessing</a></li>
+<li><a href="technical_overview/cell_segmentation.md">Cell Segmentation</a></li>
+<li><a href="technical_overview/phenotyping.md">Phenotyping</a></li>
+<li><a href="technical_overview/neighborhood_analysis.md">Neighborhood Analysis</a></li>
+<li><a href="technical_overview/spatially_variable_genes.md">Spatially Variable Genes</a></li>
+<li><a href="technical_overview/domain_identification.md">Domain Identification</a></li>
+<li><a href="technical_overview/functional_analysis.md">Functional Analysis</a></li>
+<li><a href="technical_overview/sample_condition_distinctions.md">Sample Condition Distinctions</a></li>
+</ul>
+</li>
+</ul>
 
 
 
