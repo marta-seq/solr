@@ -428,6 +428,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -460,6 +462,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -468,16 +472,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#spatially-resolved-omics-techniques" class="md-nav__link">
-    <span class="md-ellipsis">
-      Spatially Resolved Omics Techniques
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Spatially Resolved Omics Techniques">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#spatial-proteomics" class="md-nav__link">
     <span class="md-ellipsis">
       Spatial proteomics
@@ -485,9 +479,73 @@
   </a>
   
 </li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-transcriptomics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spatial transcriptomics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spatial transcriptomics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-situ-hybridization-imaging-based-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      In Situ Hybridization Imaging-Based Approaches
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-situ-sequencing-imaging-based-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      In situ sequencing Imaging-Based Approaches
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial-barcoding-and-sequencing-based-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spatial Barcoding and Sequencing-Based Methods
+    </span>
+  </a>
+  
+</li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-metabolomics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spatial metabolomics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-multi-omics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spatial multi-omics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    <span class="md-ellipsis">
+      -------------------------------- ----------
+    </span>
+  </a>
   
 </li>
       
@@ -658,295 +716,624 @@
 
 
 
-  <h1>Chapter 1</h1>
-
-<h2 id="spatially-resolved-omics-techniques">Spatially Resolved Omics Techniques</h2>
-<p>Spatial omics technologies have the potential to advance our understanding 
-of tumour ecosystems and improve clinical outcomes. 
-The essence of spatial omics lies in its aptitude for the simultaneous detection 
-of molecular constituents at exact spatial coordinates (35).
-Spatial molecular profiling vary in resolution, scale and molecular
-complexity (36).</p>
-<h3 id="spatial-proteomics">Spatial proteomics</h3>
-<p>Spatial proteomics encompasses technologies that enable the in-situ profiling
-of proteins within tissues, preserving their spatial localization. 
-Most spatial proteomics techniques detect proteins using antibodies tagged 
-with fluorophores, metals, or DNA barcodes. These tags are then read using
-technologies such as fluorescence microscopy, mass spectrometry, or DNA-based
-imaging to map the spatial distribution of proteins within tissues (35, 37-39).
-A summary of key features across these technologies is provided in Table1. </p>
-<p>Immunohistochemistry (IHC) is one of the most established clinical tools for protein
-detection (40).  It uses enzyme-linked antibodies to generate a chromogenic signal 
-visible under brightfield microscopy. While widely available and routinely used in
-diagnostics, traditional IHC is generally limited to detecting one or a few markers per 
-tissue section, making it unsuitable for high-dimensional spatial profiling.</p>
-<p>Among the fluorescence-based approaches,  immunofluorescence (IF) (41) is widely 
-used but limited in multiplexing. More advanced cyclic immunofluorescence methods—such
-as tissue-based cyclic
-immunofluorescence (t-CyCIF) \cite{B42_Cycif2018} and \gls{IBEX}\cite{B43_ibex_2022} - use iterative staining and imaging cycles to overcome spectral limitations, enabling the detection of 40–60+ markers with spatial resolution down to 200–300 nm.
-Among the fluorescence-based approaches, immunofluorescence (IF)
-[CITATION] is widely used but limited in multiplexing. More advanced
-cyclic immunofluorescence methods---such as tissue-based cyclic
-immunofluorescence (t-CyCIF) (40) and iterative bleaching extends
-multiplexity (IBEX) (41) - use iterative staining and imaging cycles to
-overcome spectral limitations, enabling the detection of 40--60+ markers
-with spatial resolution down to 200--300 nm.</p>
-<p>DNA-barcoded approaches such as co-detection by indexing (CODEX) (42)
-and immunostaining with signal amplification by exchange reaction
-(Immuno-SABER) further enhance multiplexing. CODEX utilizes DNA-barcoded
-antibodies and sequential hybridization of fluorescent probes, achieving
-high multiplexing (up to 60 proteins) with single-cell resolution (\~500
-nm) in a single imaging plane (43). Immuno-SABER employs orthogonal DNA
-concatemers for signal amplification ADD RESOLUTION AND PLEX (44).</p>
-<p>Mass spectrometry-based approaches---notably Imaging Mass Cytometry
-(IMC) (45) and multiplexed ion beam imaging by time of flight (MIBI-TOF)
-(46)---use antibodies conjugated to isotopically pure lanthanide metals,
-which are detected using laser ablation (IMC) or ion beams (MIBI). These
-methods avoid fluorescence background and allow simultaneous
-quantification of 40--50 proteins per tissue section. IMC offers spatial
-resolution of approximately 1 μm, while MIBI achieves higher resolution
-(\~300 nm), albeit with more complex instrumentation.</p>
-<p>Table 1 -- Comparison table of key features of spatial proteomics
-profiling methods</p>
-<p>+--------+----------+--------------+---------+--------------+-------+
-| Method | Tag type | Detection    | Multi   | Resolution   | Refe  |
-|        |          |              | plexing |              | rence |
-|        |          |              | c       |              |       |
-|        |          |              | apacity |              |       |
-+========+==========+==============+=========+==============+=======+
-| IHC    | Enzyme   | Brightfield  | 1-2     |   ---------  |       |
-|        | (ch      | Microscopy   |         |              |       |
-|        | romogen) |              |         |   ---------  |       |
-|        |          |              |         |              |       |
-|        |          |              |         |   ---------  |       |
-|        |          |              |         |   \~1--5 µm  |       |
-|        |          |              |         |   ---------  |       |
-|        |          |              |         |              |       |
-|        |          |              |         |   ---------  |       |
-+--------+----------+--------------+---------+--------------+-------+
-| IF     | Flu      | Fluorescence | 4-7     | \~200--500   |       |
-|        | orophore | Microscopy   |         | nm           |       |
-+--------+----------+--------------+---------+--------------+-------+
-| cyCIF  | Flu      | Cyclic       | &gt;60    | \~250 nm     |       |
-| / 4i / | orophore | Fluorescence |         |              |       |
-| IBEX   | (it      | Imaging      |         |              |       |
-|        | erative) |              |         |              |       |
-+--------+----------+--------------+---------+--------------+-------+
-| CODEX  | DNA      | Fluorescence | &gt;      | \~250 nm     |       |
-|        | Barcode  | Microscopy   | 40--60+ |              |       |
-+--------+----------+--------------+---------+--------------+-------+
-| Immuno | DNA      | Fluorescence | &gt;50+   | \~200--300   |       |
-| -SABER | Barcode  | Microscopy   |         | nm           |       |
-|        | (conc    |              |         |              |       |
-|        | atemers) |              |         |              |       |
-+--------+----------+--------------+---------+--------------+-------+
-| IMC    | Metal    | Laser        | \~40    | \~1 µm       |       |
-|        | Isotopes | Ablation +   |         |              |       |
-|        |          | MS           |         |              |       |
-+--------+----------+--------------+---------+--------------+-------+
-| MIBI   | Metal    | Ion Beam +   | \~40    | \~300 nm     |       |
-|        | Isotopes | MS           |         |              |       |
-+--------+----------+--------------+---------+--------------+-------+</p>
+<p>Understanding the complexity of cancer, particularly its cellular
+heterogeneity and dynamic microenvironment, relies heavily on advanced
+analytical technologies.</p>
+<p>Traditionally, cancer research has been dominated by genomic and
+transcriptomic approaches, which have illuminated key mutations,
+epigenetic alterations, and dysregulated pathways across tumour
+types^1--4^. More recently, multi-omics strategies---including
+epigenomics^5--7^, proteomics^8--10^, and metabolomics^11^ --- have
+expanded our understanding of tumour biology by capturing additional
+layers of molecular regulation.</p>
+<p>Single-cell technologies have further revolutionized the field by
+enabling the dissection of intra-tumoral heterogeneity at cellular
+resolution, uncovering rare cell populations and lineage trajectories
+that bulk analyses obscure^12,13^. These innovations have also extended
+to single-cell proteomics^14--16^ and metabolomics^17,18^, offering
+increasingly comprehensive insights into tumour ecosystems. However,
+despite their power, these methods often lack spatial context---an
+essential component for understanding how cellular localization and
+cell--cell interactions within the tumour microenvironment influence
+disease progression and treatment response.</p>
+<p>On the other hand, spatial information is routinely obtained in the
+clinic through histopathological staining (e.g., H&amp;E),
+[IHC]{acronym-label="IHC" acronym-form="singular+short"}, and
+radiological imaging^19^. These approaches offer spatial resolution at
+the tissue or organ level and remain vital for diagnosis and clinical
+decision-making, but are inherently limited in molecular detail and
+throughput, lacking the capacity to resolve cellular heterogeneity or
+dynamic molecular interactions at scale.</p>
+<p>To bridge this gap, spatial omics technologies have emerged as powerful
+tools that integrate high-resolution molecular profiling with spatial
+localization. These approaches allow the mapping of transcripts,
+proteins, and metabolites directly within their tissue
+context---preserving the native architecture of tumours and their
+microenvironments.</p>
+<h1 id="spatially-resolved-omics-techniques">Spatially Resolved Omics Techniques</h1>
+<p>Spatial omics technologies have the potential to advance our
+understanding of tumour ecosystems and improve clinical outcomes. The
+essence of spatial omics lies in its aptitude for the simultaneous
+detection of molecular constituents at exact spatial coordinates^20^.
+However different techniques vary greatly in resolution, scale and
+molecular complexity^21^.</p>
+<h2 id="spatial-proteomics">Spatial proteomics</h2>
+<p>Spatial proteomics encompasses technologies that enable the in-situ
+profiling of proteins within tissues, preserving their spatial
+localization. Most spatial proteomics techniques detect proteins using
+antibodies tagged with fluorophores, metals, or DNA barcodes. These tags
+are then read using technologies such as fluorescence microscopy, mass
+spectrometry, or DNA-based imaging to map the spatial distribution of
+proteins within tissues^20,22--24^. A summary of key features across
+these technologies is provided in
+Table <a href="#tab:spatial_proteomics">1</a>{reference-type="ref"
+reference="tab:spatial_proteomics"}.</p>
+<p>Immunohistochemistry (IHC) is one of the most established clinical tools
+for protein detection^25^. It uses enzyme-linked antibodies to generate
+a chromogenic signal visible under brightfield microscopy. While widely
+available and routinely used in diagnostics, traditional IHC is
+generally limited to detecting one or a few markers per tissue section,
+making it unsuitable for high-dimensional spatial profiling.</p>
+<p>Among the fluorescence-based approaches, [IF]{acronym-label="IF"
+acronym-form="singular+short"}^26^ is widely used but limited in
+multiplexing. More advanced cyclic immunofluorescence methods---such as
+[t-CyCIF]{acronym-label="t-CyCIF" acronym-form="singular+short"}^27^ and
+[IBEX]{acronym-label="IBEX" acronym-form="singular+short"}^28^ - use
+iterative staining and imaging cycles to overcome spectral limitations,
+enabling the detection of 40--60+ markers with spatial resolution down
+to 200--300 nm.</p>
+<p>DNA-barcoded approaches such as [CODEX]{acronym-label="CODEX"
+acronym-form="singular+short"}^29^ and
+[Immuno-SABER]{acronym-label="Immuno-SABER"
+acronym-form="singular+short"}^30^ further enhance multiplexing. CODEX
+utilizes DNA-barcoded antibodies and sequential hybridization of
+fluorescent probes, achieving high multiplexing (up to 60 proteins) with
+single-cell resolution ($\sim$<code>&lt;!-- --&gt;</code>{=html}500 nm) in a single
+imaging plane^31^. Immuno-SABER employs orthogonal DNA concatemers for
+signal amplification achieving 32-plex with same resolution as
+COSMX^30^.</p>
+<p>Mass spectrometry-based approaches---notably [IMC]{acronym-label="IMC"
+acronym-form="singular+short"}^32^ and
+[MIBI-TOF]{acronym-label="MIBI-TOF"
+acronym-form="singular+short"}^33^---use antibodies conjugated to
+isotopically pure lanthanide metals, which are detected using laser
+ablation (IMC) or ion beams (MIBI-TOF). These methods avoid fluorescence
+background and allow simultaneous quantification of 40--50 proteins per
+tissue section. IMC offers spatial resolution of approximately 1 μm,
+while MIBI achieves higher resolution ($\sim$<code>&lt;!-- --&gt;</code>{=html}300 nm),
+albeit with more complex instrumentation.</p>
+<p>::: {#tab:spatial_proteomics}</p>
+<hr />
+<p><strong>Type</strong>\
+<strong>Capacity</strong>\
+<strong>Scale</strong>\
+IHC\
+(chromogen)\
+Microscopy 1--2 $\sim$<code>&lt;!-- --&gt;</code>{=html}1--5 µm Cellular\
+IF Fluorophore\
+Microscopy 4--7 $\sim$<code>&lt;!-- --&gt;</code>{=html}200--500 nm Subcellular\
+cyCIF / 4i / IBEX\
+(iterative)\
+Imaging $&gt;$<code>&lt;!-- --&gt;</code>{=html}60 $\sim$<code>&lt;!-- --&gt;</code>{=html}250 nm
+Subcellular\
+CODEX DNA Barcode\
+Microscopy $&gt;$<code>&lt;!-- --&gt;</code>{=html}40--60+ $\sim$<code>&lt;!-- --&gt;</code>{=html}250 nm
+Subcellular\
+Immuno-SABER\
+(concatemers)\
+Microscopy $&gt;$<code>&lt;!-- --&gt;</code>{=html}50+ $\sim$<code>&lt;!-- --&gt;</code>{=html}200--300 nm
+Subcellular\
+IMC Metal Isotopes\
++ MS $\sim$<code>&lt;!-- --&gt;</code>{=html}40 $\sim$<code>&lt;!-- --&gt;</code>{=html}1 µm Cellular\
+MIBI Metal Isotopes\
++ MS $\sim$<code>&lt;!-- --&gt;</code>{=html}40 $\sim$<code>&lt;!-- --&gt;</code>{=html}300 nm
+Subcellular\</p>
+<hr />
+<hr />
+<p>: Comparison table of key features of spatial proteomics profiling
+methods.
+:::</p>
 <p>Together, these spatial proteomics platforms offer complementary
 advantages in terms of marker throughput, resolution, and sensitivity,
 enabling comprehensive characterization of the tumour microenvironment,
 immune cell infiltration, and cellular architecture in situ.</p>
-<p><strong>2.3.2 Spatial transcriptomics</strong></p>
+<h2 id="spatial-transcriptomics">Spatial transcriptomics</h2>
 <p>Spatial transcriptomics enables the study of gene expression within the
 tissue architecture, preserving spatial context at cellular or
 subcellular resolution. These platforms can be broadly divided into two
 main categories based on detection strategy: imaging-based
-methods---including <em>In Situ Hybridization</em> (ISH) and <em>In Situ
-Sequencing</em> (ISS)---and spatial barcoding methods, which rely on
-capture-based approaches followed by sequencing. Each approach presents
-trade-offs in terms of resolution, transcriptome coverage, throughput,
-and tissue compatibility (35,47--49) (Table 2).</p>
-<p><em>[In Situ Hybridization Imaging-Based Approaches]{.underline}</em></p>
+methods---including [ISH]{acronym-label="ISH"
+acronym-form="singular+short"} and [ISS]{acronym-label="ISS"
+acronym-form="singular+short"} ---and spatial barcoding methods, which
+rely on capture-based approaches followed by sequencing. Each approach
+presents trade-offs in terms of resolution, transcriptome coverage,
+throughput, and tissue compatibility^20,34--36^
+(Table <a href="#tab:backg_st">2</a>{reference-type="ref"
+reference="tab:backg_st"}).</p>
+<h3 id="in-situ-hybridization-imaging-based-approaches">In Situ Hybridization Imaging-Based Approaches</h3>
 <p>ISH-based techniques use fluorescently labelled probes that hybridize
 directly to target RNA molecules in fixed tissue sections. These methods
 are highly accurate and can offer single-molecule and single-cell
 resolution, but typically have limitations in multiplexing capacity
 unless cyclic imaging or barcode strategies are used.</p>
-<p>Basic single molecule FISH (<em>smFISH)</em> can detect individual transcripts
-with high spatial precision but is limited in the number of genes
-detectable due to the finite number of distinguishable fluorophores
-[citation].</p>
-<p>Advanced multiplexed methods, such as MERFISH, and seqFISH+, overcome
-these limits by iterative cycles of hybridization and imaging, enabling
-detection of hundreds to thousands of genes. Multiplexed error-robust
-FISH (MERFISH) (50) uses combinatorial labelling and error-correcting
-barcodes to detect thousands of RNA species in single cells. Sequential
-fluorescence in situ hybridization (seqFISH+) (51) leverages sequential
-rounds of hybridization with an expanded pseudo-color palette, enabling
-detection of over 10,000 genes at subcellular resolution.</p>
-<p>Commercial platforms such as CosMx (52), MERscope (Vizgen) [citation],
-and Xenium (10x Genomics) (54) implement these strategies to achieve
-high-resolution imaging of hundreds to thousands of RNA species, often
-with optional co-detection of proteins.</p>
-<p><em>[In situ sequencing Imaging-Based Approaches]{.underline}</em></p>
+<p>Basic [smFISH]{acronym-label="smFISH" acronym-form="singular+short"} can
+detect individual transcripts with high spatial precision but is limited
+in the number of genes detectable due to the finite number of
+distinguishable fluorophores.</p>
+<p>Advanced multiplexed methods, such as [MERFISH]{acronym-label="MERFISH"
+acronym-form="singular+short"}, and seqFISH+, overcome these limits by
+iterative cycles of hybridization and imaging, enabling detection of
+hundreds to thousands of genes. MERFISH^37^ uses combinatorial labelling
+and error-correcting barcodes to detect thousands of RNA species in
+single cells. [seqFISH]{acronym-label="seqFISH"
+acronym-form="singular+short"}+^38^ leverages sequential rounds of
+hybridization with an expanded pseudo-color palette, enabling detection
+of over 10,000 genes at subcellular resolution.</p>
+<p>Commercial platforms such as CosMx (Nanostring/Bruker Spatial)^37^,
+MERscope (Vizgen), and Xenium (10x Genomics)^39^ implement these
+strategies to achieve high-resolution imaging of hundreds to thousands
+of RNA species, often with optional co-detection of proteins.</p>
+<h3 id="in-situ-sequencing-imaging-based-approaches">In situ sequencing Imaging-Based Approaches</h3>
 <p>ISS techniques sequence RNA molecules directly within tissues,
 preserving both spatial context and nucleotide identity. Unlike ISH, ISS
 provides sequence information, enabling mutation and splice isoform
 detection.</p>
-<p>STARmap (55) improves detection efficiency by using DNA nanostructures
-and hydrogel-tissue chemistry, while FISSEQ (56), enables untargeted,
+<p>STARmap^40^ improves detection efficiency by using DNA nanostructures
+and hydrogel-tissue chemistry, while FISSEQ^41^, enables untargeted,
 whole-transcriptome analysis through in situ reverse transcription and
 random-hexamer priming. These methods retain spatial localization while
 offering a more detailed molecular readout than hybridization alone.</p>
 <p>Both ISH and ISS require fluorescence microscopy for imaging readouts
 and are collectively referred to as imaging-based spatial
 transcriptomics.</p>
-<p><em>[Spatial Barcoding and Sequencing-Based Methods]{.underline}</em></p>
+<h3 id="spatial-barcoding-and-sequencing-based-methods">Spatial Barcoding and Sequencing-Based Methods</h3>
 <p>Unlike imaging methods, spatial barcoding techniques rely on
 sequencing-based detection. They use spatially encoded oligonucleotides
 (barcodes) fixed to a surface (e.g., slide, bead, or grid) to capture
 RNA from overlying tissue. After RNA capture, reverse transcription and
 sequencing are performed, and spatial information is reconstructed based
 on barcode identity.</p>
-<p>Prominent examples include Visium (10X Genomics) (57), which captures
-RNA on slide-mounted barcoded spots (\~55 µm resolution), and it's new
-version, Visium HD [citation], that offers spatial resolution to
-\~2--5 µm. Slide-seq (58) and Slide-seqV2 (59) use barcoded beads with
-known spatial locations (\~10 µm resolution).</p>
+<p>Prominent examples include Visium (10X Genomics)^42^, which captures RNA
+on slide-mounted barcoded spots ($\sim$<code>&lt;!-- --&gt;</code>{=html}55 µm
+resolution), and it's new version, Visium HD, that offers spatial
+resolution to $\sim$<code>&lt;!-- --&gt;</code>{=html}2--5 µm. Other examples include
+Slide-seq^43^ and Slide-seqV2^44^ that utilise barcoded beads with known
+spatial locations ($\sim$<code>&lt;!-- --&gt;</code>{=html}10 µm resolution).</p>
 <p>These methods offer broader transcriptomic coverage---often approaching
 the whole transcriptome---and are scalable to larger tissue sections.
 However, they typically offer lower spatial resolution than
-imaging-based platforms and may not reach single-cell or subcellular
+imaging-based platforms and may not reveal single-cell or subcellular
 detail.</p>
-<p>.</p>
-<p>Table 2 - Comparison table of key features of spatial transcriptomics
-profiling methods</p>
-<p>+---------------+------------+----------------+------------+---------+
-| Method        | Category   | Resolution     | Transcript | Re      |
-|               |            |                | coverage   | ference |
-+===============+============+================+============+=========+
-| smFISH        | ISH        | \~200--300 nm  | Low (1--10 |         |
-|               | (Imag      | (subcellular)  | genes)     |         |
-|               | ing-based) |                |            |         |
-+---------------+------------+----------------+------------+---------+
-| MERFISH       | ISH        | \~100--300 nm  | High       |         |
-|               | (Imag      |                | (1,000+    |         |
-|               | ing-based) | (subcellular)  | genes)     |         |
-+---------------+------------+----------------+------------+---------+
-| seqFISH /     | ISH        | \~200 nm       | Very High  |         |
-| seqFISH+      | (Imag      |                | (&gt;10,000  |         |
-|               | ing-based) | (subcellular)  | genes)     |         |
-+---------------+------------+----------------+------------+---------+
-| CosMx         | ISH /      | \~250 nm       | Up to      |         |
-| (NanoString)  | smFISH     | (subcellular)  | \~1,000    |         |
-|               |            |                | genes      |         |
-+---------------+------------+----------------+------------+---------+
-| MERscope      | MER        | \~300 nm       | \~         |         |
-| (Vizgen)      | FISH-based |                | 500--1,000 |         |
-|               | (ISH)      | (subcellular)  | genes      |         |
-+---------------+------------+----------------+------------+---------+
-| Xenium (10x   | sm         | \~280 nm       | \~300--400 |         |
-| Genomics)     | FISH-based | (subcellular)  | genes      |         |
-|               | (ISH)      |                |            |         |
-+---------------+------------+----------------+------------+---------+
-| STARmap       | ISS        | \~2--3 µm (3D) | \~1,000    |         |
-|               |            |                | genes      |         |
-|               |            | (Single-cell)  |            |         |
-+---------------+------------+----------------+------------+---------+
-| FISSEQ        | ISS (In    | \~300 nm -- 1  | Whole      |         |
-|               | Situ       | µm             | tra        |         |
-|               | S          |                | nscriptome |         |
-|               | equencing) | (Single-cell/  |            |         |
-|               |            | subcellular)   |            |         |
-+---------------+------------+----------------+------------+---------+
-| Visium (10x   | Spatial    | \~55 µm (spot  | Whole      |         |
-| Genomics)     | Barcoding  | diameter)      | tra        |         |
-|               | (Slide)    |                | nscriptome |         |
-+---------------+------------+----------------+------------+---------+
-| Visium HD     | Spatial    | \~2--5 µm      | Whole      |         |
-|               | Barcoding  |                | tra        |         |
-|               | (Slide)    | (close         | nscriptome |         |
-|               |            | single-cell)   |            |         |
-+---------------+------------+----------------+------------+---------+
-| Slide-seq     | Spatial    | \~10 µm (bead  | Whole      |         |
-|               | Barcoding  | diameter)      | tra        |         |
-|               | (Beads)    |                | nscriptome |         |
-+---------------+------------+----------------+------------+---------+
-| Slide-seqV2   | Spatial    | \~10 µm        | Whole      |         |
-|               | Barcoding  | (higher        | tra        |         |
-|               | (Beads)    | sensitivity)   | nscriptome |         |
-+---------------+------------+----------------+------------+---------+</p>
-<p><strong>2.3.3 Spatial metabolomics</strong></p>
+<p>::: {#tab:backg_st}</p>
+<hr />
+<p><strong>Coverage</strong>\
+<strong>Scale</strong>\
+smFISH ISH 1--10 genes $\sim$<code>&lt;!-- --&gt;</code>{=html}200--300 nm Subcellular
+MERFISH ISH ,000+ genes $\sim$<code>&lt;!-- --&gt;</code>{=html}100--300 nm Subcellular</p>
+<p>seqFISH+ ISH-based &gt;10,000 genes $\sim$<code>&lt;!-- --&gt;</code>{=html}200 nm
+Subcellular CosMx ISH / smFISH $\sim$<code>&lt;!-- --&gt;</code>{=html}1,000 genes
+$\sim$<code>&lt;!-- --&gt;</code>{=html}250 nm Subcellular MERscope MERFISH\
+genes $\sim$<code>&lt;!-- --&gt;</code>{=html}300 nm Subcellular\
+Xenium smFISH\
+genes $\sim$<code>&lt;!-- --&gt;</code>{=html}280 nm Subcellular\
+STARmap ISS\
+genes $\sim$<code>&lt;!-- --&gt;</code>{=html}2--3$\mu\text{m}$ Single-cell\
+FISSEQ ISS\
+transcriptome $\sim$<code>&lt;!-- --&gt;</code>{=html}300 nm--1$\mu\text{m}$\
+Subcellular\
+Visium Spatial Barcoding (Slide)\
+transcriptome $\sim$<code>&lt;!-- --&gt;</code>{=html}55$\mu\text{m}$ Multicellular\
+Visium HD Spatial Barcoding (Slide)\
+transcriptome $\sim$<code>&lt;!-- --&gt;</code>{=html}2--5$\mu\text{m}$ Close to
+single-cell\
+Slide-seq Spatial Barcoding (Beads)\
+transcriptome $\sim$<code>&lt;!-- --&gt;</code>{=html}10$\mu\text{m}$ Cellular\
+Slide-seqV2 Spatial Barcoding (Beads)\
+transcriptome $\sim$<code>&lt;!-- --&gt;</code>{=html}10$\mu\text{m}$ Cellular\</p>
+<hr />
+<hr />
+<hr />
+<p>: Comparison table of key features of spatial transcriptomics profiling
+methods.
+:::</p>
+<h2 id="spatial-metabolomics">Spatial metabolomics</h2>
 <p>Spatial metabolomics explores the spatial distribution of metabolites
 directly in tissue sections, providing insight into biochemical activity
-within the anatomical context (60). The field is largely driven by
-Matrix-Assisted Laser Desorption/Ionization Mass Spectrometry Imaging
-(MALDI-MSI) (61), a label-free, untargeted technique capable of
-detecting a wide range of small molecules including lipids,
+within the anatomical context^45^. The field is largely driven by
+[MALDI-MSI]{acronym-label="MALDI-MSI"
+acronym-form="singular+short"}^46^, a label-free, untargeted technique
+capable of detecting a wide range of small molecules including lipids,
 neurotransmitters, and drugs.</p>
 <p>In MALDI-MSI, tissue sections are coated with a matrix that facilitates
 ionization when hit by a laser. The resulting ions are analysed by mass
 spectrometry to reconstruct spatial metabolite maps. MALDI-MSI offers
-spatial resolution in the range of 10--50 µm, with coverage of hundreds
-to thousands of metabolites, depending on the tissue and matrix.</p>
-<p><strong>2.3.4 Spatial multi-omics</strong></p>
-<p>Spatial multi-omics technologies (Table 3) enable the simultaneous or
+spatial resolution in the range of 10--$50\,\mu\text{m}$, with coverage
+of hundreds to thousands of metabolites, depending on the tissue and
+matrix.</p>
+<h2 id="spatial-multi-omics">Spatial multi-omics</h2>
+<p>Spatial multi-omics technologies
+(Table <a href="#tab:backg_smultiomics">3</a>{reference-type="ref"
+reference="tab:backg_smultiomics"}) enable the simultaneous or
 integrative profiling of multiple molecular layers---such as RNA,
 proteins, and metabolites---within their spatial tissue context,
 offering a more comprehensive understanding of cellular states and
 interactions.</p>
-<p>One of the most established platforms, GeoMx Digital Spatial Profiler
-(DSP) (NanoString) (62), allows for high-plex profiling of both RNA and
-proteins within defined regions of interest using oligonucleotide-tagged
-probes and UV-directed barcode collection, though at limited spatial
-resolution (\~10--100 μm). Other advanced methods, such as deterministic
-barcoding in tissue for spatial omics sequencing (DBiT-seq) (63),
-achieve co-detection of RNA and proteins through microfluidic-based
-spatial barcoding on the same section, offering high spatial resolution
-(\~10 μm) and true multimodal readouts. Similarly, Spatial-CITE-seq (64)
-adapts co-indexing of transcriptomes and epitopes (CITE) to the spatial
-dimension, enabling the capture of transcriptomes alongside surface
-protein markers.</p>
+<p>One of the most established platforms, GeoMx [DSP]{acronym-label="DSP"
+acronym-form="singular+short"}(NanoString)^47^, allows for high-plex
+profiling of both RNA and proteins within defined regions of interest
+using oligonucleotide-tagged probes and UV-directed barcode collection,
+though at limited spatial resolution ($\sim10–100\,\mu\text{m}$). Other
+advanced methods, such as deterministic barcoding in tissue for spatial
+omics sequencing (DBiT-seq)^48^, achieve co-detection of RNA and
+proteins through microfluidic-based spatial barcoding on the same
+section, offering high spatial resolution ($\sim 10\,\mu\text{m}$) and
+true multimodal readouts. Similarly, Spatial-CITE-seq^49^ adapts
+[CITE]{acronym-label="CITE" acronym-form="singular+short"} to the
+spatial dimension, enabling the capture of transcriptomes alongside
+surface protein markers.</p>
 <p>Furthermore, MALDI-MSI have been successfully combined on the same slide
-with both IMC (65) and spatial transcriptomics platforms like 10x Visium
-(66).</p>
-<p>Table 3 - Comparison table of key features of spatial multiomics methods</p>
-<p>+---------+----------+--------------+---------+--------------+-------+
-| Method  | Spatial  | RNA Targets  | Protein | Metabolite   | Refe  |
-|         | Re       |              | Targets | Coverage     | rence |
-|         | solution |              |         |              |       |
-+=========+==========+==============+=========+==============+=======+
-| GeoMx   | \~10     | Up to        | \~100+  | --           |       |
-| DSP     | --100 µm | \~18,000     | (a      |              |       |
-| (Nano   | (RO      | (targeted    | ntibody |              |       |
-| String) | I-based) | panels)      | panels) |              |       |
-+---------+----------+--------------+---------+--------------+-------+
-| D       |   -      | \~6          | \~      | --           |       |
-| BiT-seq | -------- | ,000--10,000 | 30--100 |              |       |
-|         |          |              |         |              |       |
-|         |  \~10 µm |              |         |              |       |
-|         |   -      |              |         |              |       |
-|         | -------- |              |         |              |       |
-|         |          |              |         |              |       |
-|         |   -      |              |         |              |       |
-|         | -------- |              |         |              |       |
-|         |          |              |         |              |       |
-|         |   -----  |              |         |              |       |
-|         |          |              |         |              |       |
-|         |   -----  |              |         |              |       |
-+---------+----------+--------------+---------+--------------+-------+
-| Sp      | \~2      | \~5          | \~1     | --           |       |
-| atial-C | 0--50 µm | ,000--10,000 | 00--200 |              |       |
-| ITE-seq |          |              |         |              |       |
-+---------+----------+--------------+---------+--------------+-------+
-| MALD    | \~       | --           | \       | 100s to      |       |
-| I-MSI + | 1--10 µm |              | ~30--50 | 1,000s       |       |
-| IMC     |          |              |         |              |       |
-+---------+----------+--------------+---------+--------------+-------+
-| MALD    | \~1      | \~18,000     | --      | 100s to      |       |
-| I-MSI + | 0--50 µm |              |         | 1,000s       |       |
-| Visium  | (MALDI); |              |         |              |       |
-|         | 55 µm    |              |         |              |       |
-|         | (ST)     |              |         |              |       |
-+---------+----------+--------------+---------+--------------+-------+</p>
-<p>While this overview focuses on representative technologies, detailed
-descriptions and additional methods and recent innovations are
-extensively reviewed elsewhere.</p>
+with both IMC^50^ and spatial transcriptomics platforms like 10x
+Visium^51^.</p>
+<p>::: {#tab:backg_smultiomics}</p>
+<hr />
+<p><strong>Targets</strong>\
+<strong>Targets</strong>\
+<strong>Coverage</strong>\
+<strong>Resolution</strong>\
+GeoMx DSP $\sim$<code>&lt;!-- --&gt;</code>{=html}18,000 100+ --\
+(ROI-based)\
+DBiT-seq $\sim$<code>&lt;!-- --&gt;</code>{=html}6,000-10,000
+$\sim$<code>&lt;!-- --&gt;</code>{=html}30-100 -- $\sim$<code>&lt;!-- --&gt;</code>{=html}10$\mu\text{m}$
+Spatial-CITE-seq $\sim$<code>&lt;!-- --&gt;</code>{=html}5,000-10,000
+$\sim$<code>&lt;!-- --&gt;</code>{=html}100-200 --
+$\sim$<code>&lt;!-- --&gt;</code>{=html}20--50$\mu\text{m}$ MALDI-MSI + IMC --
+$\sim$<code>&lt;!-- --&gt;</code>{=html}30-50\
+1,000s $\sim$<code>&lt;!-- --&gt;</code>{=html}1--10$\mu\text{m}$\
+MALDI-MSI + Visium 18000 -- 100-1000\
+55$\mu\text{m}$ (ST)\</p>
+<hr />
+<h2 id="-">-------------------------------- ----------</h2>
+<p>: Comparison table of key features of spatial multi-omics methods.
+:::</p>
+<p>Altogether, spatial omics are accelerating insights into tissue biology
+and transforming multiple areas of medicine. In particular, they have
+been extensively applied to study complex microenvironments, such as
+tumours, where spatial context and cellular heterogeneity are critical
+and often obscured in bulk or single-modality data^36,52--54^. They have
+also been used to study clonality differences in space^32,55^. As the
+applications are vast and rapidly evolving, they are reviewed in detail
+elsewhere^36,53,54^.</p>
+<p>With this foundation in the underlying technologies and their biological
+potential, the next section shifts focus to the analytical challenges
+and computational frameworks required to interpret and integrate spatial
+omics data.</p>
+<p>:::::::::::::::::::::::::::::::::::::::: {#refs .references .csl-bib-body entry-spacing="0" line-spacing="2"}
+::: {#ref-B16_TCGA2013 .csl-entry}
+[1.]{.csl-left-margin}[The Cancer Genome Atlas Research Network <em>et al.</em>
+<a href="https://doi.org/10.1038/ng.2764">The Cancer Genome Atlas Pan-Cancer analysis
+project</a>. <em>Nature Genetics</em> <strong>45</strong>,
+1113--1120 (2013).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B17_2018 .csl-entry}
+[2.]{.csl-left-margin}[Hoadley, K. A. <em>et al.</em> <a href="https://doi.org/10.1016/j.cell.2018.03.022">Cell-of-Origin Patterns
+Dominate the Molecular Classification of 10,000 Tumors from 33 Types of
+Cancer</a>. <em>Cell</em> <strong>173</strong>,
+291--304.e6 (2018).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B18_TCGA2012 .csl-entry}
+[3.]{.csl-left-margin}[The Cancer Genome Atlas Network. <a href="https://doi.org/10.1038/nature11252">Comprehensive
+molecular characterization of human colon and rectal
+cancer</a>. <em>Nature</em> <strong>487</strong>, 330--337
+(2012).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B19_nunes2024 .csl-entry}
+[4.]{.csl-left-margin}[Nunes, L. <em>et al.</em> <a href="https://doi.org/10.1038/s41586-024-07769-3">Prognostic genome and
+transcriptome signatures in colorectal
+cancers</a>. <em>Nature</em> <strong>633</strong>,
+137--146 (2024).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B20_li .csl-entry}
+[5.]{.csl-left-margin}[Li, Y. <a href="https://doi.org/10.1016/j.ymeth.2020.06.022">Modern epigenetics methods in biological
+research</a>. <em>Methods (San
+Diego, Calif.)</em> <strong>187</strong>, 104--113 (2021).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B21_chen_mapping_2025 .csl-entry}
+[6.]{.csl-left-margin}[Chen, X., Xu, H., Shu, X. &amp; Song, C.-X. <a href="https://doi.org/10.1038/s41418-023-01213-1">Mapping
+epigenetic modifications by sequencing
+technologies</a>. <em>Cell Death &amp;
+Differentiation</em> <strong>32</strong>, 56--65 (2025).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B22_baylin2011 .csl-entry}
+[7.]{.csl-left-margin}[Baylin, S. B. &amp; Jones, P. A. <a href="https://doi.org/10.1038/nrc3130">A decade of
+exploring the cancer epigenome --- biological and translational
+implications</a>. <em>Nature Reviews Cancer</em>
+<strong>11</strong>, 726--734 (2011).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B23_protmap2015 .csl-entry}
+[8.]{.csl-left-margin}[Uhlén, M. <em>et al.</em> <a href="https://doi.org/10.1126/science.1260419">Tissue-based map of the human
+proteome</a>. <em>Science</em> <strong>347</strong>,
+1260419 (2015).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B24_suhre2021 .csl-entry}
+[9.]{.csl-left-margin}[Suhre, K., McCarthy, M. I. &amp; Schwenk, J. M.
+<a href="https://doi.org/10.1038/s41576-020-0268-2">Genetics meets proteomics: Perspectives for large population-based
+studies</a>. <em>Nature Reviews
+Genetics</em> <strong>22</strong>, 19--37 (2021).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B25_aebersold2016 .csl-entry}
+[10.]{.csl-left-margin}[Aebersold, R. &amp; Mann, M. <a href="https://doi.org/10.1038/nature19949">Mass-spectrometric
+exploration of proteome structure and
+function</a>. <em>Nature</em> <strong>537</strong>,
+347--355 (2016).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B26_schmidt2021 .csl-entry}
+[11.]{.csl-left-margin}[Schmidt, D. R. <em>et al.</em> <a href="https://doi.org/10.3322/caac.21670">Metabolomics in cancer
+research and emerging applications in clinical
+oncology</a>. <em>CA:A Cancer Journal for
+Clinicians</em> <strong>71</strong>, 333--358 (2021).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B27_aldridge2020 .csl-entry}
+[12.]{.csl-left-margin}[Aldridge, S. &amp; Teichmann, S. A. <a href="https://doi.org/10.1038/s41467-020-18158-5">Single cell
+transcriptomics comes of
+age</a>. <em>Nature
+Communications</em> <strong>11</strong>, 4307 (2020).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B28_kinker2020 .csl-entry}
+[13.]{.csl-left-margin}[Kinker, G. S. <em>et al.</em> <a href="https://doi.org/10.1038/s41588-020-00726-6">Pan-cancer single-cell
+RNA-seq identifies recurring programs of cellular
+heterogeneity</a>. <em>Nature
+Genetics</em> <strong>52</strong>, 1208--1218 (2020).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B29_mansuri2023 .csl-entry}
+[14.]{.csl-left-margin}[Mansuri, M. S., Williams, K. &amp; Nairn, A. C.
+<a href="https://doi.org/10.1038/s42003-023-04635-2">Uncovering biology by single-cell
+proteomics</a>. <em>Communications
+Biology</em> <strong>6</strong>, 381 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B30_protchalg2023 .csl-entry}
+[15.]{.csl-left-margin}[<a href="https://doi.org/10.1038/s41592-023-01828-9">Single-cell proteomics: Challenges and
+prospects</a>. <em>Nature Methods</em>
+<strong>20</strong>, 317--318 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B31_setayesh2023 .csl-entry}
+[16.]{.csl-left-margin}[Setayesh, S. M. <em>et al.</em> <a href="https://doi.org/10.1038/s41698-023-00446-0">Targeted single-cell
+proteomic analysis identifies new liquid biopsy biomarkers associated
+with multiple myeloma</a>. <em>npj
+Precision Oncology</em> <strong>7</strong>, 95 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B32_seydel_metab_2021 .csl-entry}
+[17.]{.csl-left-margin}[Seydel, C. <a href="https://doi.org/10.1038/s41592-021-01333-x">Single-cell metabolomics hits its
+stride</a>. <em>Nature Methods</em>
+<strong>18</strong>, 1452--1456 (2021).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B33_spatial_metab2023 .csl-entry}
+[18.]{.csl-left-margin}[Hu, T. <em>et al.</em> <a href="https://doi.org/10.1038/s41467-023-43917-5">Single-cell spatial
+metabolomics with cell-type specific protein profiling for tissue
+systems biology</a>. <em>Nature
+Communications</em> <strong>14</strong>, 8260 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B34_TCIA2013 .csl-entry}
+[19.]{.csl-left-margin}[Clark, K. <em>et al.</em> <a href="https://doi.org/10.1007/s10278-013-9622-7">The Cancer Imaging Archive
+(TCIA): Maintaining and Operating a Public Information
+Repository</a>. <em>Journal of
+Digital Imaging</em> <strong>26</strong>, 1045--1057 (2013).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B35_liu_spatiotemporal2024 .csl-entry}
+[20.]{.csl-left-margin}[Liu, L. <em>et al.</em> <a href="https://doi.org/10.1016/j.cell.2024.07.040">Spatiotemporal omics for
+biology and medicine</a>.
+<em>Cell</em> <strong>187</strong>, 4488--4519 (2024).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B36_palla_spatial_2022 .csl-entry}
+[21.]{.csl-left-margin}[Palla, G., Fischer, D. S., Regev, A. &amp; Theis, F.
+J. <a href="https://doi.org/10.1038/s41587-021-01182-1">Spatial components of molecular tissue
+biology</a>. <em>Nature
+Biotechnology</em> <strong>40</strong>, 308--318 (2022).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B37_elundberg2019 .csl-entry}
+[22.]{.csl-left-margin}[Lundberg, E. &amp; Borner, G. H. H. <a href="https://doi.org/10.1038/s41580-018-0094-y">Spatial
+proteomics: A powerful discovery tool for cell
+biology</a>. <em>Nature Reviews
+Molecular Cell Biology</em> <strong>20</strong>, 285--302 (2019).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B38_G1_jing2025 .csl-entry}
+[23.]{.csl-left-margin}[Jing, S. <em>et al.</em> <a href="https://doi.org/10.1038/s41698-025-00857-1">Quantifying and interpreting
+biologically meaningful spatial signatures within tumor
+microenvironments</a>. <em>npj
+Precision Oncology</em> <strong>9</strong>, 68 (2025).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B39_hickey2022 .csl-entry}
+[24.]{.csl-left-margin}[Hickey, J. W. <em>et al.</em> <a href="https://doi.org/10.1038/s41592-021-01316-y">Spatial mapping of
+protein composition and tissue organization: A primer for multiplexed
+antibody-based imaging</a>.
+<em>Nature Methods</em> <strong>19</strong>, 284--295 (2022).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B40_IHC2019 .csl-entry}
+[25.]{.csl-left-margin}[Magaki, S., Hojat, S. A., Wei, B., So, A. &amp;
+Yong, W. H. <a href="https://doi.org/10.1007/978-1-4939-8935-5_25">An Introduction to the Performance of
+Immunohistochemistry</a>. in
+<em>Biobanking</em> (ed. Yong, W. H.) vol. 1897 289--298 (Springer New York,
+New York, NY, 2019).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B41_ijsselsteijn2019 .csl-entry}
+[26.]{.csl-left-margin}[Ijsselsteijn, M. E. <em>et al.</em> <a href="https://doi.org/10.1002/cjp2.113">Cancer
+immunophenotyping by seven‐colour multispectral imaging without tyramide
+signal amplification</a>. <em>The Journal of
+Pathology: Clinical Research</em> <strong>5</strong>, 3--11 (2019).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B42_Cycif2018 .csl-entry}
+[27.]{.csl-left-margin}[Lin, J.-R. <em>et al.</em> <a href="https://doi.org/10.7554/eLife.31657">Highly multiplexed
+immunofluorescence imaging of human tissues and tumors using t-CyCIF and
+conventional optical microscopes</a>.
+<em>eLife</em> <strong>7</strong>, e31657 (2018).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B43_ibex_2022 .csl-entry}
+[28.]{.csl-left-margin}[Radtke, A. J. <em>et al.</em> <a href="https://doi.org/10.1038/s41596-021-00644-9">IBEX: An iterative
+immunolabeling and chemical bleaching method for high-content imaging of
+diverse tissues</a>. <em>Nature
+Protocols</em> <strong>17</strong>, 378--401 (2022).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-P5_B44_S2_CODEX2018 .csl-entry}
+[29.]{.csl-left-margin}[Goltsev, Y. <em>et al.</em> <a href="https://doi.org/10.1016/j.cell.2018.07.010">Deep Profiling of Mouse
+Splenic Architecture with CODEX Multiplexed
+Imaging</a>. <em>Cell</em> <strong>174</strong>,
+968--981.e15 (2018).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B45_isaber2019 .csl-entry}
+[30.]{.csl-left-margin}[Saka, S. K. <em>et al.</em> <a href="https://doi.org/10.1038/s41587-019-0207-y">Immuno-SABER enables
+highly multiplexed and amplified protein imaging in
+tissues</a>. <em>Nature
+Biotechnology</em> <strong>37</strong>, 1080--1090 (2019).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B46_codex .csl-entry}
+[31.]{.csl-left-margin}[Black, S. <em>et al.</em> CODEX multiplexed tissue
+imaging with DNA-conjugated antibodies. <em>Nature protocols</em> <strong>16</strong>,
+3802--3835 (2021).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B47_B72_S4_IMC2014 .csl-entry}
+[32.]{.csl-left-margin}[Giesen, C. <em>et al.</em> <a href="https://doi.org/10.1038/nmeth.2869">Highly multiplexed imaging
+of tumor tissues with subcellular resolution by mass
+cytometry</a>. <em>Nature Methods</em> <strong>11</strong>,
+417--422 (2014).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B48_P4_keren_mibi-tof_2019 .csl-entry}
+[33.]{.csl-left-margin}[Keren, L. <em>et al.</em> <a href="https://doi.org/10.1126/sciadv.aax5851">MIBI-TOF: A multiplexed
+imaging platform relates cellular phenotypes and tissue
+structure</a>. <em>Science Advances</em>
+<strong>5</strong>, eaax5851 (2019).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B49asp2020 .csl-entry}
+[34.]{.csl-left-margin}[Asp, M., Bergenstråhle, J. &amp; Lundeberg, J.
+<a href="https://doi.org/10.1002/bies.201900221">Spatially Resolved Transcriptomes---Next Generation Tools for Tissue
+Exploration</a>. <em>BioEssays</em>
+<strong>42</strong>, (2020).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B50_du2023 .csl-entry}
+[35.]{.csl-left-margin}[Du, J. <em>et al.</em> <a href="https://doi.org/10.1186/s12967-023-04150-2">Advances in spatial
+transcriptomics and related data analysis
+strategies</a>. <em>Journal of
+Translational Medicine</em> <strong>21</strong>, 330 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B51_museumST_2022 .csl-entry}
+[36.]{.csl-left-margin}[Moses, L. &amp; Pachter, L. <a href="https://doi.org/10.1038/s41592-022-01409-2">Museum of spatial
+transcriptomics</a>. <em>Nature
+Methods</em> <strong>19</strong>, 534--546 (2022).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B52_chen2015 .csl-entry}
+[37.]{.csl-left-margin}[Chen, K. H., Boettiger, A. N., Moffitt, J. R.,
+Wang, S. &amp; Zhuang, X. <a href="https://doi.org/10.1126/science.aaa6090">Spatially resolved, highly multiplexed RNA
+profiling in single cells</a>.
+<em>Science</em> <strong>348</strong>, aaa6090 (2015).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B53_seqFISH+2019 .csl-entry}
+[38.]{.csl-left-margin}[Eng, C.-H. L. <em>et al.</em> <a href="https://doi.org/10.1038/s41586-019-1049-y">Transcriptome-scale
+super-resolved imaging in tissues by RNA
+[seqFISH]{.nocase}+</a>.
+<em>Nature</em> <strong>568</strong>, 235--239 (2019).]{.csl-right-inline}
+::::::::::::::::::::::::::::::::::::::::</p>
+<p>::: {#ref-B56_G5_xenium .csl-entry}
+[39.]{.csl-left-margin}[Janesick, A. <em>et al.</em> <a href="https://doi.org/10.1038/s41467-023-43458-x">High resolution mapping
+of the tumor microenvironment using integrated single-cell, spatial and
+in situ analysis</a>. <em>Nature
+Communications</em> <strong>14</strong>, 8353 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B57_STARmap2018 .csl-entry}
+[40.]{.csl-left-margin}[Wang, X. <em>et al.</em> <a href="https://doi.org/10.1126/science.aat5691">Three-dimensional
+intact-tissue sequencing of single-cell transcriptional
+states</a>. <em>Science (New York,
+N.Y.)</em> <strong>361</strong>, eaat5691 (2018).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B58_FISSEQ2015 .csl-entry}
+[41.]{.csl-left-margin}[Lee, J. H. <em>et al.</em> <a href="https://doi.org/10.1038/nprot.2014.191">Fluorescent in situ
+sequencing (FISSEQ) of RNA for gene expression profiling in intact cells
+and tissues</a>. <em>Nature Protocols</em>
+<strong>10</strong>, 442--458 (2015).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B59_stahl2016 .csl-entry}
+[42.]{.csl-left-margin}[Ståhl, P. L. <em>et al.</em> <a href="https://doi.org/10.1126/science.aaf2403">Visualization and
+analysis of gene expression in tissue sections by spatial
+transcriptomics</a>. <em>Science</em>
+<strong>353</strong>, 78--82 (2016).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B60_slideseq2019 .csl-entry}
+[43.]{.csl-left-margin}[Rodriques, S. G. <em>et al.</em> <a href="https://doi.org/10.1126/science.aaw1219">Slide-seq: A scalable
+technology for measuring genome-wide expression at high spatial
+resolution</a>. <em>Science</em> <strong>363</strong>,
+1463--1467 (2019).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B61_slideseqv2_2021 .csl-entry}
+[44.]{.csl-left-margin}[Stickels, R. R. <em>et al.</em> <a href="https://doi.org/10.1038/s41587-020-0739-1">Highly sensitive
+spatial transcriptomics at near-cellular resolution with
+Slide-[seqV2]{.nocase}</a>.
+<em>Nature Biotechnology</em> <strong>39</strong>, 313--319 (2021).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B62_maldi2015 .csl-entry}
+[45.]{.csl-left-margin}[Aichler, M. &amp; Walch, A. <a href="https://doi.org/10.1038/labinvest.2014.156">MALDI Imaging mass
+spectrometry: Current frontiers and perspectives in pathology research
+and practice</a>. <em>Laboratory
+Investigation</em> <strong>95</strong>, 422--431 (2015).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B63_IMS2001 .csl-entry}
+[46.]{.csl-left-margin}[Stoeckli, M., Chaurand, P., Hallahan, D. E. &amp;
+Caprioli, R. M. <a href="https://doi.org/10.1038/86573">Imaging mass spectrometry: A new technology for the
+analysis of protein expression in mammalian
+tissues</a>. <em>Nature Medicine</em> <strong>7</strong>,
+493--496 (2001).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B64_merritt_multiplex_2020 .csl-entry}
+[47.]{.csl-left-margin}[Merritt, C. R. <em>et al.</em> <a href="https://doi.org/10.1038/s41587-020-0472-9">Multiplex digital
+spatial profiling of proteins and RNA in fixed
+tissue</a>. <em>Nature
+Biotechnology</em> <strong>38</strong>, 586--599 (2020).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B65_liu2020 .csl-entry}
+[48.]{.csl-left-margin}[Liu, Y. <em>et al.</em> <a href="https://doi.org/10.1016/j.cell.2020.10.026">High-Spatial-Resolution
+Multi-Omics Sequencing via Deterministic Barcoding in
+Tissue</a>. <em>Cell</em> <strong>183</strong>,
+1665--1681.e18 (2020).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B66_CITESEQ_liu2023 .csl-entry}
+[49.]{.csl-left-margin}[Liu, Y. <em>et al.</em> <a href="https://doi.org/10.1038/s41587-023-01676-0">High-plex protein and whole
+transcriptome co-mapping at cellular resolution with spatial
+CITE-seq</a>. <em>Nature
+Biotechnology</em> <strong>41</strong>, 1405--1409 (2023).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B67_nunes2024 .csl-entry}
+[50.]{.csl-left-margin}[Nunes, J. B. <em>et al.</em> <a href="https://doi.org/10.1038/s41592-024-02392-6">Integration of mass
+cytometry and mass spectrometry imaging for spatially resolved
+single-cell metabolic
+profiling</a>. <em>Nature Methods</em>
+<strong>21</strong>, 1796--1800 (2024).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B68_vicari2024 .csl-entry}
+[51.]{.csl-left-margin}[Vicari, M. <em>et al.</em> <a href="https://doi.org/10.1038/s41587-023-01937-y">Spatial multimodal analysis
+of transcriptomes and metabolomes in
+tissues</a>. <em>Nature
+Biotechnology</em> <strong>42</strong>, 1046--1050 (2024).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-P24_abadi_tensorflow_2016 .csl-entry}
+[52.]{.csl-left-margin}[Abadi, M. <em>et al.</em> TensorFlow: Large-Scale
+Machine Learning on Heterogeneous Distributed Systems. (2016)
+doi:<a href="https://doi.org/10.48550/ARXIV.1603.04467">10.48550/ARXIV.1603.04467</a>.]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B69_engblom2025 .csl-entry}
+[53.]{.csl-left-margin}[Engblom, C. &amp; Lundeberg, J. <a href="https://doi.org/10.1038/s41587-025-02596-x">Putting cancer
+immunotherapy into spatial context in the
+clinic</a>. <em>Nature
+Biotechnology</em> <strong>43</strong>, 471--476 (2025).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B71_hsieh2022 .csl-entry}
+[54.]{.csl-left-margin}[Hsieh, W.-C. <em>et al.</em> <a href="https://doi.org/10.1186/s12929-022-00879-y">Spatial multi-omics
+analyses of the tumor immune
+microenvironment</a>. <em>Journal
+of Biomedical Science</em> <strong>29</strong>, 96 (2022).]{.csl-right-inline}
+:::</p>
+<p>::: {#ref-B73_engblom_spatial_2023 .csl-entry}
+[55.]{.csl-left-margin}[Engblom, C. <em>et al.</em> <a href="https://doi.org/10.1126/science.adf8486">Spatial transcriptomics of
+B cell and T cell receptors reveals lymphocyte clonal
+dynamics</a>. <em>Science</em> <strong>382</strong>,
+eadf8486 (2023).]{.csl-right-inline}
+:::</p>
+<p>::::::::::::::::::::::::::::::::::::::::::::::::::::::::::</p>
 
 
 
