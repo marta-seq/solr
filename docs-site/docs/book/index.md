@@ -51,10 +51,10 @@ omics provides a more complete and insightful picture of biological processes.
 The following chapters aim to provide a comprehensive understanding of spatial omics workflows, 
 covering topics from:
 
-* [# Spatially Resolved Omics Techniques](chapter1.md)
-* [Technical Overview](technical_overview.md)
-    * [Preprocessing](technical_overview/preprocessing.md)
-    * [Cell Segmentation](technical_overview/cell_segmentation.md)
+* [Spatially Resolved Omics Techniques](chapter1.md)
+* [Technical Overview](chapter2.md)
+    * [Preprocessing](chapter2.md##Data preprocessing)
+    * [Cell Segmentation](chapter2.md##Cell segmentation)
     * [Phenotyping](technical_overview/phenotyping.md)
     * [Neighborhood Analysis](technical_overview/neighborhood_analysis.md)
     * [Spatially Variable Genes](technical_overview/spatially_variable_genes.md)
