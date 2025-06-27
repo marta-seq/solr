@@ -55,12 +55,14 @@ covering topics from:
 * [Technical Overview](chapter2.md)
     * [Preprocessing](chapter2.md##Data preprocessing)
     * [Cell Segmentation](chapter2.md##Cell segmentation)
-    * [Phenotyping](technical_overview/phenotyping.md)
-    * [Neighborhood Analysis](technical_overview/neighborhood_analysis.md)
-    * [Spatially Variable Genes](technical_overview/spatially_variable_genes.md)
-    * [Domain Identification](technical_overview/domain_identification.md)
-    * [Functional Analysis](technical_overview/functional_analysis.md)
-    * [Sample Condition Distinctions](technical_overview/sample_condition_distinctions.md)
+    * [Phenotyping](chapter2.md##Cell phenotyping)
+    * [Neighborhood Analysis](chapter2.md##Cellular neighbourhood analysis)
+    * [Domain Identification](chapter2.md##Spatial domains)
+    * [Spatially Variable Genes](chapter2.md##Spatially Variable genes)
+    * [Functional Analysis](chapter2.md##Functional analysis)
+    * [Sample Condition Distinctions](chapter2.md##How to distinguish between sample conditions)
+    * [Frameworks and tools](chapter2.md##Frameworks and tools for spatial omics analysis)
+    * [Closing remarks](chapter2.md##Closing remarks)
 
 
 
