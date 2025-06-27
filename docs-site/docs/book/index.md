@@ -6,13 +6,16 @@ focuses on single-molecule or single-cell resolution approaches.
 ⚠️⚠️⚠️⚠️⚠️⚠️⚠️
 
 Disclaimer: This overview is a preliminary text written in the context of my PhD research and has not yet undergone peer review. 
-It summarizes my understanding of spatial omics datasets.
+It summarizes my understanding of spatial omics datasets analysis.
 ---
 
 If you find this information useful, please consider acknowledging its source!
 
 ---
 
+Last updated: 2025-06-27
+
+---
 
 ### Understanding Tissue Complexity: The Journey to Spatial Omics
 
