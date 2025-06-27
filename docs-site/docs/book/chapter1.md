@@ -1,30 +1,34 @@
 
-**2.3 Spatially resolved techniques /(left just techniques)/to unveil
-tumour microenvironment/ cancer study**
+## Spatially Resolved Omics Techniques
 
-The essence of spatial omics lies in its aptitude for the simultaneous
-detection of molecular constituents at exact spatial coordinates (35).
+Spatial omics technologies have the potential to advance our understanding 
+of tumour ecosystems and improve clinical outcomes. 
+The essence of spatial omics lies in its aptitude for the simultaneous detection 
+of molecular constituents at exact spatial coordinates (35).
 Spatial molecular profiling vary in resolution, scale and molecular
 complexity (36).
 
-**2.3.1 Spatial proteomics**
+### Spatial proteomics
 
-Spatial proteomics encompasses technologies that enable the in-situ
-profiling of proteins within tissues, preserving their spatial
-localization. Most spatial proteomics techniques detect proteins using
-antibodies tagged with fluorophores, metals, or DNA barcodes. These tags
-are then read using technologies such as fluorescence microscopy, mass
-spectrometry, or DNA-based imaging to map the spatial distribution of
-proteins within tissues (35,37--39). A summary of key features across
-these technologies is provided in Table 1.
+Spatial proteomics encompasses technologies that enable the in-situ profiling
+of proteins within tissues, preserving their spatial localization. 
+Most spatial proteomics techniques detect proteins using antibodies tagged 
+with fluorophores, metals, or DNA barcodes. These tags are then read using
+technologies such as fluorescence microscopy, mass spectrometry, or DNA-based
+imaging to map the spatial distribution of proteins within tissues (35, 37-39).
+A summary of key features across these technologies is provided in Table1. 
 
-Immunohistochemistry (IHC) is one of the most established clinical tools
-for protein detection \[CITATION\]. It uses enzyme-linked antibodies to
-generate a chromogenic signal visible under brightfield microscopy.
-While widely available and routinely used in diagnostics, traditional
-IHC is generally limited to detecting one or a few markers per tissue
-section, making it unsuitable for high-dimensional spatial profiling.
+Immunohistochemistry (IHC) is one of the most established clinical tools for protein
+detection (40).  It uses enzyme-linked antibodies to generate a chromogenic signal 
+visible under brightfield microscopy. While widely available and routinely used in
+diagnostics, traditional IHC is generally limited to detecting one or a few markers per 
+tissue section, making it unsuitable for high-dimensional spatial profiling.
 
+
+Among the fluorescence-based approaches,  immunofluorescence (IF) (41) is widely 
+used but limited in multiplexing. More advanced cyclic immunofluorescence methods—such
+as tissue-based cyclic
+immunofluorescence (t-CyCIF) \cite{B42_Cycif2018} and \gls{IBEX}\cite{B43_ibex_2022} - use iterative staining and imaging cycles to overcome spectral limitations, enabling the detection of 40–60+ markers with spatial resolution down to 200–300 nm.
 Among the fluorescence-based approaches, immunofluorescence (IF)
 \[CITATION\] is widely used but limited in multiplexing. More advanced
 cyclic immunofluorescence methods---such as tissue-based cyclic
