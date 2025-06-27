@@ -15,7 +15,17 @@ theme:
 
 nav:
   - Home: index.md
-  - Book: book/index.md
+  - Book:
+      - Introduction: book/index.md  # Your book's introduction
+      - Chapter 1: book/chapter1.md
+      - Chapter 2: book/chapter2.md
+      - Chapter 3: book/chapter3.md
+      - References: book/references.md
+
+      # You can nest further for sections within chapters:
+      # - Chapter 4:
+      #   - Section A: book/chapter4-sectionA.md
+      #   - Section B: book/chapter4-sectionB.md
   - Spatial Omics Datasets: datasets/index.md
   - Spatial Omics Methods: methods/index.md
   - Spatial Omics Applications: applications/index.md
