@@ -18,28 +18,26 @@
             border-collapse: collapse;
             margin-top: 15px;
         }
-        /* Global styling for all table cells: prevents text wrapping by default */
+        /* Global styling for all table cells:
+           Now includes truncation properties for all columns via 'overflow' and 'text-overflow' */
         #paperTable th, #paperTable td {
             border: 1px solid #ddd;
             padding: 4px 8px;
             text-align: left;
             font-size: 0.9em;
-            white-space: nowrap; /* Forces content to stay on one line */
-            box-sizing: border-box; /* Ensures padding/border are included in total width for better alignment */
+            white-space: nowrap;     /* Ensures content stays on one line */
+            overflow: hidden;        /* Hides content that overflows the cell's boundaries */
+            text-overflow: ellipsis; /* Displays "..." for hidden content (at the end) */
+            box-sizing: border-box;  /* Crucial for consistent width calculation */
         }
         #paperTable th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
 
-        /* --- CSS FOR VISUAL TRUNCATION (ONLY for 'title' column, or explicitly long ones) --- */
-        #paperTable td.truncate {
-            overflow: hidden;            /* Hides content that overflows the cell's boundaries */
-            text-overflow: ellipsis;     /* Displays "..." for hidden content (at the end) */
-            max-width: 450px;            /* ADJUST THIS VALUE to control 'title' column width.
-                                            Make it smaller if the table is still too wide. */
-        }
-        /* End NEW CSS */
+        /* The .truncate class and its max-width rule are no longer needed
+           because overflow/text-overflow are global on td,
+           and widths are controlled by JS columnDefs.width */
 
         /* Optional: Styling for the horizontal scrollbar introduced by DataTables scrollX */
         .dataTables_scrollBody {
@@ -50,7 +48,7 @@
         .dataTables_wrapper .dataTables_paginate {
             margin-bottom: 10px;
         }
-        /* Style for the new info section */
+        /* Style for the info section */
         #info-section {
             background-color: #e9ecef;
             padding: 10px 15px;
@@ -60,7 +58,7 @@
             color: #495057;
         }
         #info-section p {
-            margin-bottom: 5px; /* Reduce spacing between paragraphs in info section */
+            margin-bottom: 5px;
         }
         #info-section p:last-child {
             margin-bottom: 0;
@@ -80,6 +78,7 @@
         <p>Abstracts and titles were weakly annotated via LLM queries.</p>
         <p>Further improvements will include scraping of Gscholar, bioArxiv and the manual curation for more in-depth analysis.</p>
     </div>
+
     <table id="paperTable" class="display compact" style="width:100%">
         <thead>
             <tr>
@@ -110,9 +109,8 @@
         $(document).ready(function() {
             const basePath = getGithubPagesBasePath();
 
-            // --- CRITICAL: Verify these paths match the EXACT locations of your files on GitHub.com ---
             const csvFilePath = `${basePath}/data/weak_annotation_pool_application_papers_harmonized.csv`;
-            const datesFilePath = `${basePath}/data/dates.json`; // Path to your dates.json file
+            const datesFilePath = `${basePath}/data/dates.json`;
 
             console.log("Attempting to load CSV from:", csvFilePath);
 
@@ -122,17 +120,15 @@
                     header: true,
                     skipEmptyLines: true,
                     complete: function(results) {
-                        // Check for any parsing errors reported by PapaParse
                         if (results.errors.length > 0) {
                             console.error("PapaParse errors:", results.errors);
                             alert("Error parsing CSV data. Please check the CSV file for issues (e.g., malformed lines).");
                             return;
                         }
 
-                        let originalHeaders = results.meta.fields; // All headers detected in your CSV
+                        let originalHeaders = results.meta.fields;
                         const data = results.data.map(row => originalHeaders.map(header => row[header]));
 
-                        // --- YOUR DESIRED COLUMN ORDER ---
                         const desiredDisplayOrder = [
                             'title',
                             'curated_data_modalities_used',
@@ -153,29 +149,19 @@
                             'relevance_score_llm'
                         ];
 
-                        // Define columns for DataTables based on the desired order
                         const dataTableColumns = desiredDisplayOrder.map(colName => {
                             const colDef = {
                                 title: colName,
                                 data: originalHeaders.indexOf(colName),
-                                // --- NEW: Universal render for tooltips on all columns ---
+                                // Universal render for tooltips on all columns
                                 render: function (data, type, row) {
                                     if (type === 'display' && data !== null && data !== undefined) {
-                                        // Handle arrays (e.g., for modalities) by joining them for display
                                         let displayData = Array.isArray(data) ? data.join(', ') : String(data);
-                                        // Return a span with the full content as a title (tooltip)
                                         return '<span title="' + displayData.replace(/"/g, '&quot;') + '">' + displayData + '</span>';
                                     }
-                                    return data; // For other types (filter, sort, etc.) or null/undefined, just return data
+                                    return data;
                                 }
-                                // --- END NEW ---
                             };
-
-                            // Apply specific visual truncation class ONLY to 'title' (or other explicitly long columns)
-                            if (colName === 'title') {
-                                colDef.className = 'truncate';
-                            }
-
                             return colDef;
                         });
 
@@ -191,13 +177,12 @@
                             scrollX: true,
                             autoWidth: false,
 
-                            // --- NEW: Enable FixedHeader for robust alignment with horizontal scroll ---
-                            fixedHeader: true,
+                            fixedHeader: true, // Enable FixedHeader for robust alignment
 
-                            // Explicit Column Widths for better alignment and control
+                            // Explicit Column Widths. Adjust these values for your content.
+                            // These widths will also dictate where the ellipsis kicks in due to global CSS.
                             columnDefs: [
-                                // Adjust these width values as needed for your content and screen size
-                                { width: '450px', targets: originalHeaders.indexOf('title') },
+                                { width: '450px', targets: originalHeaders.indexOf('title') }, // Title is still wider
                                 { width: '120px', targets: originalHeaders.indexOf('curated_data_modalities_used') },
                                 { width: '100px', targets: originalHeaders.indexOf('modalities_general') },
                                 { width: '80px', targets: originalHeaders.indexOf('tissue') },
@@ -215,16 +200,14 @@
                                 { width: '80px', targets: originalHeaders.indexOf('llm_model') },
                                 { width: '80px', targets: originalHeaders.indexOf('relevance_score_llm') }
                             ],
-                            // Callback to adjust columns after initialization (still useful with FixedHeader)
+                            // Callback to adjust columns after initialization
                             initComplete: function() {
                                 this.api().columns.adjust().draw();
                             }
                         });
 
-                        // --- Update dynamic info after table initialization ---
                         $('#paperCount').text(myTable.rows().count());
 
-                        // Fetch and display custom dates from JSON file
                         $.getJSON(datesFilePath)
                             .done(function(data) {
                                 $('#lastPubMedScraping').text(data.last_pubmed_scraping || 'N/A');
@@ -237,7 +220,6 @@
                                 $('#lastLlmCuration').text('Error: N/A');
                                 $('#lastApplicationCuration').text('Error: N/A');
                             });
-                        // --- END Dynamic Info Update ---
 
                         console.log("Table initialized with custom column order, specified columns displayed, and 'title' column truncated.");
                     },
