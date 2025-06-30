@@ -22,14 +22,23 @@
             padding: 4px 8px; /* Reduced vertical padding, standard horizontal */
             text-align: left;
             font-size: 0.9em; /* Slightly smaller font size for compactness */
-            white-space: nowrap; /* Prevent text wrapping in cells by default if too wide */
         }
         #paperTable th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
 
-        /* Styling for the horizontal scrollbar introduced by DataTables scrollX */
+        /* --- CSS FOR TRUNCATION --- */
+        #paperTable td.truncate { /* Apply this class to cells that should truncate */
+            white-space: nowrap;         /* Prevent text wrapping */
+            overflow: hidden;            /* Hide overflow content */
+            text-overflow: ellipsis;     /* Show ellipsis (...) for hidden content */
+            max-width: 200px;            /* IMPORTANT: Set a max-width for the column */
+                                         /* Adjust this value (e.g., 150px, 250px, 300px) as needed for 'Title' */
+        }
+        /* End NEW CSS */
+
+        /* Optional: Styling for the horizontal scrollbar introduced by DataTables scrollX */
         .dataTables_scrollBody {
             border-bottom: 1px solid #ddd;
         }
@@ -61,14 +70,9 @@
 
     <script type="text/javascript">
         // Function to dynamically get the base path for assets on GitHub Pages
-        // This function helps your script find files correctly whether on a root domain
-        // or in a GitHub Pages project subfolder (like /solr/).
         function getGithubPagesBasePath() {
             const pathname = window.location.pathname;
             const parts = pathname.split('/');
-            // If the URL is like 'https://username.github.io/repo-name/...'
-            // then parts[1] will be 'repo-name'.
-            // If it's 'https://username.github.io/', parts[1] will be empty.
             if (parts.length > 1 && parts[1] !== '') {
                 return '/' + parts[1];
             }
@@ -101,22 +105,80 @@
                             return;
                         }
 
-                        // `results.meta.fields` gives us an ordered array of the column names as found in the CSV header.
-                        const headers = results.meta.fields;
-
-                        // `results.data` is an array of objects, where each object is a row
-                        // with column names as keys (e.g., { "DOI": "10.123/abc", "Title": "Paper A" }).
-                        // DataTables can work directly with this format using the `columns.data` option,
-                        // but for simplicity, we convert it to an array of arrays here, maintaining order.
+                        let headers = results.meta.fields; // Get original headers from CSV
+                        // `results.data` is an array of objects (rows). Convert to array of arrays for DataTables.
                         const data = results.data.map(row => {
-                            // Ensure data order matches header order for DataTables
                             return headers.map(header => row[header]);
                         });
 
-                        // Initialize DataTables
+                        // --- NEW: Define your desired column order ---
+                        // IMPORTANT: List ALL column names from your CSV's header row, exactly as they appear.
+                        // The order here will determine the display order of columns in the table.
+                        // Columns not listed here will NOT be displayed.
+
+                        const desiredDisplayOrder = [
+                            'title', // Example: Put Title first
+                            'curated_data_modalities_used',
+                            'modalities_general',
+                            'tissue',
+                            'disease',
+                            'animal',
+                            'biological_context',
+                            'main_goals',
+                            'covered_analysis_steps',
+                            'data_links_mentioned',
+                            'doi',
+                            'pmid',
+                            'paper_type',
+                            'annotation_status',
+                            'llm_query_date',
+                            'llm_model',
+                            'relevance_score_llm',
+
+
+                        ];
+
+                        // Create the `columns` array for DataTables in the desired order
+                        const dataTableColumns = desiredDisplayOrder.map(colName => {
+                            const colDef = {
+                                title: colName,
+                                // This `data` property is crucial when your `data` source is an array of arrays
+                                // It links the column definition to the correct data index.
+                                // We find the original index of the column name from PapaParse's `headers`.
+                                data: headers.indexOf(colName)
+                            };
+
+                            // --- NEW: Truncate long text for specific columns ---
+                            // Apply truncation to Title and Comment columns
+                            if (colName === 'Title' || colName === 'Comment') {
+                                colDef.className = 'truncate'; // Add a class for CSS styling
+                                colDef.render = function (data, type, row) {
+                                    if (type === 'display' && data && data.length > 80) { // Truncate if longer than 80 chars
+                                        // Wrap in a span with 'title' attribute for tooltip
+                                        return '<span title="' + data.replace(/"/g, '&quot;') + '">' + data.substr(0, 80) + '&hellip;</span>';
+                                    }
+                                    return data;
+                                };
+                            }
+                            // --- End NEW: Truncation ---
+
+                            // Check if this column should be hidden based on your original list
+                            const columnsToHide = [
+                                'is_method_paper', 'is_method_comparison_paper', 'review_type', 'methodology_type',
+                                'pipeline_package_name', 'main_goals', 'data_links_mentioned', 'code_availability.status',
+                                'code_availability.link_in_abstract_or_title', 'is_disease_specific_review',
+                                'is_pipeline_paper', 'is_review_paper'
+                            ];
+                            if (columnsToHide.includes(colName)) {
+                                colDef.visible = false; // Hide the column
+                            }
+
+                            return colDef;
+                        });
+
                         $('#paperTable').DataTable({
-                            data: data, // Your parsed CSV data
-                            columns: headers.map(header => ({ title: header })), // Use PapaParse's headers for table columns
+                            data: data, // Your parsed CSV data (array of arrays)
+                            columns: dataTableColumns, // Use the newly ordered and configured columns
 
                             paging: true,     // Enable pagination
                             searching: true,  // Enable the global search box
@@ -125,32 +187,19 @@
 
                             // --- Table Sizing and Scroll (to fit screen) ---
                             scrollX: true,    // Add horizontal scrollbar if table content is wider than screen
-                            autoWidth: false, // Prevents DataTables from trying to perfectly fit columns, better with scrollX
+                            autoWidth: false  // Prevents DataTables from trying to perfectly fit columns, better with scrollX
 
-                            // --- Column Hiding ---
-                            columnDefs: [
-                                { targets: headers.indexOf('is_method_paper'), visible: false },
-                                { targets: headers.indexOf('is_method_comparison_paper'), visible: false },
-                                { targets: headers.indexOf('review_type'), visible: false },
-                                { targets: headers.indexOf('methodology_type'), visible: false },
-                                { targets: headers.indexOf('pipeline_package_name'), visible: false },
-                                { targets: headers.indexOf('main_goals'), visible: false },
-                                { targets: headers.indexOf('data_links_mentioned'), visible: false },
-                                { targets: headers.indexOf('code_availability.status'), visible: false },
-                                { targets: headers.indexOf('code_availability.link_in_abstract_or_title'), visible: false },
-                                { targets: headers.indexOf('is_disease_specific_review'), visible: false },
-                                { targets: headers.indexOf('is_pipeline_paper'), visible: false },
-                                { targets: headers.indexOf('is_review_paper'), visible: false }
-                            ]
+                            // We don't need a separate `columnDefs` property here because
+                            // visibility and rendering are handled directly within the `columns` array creation.
                         });
 
-                        console.log("Table initialized successfully with specified columns hidden and horizontal scroll enabled.");
-                        console.log("The global search box should now work correctly across all VISIBLE columns.");
+                        console.log("Table initialized with custom column order, hidden columns, and text truncation.");
+                        console.log("The global search box should work correctly across all VISIBLE columns.");
                     },
                     error: function(err, file, inputElem, reason) {
                         // This callback is for network errors or file not found before parsing begins
                         console.error("PapaParse loading error:", err, reason);
-                        alert("Error loading CSV file. Please check the console for network errors (e.g., 404 Not Found).");
+                        alert("Error loading CSV file. Please check your browser's console for network errors (e.g., 404 Not Found).");
                     }
                 });
             }
