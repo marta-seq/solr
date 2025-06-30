@@ -18,26 +18,27 @@
             border-collapse: collapse;
             margin-top: 15px;
         }
-        /* Global styling for all table cells:
-           Now includes truncation properties for all columns via 'overflow' and 'text-overflow' */
+        /* Global styling for all table cells: */
         #paperTable th, #paperTable td {
             border: 1px solid #ddd;
             padding: 4px 8px;
             text-align: left;
             font-size: 0.9em;
-            white-space: nowrap;     /* Ensures content stays on one line */
-            overflow: hidden;        /* Hides content that overflows the cell's boundaries */
-            text-overflow: ellipsis; /* Displays "..." for hidden content (at the end) */
             box-sizing: border-box;  /* Crucial for consistent width calculation */
+            white-space: nowrap;     /* Ensures content stays on one line for all cells */
         }
         #paperTable th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
 
-        /* The .truncate class and its max-width rule are no longer needed
-           because overflow/text-overflow are global on td,
-           and widths are controlled by JS columnDefs.width */
+        /* --- NEW CSS CLASS for columns that should have LIMITED WIDTH and ELLIPSIS --- */
+        #paperTable td.truncated-cell {
+            overflow: hidden;            /* Hides content that overflows */
+            text-overflow: ellipsis;     /* Displays "..." for hidden content */
+            /* The max-width for these cells is implicitly controlled by their 'width' in columnDefs */
+        }
+        /* --- END NEW CSS --- */
 
         /* Optional: Styling for the horizontal scrollbar introduced by DataTables scrollX */
         .dataTables_scrollBody {
@@ -127,8 +128,11 @@
                         }
 
                         let originalHeaders = results.meta.fields;
+                        console.log("CSV Original Headers (as seen by PapaParse):", originalHeaders); // DEBUGGING: Check this in console!
+
                         const data = results.data.map(row => originalHeaders.map(header => row[header]));
 
+                        // This is the definitive list and order of columns you want to display
                         const desiredDisplayOrder = [
                             'title',
                             'curated_data_modalities_used',
@@ -149,10 +153,24 @@
                             'relevance_score_llm'
                         ];
 
+                        // List of columns that should have visual truncation (ellipsis)
+                        const columnsToTruncateVisually = [
+                            'title',
+                            'curated_data_modalities_used',
+                            'biological_context',
+                            'main_goals',
+                            'covered_analysis_steps'
+                        ];
+
                         const dataTableColumns = desiredDisplayOrder.map(colName => {
+                            const colIndex = originalHeaders.indexOf(colName);
+                            if (colIndex === -1) {
+                                console.warn(`Column '${colName}' from desiredDisplayOrder not found in CSV headers. It might not display correctly.`);
+                            }
+
                             const colDef = {
                                 title: colName,
-                                data: originalHeaders.indexOf(colName),
+                                data: colIndex, // DataTables will get data from this index
                                 // Universal render for tooltips on all columns
                                 render: function (data, type, row) {
                                     if (type === 'display' && data !== null && data !== undefined) {
@@ -162,8 +180,15 @@
                                     return data;
                                 }
                             };
+
+                            // Apply specific visual truncation class only to designated columns
+                            if (columnsToTruncateVisually.includes(colName)) {
+                                colDef.className = 'truncated-cell';
+                            }
+
                             return colDef;
                         });
+                        console.log("DataTables Column Definitions (generated):", dataTableColumns); // DEBUGGING: Check this too!
 
                         const myTable = $('#paperTable').DataTable({
                             data: data,
@@ -180,9 +205,9 @@
                             fixedHeader: true, // Enable FixedHeader for robust alignment
 
                             // Explicit Column Widths. Adjust these values for your content.
-                            // These widths will also dictate where the ellipsis kicks in due to global CSS.
+                            // These widths control where the ellipsis appears for 'truncated-cell' columns.
                             columnDefs: [
-                                { width: '450px', targets: originalHeaders.indexOf('title') }, // Title is still wider
+                                { width: '450px', targets: originalHeaders.indexOf('title') },
                                 { width: '120px', targets: originalHeaders.indexOf('curated_data_modalities_used') },
                                 { width: '100px', targets: originalHeaders.indexOf('modalities_general') },
                                 { width: '80px', targets: originalHeaders.indexOf('tissue') },
@@ -221,7 +246,7 @@
                                 $('#lastApplicationCuration').text('Error: N/A');
                             });
 
-                        console.log("Table initialized with custom column order, specified columns displayed, and 'title' column truncated.");
+                        console.log("Table initialized.");
                     },
                     error: function(err, file, inputElem, reason) {
                         console.error("PapaParse loading error:", err, reason);
