@@ -6,6 +6,7 @@
     <title>Application Papers Explorer</title>
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
@@ -24,13 +25,14 @@
             text-align: left;
             font-size: 0.9em;
             white-space: nowrap; /* Forces content to stay on one line */
+            box-sizing: border-box; /* Ensures padding/border are included in total width for better alignment */
         }
         #paperTable th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
 
-        /* --- CSS FOR TRUNCATION AND FIXED WIDTH (for 'title' column) --- */
+        /* --- CSS FOR VISUAL TRUNCATION (ONLY for 'title' column, or explicitly long ones) --- */
         #paperTable td.truncate {
             overflow: hidden;            /* Hides content that overflows the cell's boundaries */
             text-overflow: ellipsis;     /* Displays "..." for hidden content (at the end) */
@@ -90,6 +92,7 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script type="text/javascript" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -109,7 +112,7 @@
 
             // --- CRITICAL: Verify these paths match the EXACT locations of your files on GitHub.com ---
             const csvFilePath = `${basePath}/data/weak_annotation_pool_application_papers_harmonized.csv`;
-            const datesFilePath = `${basePath}/data/dates.json`; // Path to your dates.json file (created in previous step)
+            const datesFilePath = `${basePath}/data/dates.json`; // Path to your dates.json file
 
             console.log("Attempting to load CSV from:", csvFilePath);
 
@@ -131,7 +134,7 @@
 
                         // --- YOUR DESIRED COLUMN ORDER ---
                         const desiredDisplayOrder = [
-                            'title', // This column will be truncated visually by CSS
+                            'title',
                             'curated_data_modalities_used',
                             'modalities_general',
                             'tissue',
@@ -154,20 +157,23 @@
                         const dataTableColumns = desiredDisplayOrder.map(colName => {
                             const colDef = {
                                 title: colName,
-                                data: originalHeaders.indexOf(colName)
+                                data: originalHeaders.indexOf(colName),
+                                // --- NEW: Universal render for tooltips on all columns ---
+                                render: function (data, type, row) {
+                                    if (type === 'display' && data !== null && data !== undefined) {
+                                        // Handle arrays (e.g., for modalities) by joining them for display
+                                        let displayData = Array.isArray(data) ? data.join(', ') : String(data);
+                                        // Return a span with the full content as a title (tooltip)
+                                        return '<span title="' + displayData.replace(/"/g, '&quot;') + '">' + displayData + '</span>';
+                                    }
+                                    return data; // For other types (filter, sort, etc.) or null/undefined, just return data
+                                }
+                                // --- END NEW ---
                             };
 
-                            // --- Truncate 'title' column with tooltip on hover (visual truncation by CSS) ---
+                            // Apply specific visual truncation class ONLY to 'title' (or other explicitly long columns)
                             if (colName === 'title') {
-                                colDef.className = 'truncate'; // Add CSS class for max-width and ellipsis
-                                colDef.render = function (data, type, row) {
-                                    // For display type, wrap content in a span with the full title as a tooltip
-                                    // The actual visual truncation (ellipsis at the end) is now solely handled by CSS
-                                    if (type === 'display' && data) {
-                                        return '<span title="' + data.replace(/"/g, '&quot;') + '">' + data + '</span>';
-                                    }
-                                    return data; // For other types (filter, sort, etc.) just return original data
-                                };
+                                colDef.className = 'truncate';
                             }
 
                             return colDef;
@@ -185,9 +191,12 @@
                             scrollX: true,
                             autoWidth: false,
 
-                            // --- NEW/UPDATED: Explicit Column Widths for better alignment ---
+                            // --- NEW: Enable FixedHeader for robust alignment with horizontal scroll ---
+                            fixedHeader: true,
+
+                            // Explicit Column Widths for better alignment and control
                             columnDefs: [
-                                // Titles are usually longer, so a larger width. Match this with your CSS max-width.
+                                // Adjust these width values as needed for your content and screen size
                                 { width: '450px', targets: originalHeaders.indexOf('title') },
                                 { width: '120px', targets: originalHeaders.indexOf('curated_data_modalities_used') },
                                 { width: '100px', targets: originalHeaders.indexOf('modalities_general') },
@@ -206,11 +215,10 @@
                                 { width: '80px', targets: originalHeaders.indexOf('llm_model') },
                                 { width: '80px', targets: originalHeaders.indexOf('relevance_score_llm') }
                             ],
-                            // --- NEW: Callback to adjust columns after initialization for perfect alignment ---
+                            // Callback to adjust columns after initialization (still useful with FixedHeader)
                             initComplete: function() {
                                 this.api().columns.adjust().draw();
                             }
-                            // --- END NEW/UPDATED ---
                         });
 
                         // --- Update dynamic info after table initialization ---
