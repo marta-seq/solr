@@ -15,7 +15,7 @@
 
         #paperTable {
             width: 100% !important;
-            border-collapse: collapse;
+            border-collapse: collapse !important; /* Force border-collapse */
             margin-top: 15px;
         }
         /* Global styling for all table cells: */
@@ -27,9 +27,12 @@
             box-sizing: border-box;  /* Crucial for consistent width calculation */
             white-space: nowrap;     /* Ensures content stays on one line for all cells */
         }
+
+        /* Force display: table-cell for headers to ensure correct table layout */
         #paperTable th {
             background-color: #f2f2f2;
             font-weight: bold;
+            display: table-cell !important; /* <--- CRITICAL OVERRIDE */
         }
 
         /* --- CSS CLASS for columns that should have LIMITED WIDTH and ELLIPSIS --- */
@@ -135,7 +138,7 @@
                         const desiredDisplayOrder = [
                             'title',
                             'curated_data_modalities_used',
-                            'modalities_general', // Added modalities_general here (already present)
+                            'modalities_general',
                             'tissue',
                             'disease',
                             'animal',
@@ -161,7 +164,7 @@
                         const columnsToTruncateVisually = [
                             'title',
                             'curated_data_modalities_used',
-                            'modalities_general', // <--- ADDED THIS COLUMN FOR TRUNCATION
+                            'modalities_general',
                             'biological_context',
                             'main_goals',
                             'covered_analysis_steps'
@@ -223,7 +226,7 @@
                                 // IMPORTANT: Targets for columnDefs must now use desiredDisplayOrder.indexOf()
                                 { width: '450px', targets: desiredDisplayOrder.indexOf('title') },
                                 { width: '120px', targets: desiredDisplayOrder.indexOf('curated_data_modalities_used') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('modalities_general') }, // Modalities general width
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('modalities_general') },
                                 { width: '80px', targets: desiredDisplayOrder.indexOf('tissue') },
                                 { width: '80px', targets: desiredDisplayOrder.indexOf('disease') },
                                 { width: '60px', targets: desiredDisplayOrder.indexOf('animal') },
