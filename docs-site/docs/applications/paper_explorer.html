@@ -40,11 +40,31 @@
     <script type="text/javascript" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 
     <script type="text/javascript">
+        // Function to dynamically get the base path for assets on GitHub Pages
+        // This handles cases where your site is:
+        // - `username.github.io/repo-name/` (project page) -> returns '/repo-name'
+        // - `username.github.io/` (user/org page)         -> returns ''
+        function getGithubPagesBasePath() {
+            const pathname = window.location.pathname;
+            const parts = pathname.split('/');
+            // Check if the first part after the domain is a repo name (i.e., not empty)
+            if (parts.length > 1 && parts[1] !== '') {
+                return '/' + parts[1];
+            }
+            return ''; // No repo name in path (user/org page)
+        }
+
         $(document).ready(function() {
-            // --- CRITICAL PATH CORRECTION ---
-            // You need to replace 'your-repo-name' with the actual name of your GitHub repository.
-            // Example: If your repo is named 'phd-review', the path would be '/phd-review/data/...'
-            const csvFilePath = 'solr/data/weak_annotation_pool_application_papers_harmonized.csv';
+            // Get the dynamically determined base path for your repository
+            const basePath = getGithubPagesBasePath();
+
+            // Construct the CSV file path using the determined base path
+            // This assumes your `data` folder is at the root of your GitHub repository.
+            const csvFilePath = `${basePath}/data/weak_annotation_pool_application_papers_harmonized.csv`;
+
+            // For debugging: print the calculated path to the console
+            console.log("Attempting to load CSV from:", csvFilePath);
+
             function loadCsvAndInitializeTable() {
                 $.ajax({
                     url: csvFilePath,
