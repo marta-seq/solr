@@ -30,15 +30,12 @@
             font-weight: bold;
         }
 
-        /* --- CSS FOR TRUNCATION (for 'title' column, etc.) --- */
-        /* This class will be added to cells that need truncation AND a controlled width */
+        /* --- CSS FOR TRUNCATION AND FIXED WIDTH (for 'title' column) --- */
         #paperTable td.truncate {
             overflow: hidden;            /* Hides content that overflows the cell's boundaries */
             text-overflow: ellipsis;     /* Displays "..." for hidden content */
-            max-width: 150px;            /* IMPORTANT: Set a maximum width for this column (e.g., 'title') */
-                                         /* ADJUST THIS VALUE (e.g., 100px, 200px, 250px)
-                                            to control how wide the 'title' column appears.
-                                            Make it smaller if the table is still too wide. */
+            max-width: 450px;            /* ADJUST THIS VALUE to control 'title' column width.
+                                            (e.g., 300px for double, 450px for triple 150px) */
         }
         /* End NEW CSS */
 
@@ -51,12 +48,34 @@
         .dataTables_wrapper .dataTables_paginate {
             margin-bottom: 10px;
         }
+        /* Style for the new info section */
+        #info-section {
+            background-color: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        #info-section p {
+            margin-bottom: 5px; /* Reduce spacing between paragraphs in info section */
+        }
+        #info-section p:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
     <h1>🔬 Application Papers Exploratory Framework</h1>
     <p>Explore and filter the harmonized weak annotation pool for 'application' type papers directly in your browser.</p>
 
+    <div id="info-section">
+        <p>Number of application papers: <strong id="paperCount">Loading...</strong></p>
+        <p>Last PubMed Scraping: <span id="lastPubMedScraping">Loading...</span></p>
+        <p>Last LLM Curation: <span id="lastLlmCuration">Loading...</span></p>
+        <p>Last Application Curation: <span id="lastApplicationCuration">Loading...</span></p>
+        <p>This dataset represents a light/weak annotation of PubMed abstracts, generated via LLM queries considering the title and abstract. Further improvements will include manual curation for more in-depth analysis.</p>
+    </div>
     <table id="paperTable" class="display compact" style="width:100%">
         <thead>
             <tr>
@@ -86,13 +105,9 @@
         $(document).ready(function() {
             const basePath = getGithubPagesBasePath();
 
-            // --- CRITICAL: Verify this path matches the EXACT location of your CSV on GitHub.com ---
-            //
-            // Option A: If your CSV is in 'your-repo/docs/data/' (recommended structure)
+            // --- CRITICAL: Verify these paths match the EXACT locations of your files on GitHub.com ---
             const csvFilePath = `${basePath}/data/weak_annotation_pool_application_papers_harmonized.csv`;
-
-            // Option B: If your CSV is directly in 'your-repo/docs/'
-            // const csvFilePath = `${basePath}/weak_annotation_pool_application_papers_harmonized.csv`;
+            const datesFilePath = `${basePath}/data/dates.json`; // NEW: Path to your dates.json file
 
             console.log("Attempting to load CSV from:", csvFilePath);
 
@@ -112,7 +127,7 @@
                         let originalHeaders = results.meta.fields; // All headers detected in your CSV
                         const data = results.data.map(row => originalHeaders.map(header => row[header]));
 
-                        // --- YOUR DESIRED COLUMN ORDER (based on your last input) ---
+                        // --- YOUR DESIRED COLUMN ORDER ---
                         // Only columns listed here will be displayed, in this exact order.
                         // Any column from your CSV that is NOT in this list will NOT be displayed.
                         const desiredDisplayOrder = [
@@ -147,21 +162,19 @@
                             if (colName === 'title') {
                                 colDef.className = 'truncate'; // Add CSS class for max-width and ellipsis
                                 colDef.render = function (data, type, row) {
-                                    if (type === 'display' && data && data.length > 50) { // Truncate if longer than 50 characters
+                                    // Adjust '150' characters below to show more or less of the title before truncation
+                                    if (type === 'display' && data && data.length > 150) {
                                         // Use `data.replace(/"/g, '&quot;')` to correctly escape quotes in the title attribute for HTML safety
-                                        return '<span title="' + data.replace(/"/g, '&quot;') + '">' + data.substr(0, 50) + '&hellip;</span>';
+                                        return '<span title="' + data.replace(/"/g, '&quot;') + '">' + data.substr(0, 150) + '&hellip;</span>';
                                     }
                                     return data;
                                 };
                             }
 
-                            // Columns not in `desiredDisplayOrder` are automatically not displayed.
-                            // No need for `visible: false` for those.
-
                             return colDef;
                         });
 
-                        $('#paperTable').DataTable({
+                        const myTable = $('#paperTable').DataTable({
                             data: data,
                             columns: dataTableColumns, // Use the new ordered and configured columns
 
@@ -175,18 +188,36 @@
                             autoWidth: false, // Prevents DataTables from trying to perfectly fit columns, better with scrollX
 
                             // Optional: Set explicit initial column widths if needed.
-                            // This ensures columns have a starting width before DataTables auto-calculates.
                             columnDefs: [
-                                { width: '150px', targets: originalHeaders.indexOf('title') } // Set width for title column
+                                { width: '450px', targets: originalHeaders.indexOf('title') } // Set initial width for title column
                                 // You can add more like: { width: '80px', targets: originalHeaders.indexOf('DOI') }
                             ]
                         });
+
+                        // --- Update dynamic info after table initialization ---
+                        $('#paperCount').text(myTable.rows().count());
+
+                        // Fetch and display custom dates from JSON file
+                        $.getJSON(datesFilePath)
+                            .done(function(data) {
+                                $('#lastPubMedScraping').text(data.last_pubmed_scraping || 'N/A');
+                                $('#lastLlmCuration').text(data.last_llm_curation || 'N/A');
+                                $('#lastApplicationCuration').text(data.last_application_curation || 'N/A');
+                            })
+                            .fail(function(jqxhr, textStatus, error) {
+                                console.error("Error loading dates file:", textStatus, error);
+                                // Display error or 'N/A' if file not found/error
+                                $('#lastPubMedScraping').text('Error: N/A');
+                                $('#lastLlmCuration').text('Error: N/A');
+                                $('#lastApplicationCuration').text('Error: N/A');
+                            });
+                        // --- END Dynamic Info Update ---
 
                         console.log("Table initialized with custom column order, specified columns displayed, and 'title' column truncated.");
                     },
                     error: function(err, file, inputElem, reason) {
                         console.error("PapaParse loading error:", err, reason);
-                        alert("Error loading CSV file. Please check your browser's console for network errors (e.g., 404 Not Found).");
+                        alert("Error loading CSV file. Please check your browser's console for network errors.");
                     }
                 });
             }
