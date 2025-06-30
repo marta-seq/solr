@@ -33,9 +33,9 @@
         /* --- CSS FOR TRUNCATION AND FIXED WIDTH (for 'title' column) --- */
         #paperTable td.truncate {
             overflow: hidden;            /* Hides content that overflows the cell's boundaries */
-            text-overflow: ellipsis;     /* Displays "..." for hidden content */
+            text-overflow: ellipsis;     /* Displays "..." for hidden content (at the end) */
             max-width: 450px;            /* ADJUST THIS VALUE to control 'title' column width.
-                                            (e.g., 300px for double, 450px for triple 150px) */
+                                            Make it smaller if the table is still too wide. */
         }
         /* End NEW CSS */
 
@@ -109,7 +109,7 @@
 
             // --- CRITICAL: Verify these paths match the EXACT locations of your files on GitHub.com ---
             const csvFilePath = `${basePath}/data/weak_annotation_pool_application_papers_harmonized.csv`;
-            const datesFilePath = `${basePath}/data/dates.json`; // NEW: Path to your dates.json file
+            const datesFilePath = `${basePath}/data/dates.json`; // Path to your dates.json file (created in previous step)
 
             console.log("Attempting to load CSV from:", csvFilePath);
 
@@ -130,10 +130,8 @@
                         const data = results.data.map(row => originalHeaders.map(header => row[header]));
 
                         // --- YOUR DESIRED COLUMN ORDER ---
-                        // Only columns listed here will be displayed, in this exact order.
-                        // Any column from your CSV that is NOT in this list will NOT be displayed.
                         const desiredDisplayOrder = [
-                            'title', // This column will be truncated
+                            'title', // This column will be truncated visually by CSS
                             'curated_data_modalities_used',
                             'modalities_general',
                             'tissue',
@@ -156,20 +154,19 @@
                         const dataTableColumns = desiredDisplayOrder.map(colName => {
                             const colDef = {
                                 title: colName,
-                                // Map the column name to its original index in the CSV data
                                 data: originalHeaders.indexOf(colName)
                             };
 
-                            // --- Truncate 'title' column with ellipsis and tooltip on hover ---
+                            // --- Truncate 'title' column with tooltip on hover (visual truncation by CSS) ---
                             if (colName === 'title') {
                                 colDef.className = 'truncate'; // Add CSS class for max-width and ellipsis
                                 colDef.render = function (data, type, row) {
-                                    // Adjust '150' characters below to show more or less of the title before truncation
-                                    if (type === 'display' && data && data.length > 150) {
-                                        // Use `data.replace(/"/g, '&quot;')` to correctly escape quotes in the title attribute for HTML safety
-                                        return '<span title="' + data.replace(/"/g, '&quot;') + '">' + data.substr(0, 150) + '&hellip;</span>';
+                                    // For display type, wrap content in a span with the full title as a tooltip
+                                    // The actual visual truncation (ellipsis at the end) is now solely handled by CSS
+                                    if (type === 'display' && data) {
+                                        return '<span title="' + data.replace(/"/g, '&quot;') + '">' + data + '</span>';
                                     }
-                                    return data;
+                                    return data; // For other types (filter, sort, etc.) just return original data
                                 };
                             }
 
@@ -178,22 +175,42 @@
 
                         const myTable = $('#paperTable').DataTable({
                             data: data,
-                            columns: dataTableColumns, // Use the new ordered and configured columns
+                            columns: dataTableColumns,
 
-                            paging: true,     // Enable pagination
-                            searching: true,  // Enable the global search box
-                            ordering: true,   // Enable column sorting
-                            info: true,       // Show "Showing X of Y entries" info
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            info: true,
 
-                            // --- Table Sizing and Scroll (to fit screen) ---
-                            scrollX: true,    // Add horizontal scrollbar if table content is wider than screen
-                            autoWidth: false, // Prevents DataTables from trying to perfectly fit columns, better with scrollX
+                            scrollX: true,
+                            autoWidth: false,
 
-                            // Optional: Set explicit initial column widths if needed.
+                            // --- NEW/UPDATED: Explicit Column Widths for better alignment ---
                             columnDefs: [
-                                { width: '450px', targets: originalHeaders.indexOf('title') } // Set initial width for title column
-                                // You can add more like: { width: '80px', targets: originalHeaders.indexOf('DOI') }
-                            ]
+                                // Titles are usually longer, so a larger width. Match this with your CSS max-width.
+                                { width: '450px', targets: originalHeaders.indexOf('title') },
+                                { width: '120px', targets: originalHeaders.indexOf('curated_data_modalities_used') },
+                                { width: '100px', targets: originalHeaders.indexOf('modalities_general') },
+                                { width: '80px', targets: originalHeaders.indexOf('tissue') },
+                                { width: '80px', targets: originalHeaders.indexOf('disease') },
+                                { width: '60px', targets: originalHeaders.indexOf('animal') },
+                                { width: '150px', targets: originalHeaders.indexOf('biological_context') },
+                                { width: '150px', targets: originalHeaders.indexOf('main_goals') },
+                                { width: '150px', targets: originalHeaders.indexOf('covered_analysis_steps') },
+                                { width: '100px', targets: originalHeaders.indexOf('data_links_mentioned') },
+                                { width: '100px', targets: originalHeaders.indexOf('doi') },
+                                { width: '80px', targets: originalHeaders.indexOf('pmid') },
+                                { width: '80px', targets: originalHeaders.indexOf('paper_type') },
+                                { width: '80px', targets: originalHeaders.indexOf('annotation_status') },
+                                { width: '100px', targets: originalHeaders.indexOf('llm_query_date') },
+                                { width: '80px', targets: originalHeaders.indexOf('llm_model') },
+                                { width: '80px', targets: originalHeaders.indexOf('relevance_score_llm') }
+                            ],
+                            // --- NEW: Callback to adjust columns after initialization for perfect alignment ---
+                            initComplete: function() {
+                                this.api().columns.adjust().draw();
+                            }
+                            // --- END NEW/UPDATED ---
                         });
 
                         // --- Update dynamic info after table initialization ---
@@ -208,7 +225,6 @@
                             })
                             .fail(function(jqxhr, textStatus, error) {
                                 console.error("Error loading dates file:", textStatus, error);
-                                // Display error or 'N/A' if file not found/error
                                 $('#lastPubMedScraping').text('Error: N/A');
                                 $('#lastLlmCuration').text('Error: N/A');
                                 $('#lastApplicationCuration').text('Error: N/A');
