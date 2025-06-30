@@ -32,11 +32,12 @@
             font-weight: bold;
         }
 
-        /* --- NEW CSS CLASS for columns that should have LIMITED WIDTH and ELLIPSIS --- */
+        /* --- CSS CLASS for columns that should have LIMITED WIDTH and ELLIPSIS --- */
+        /* IMPORTANT: Using !important to force these styles in case of overrides */
         #paperTable td.truncated-cell {
-            overflow: hidden;            /* Hides content that overflows */
-            text-overflow: ellipsis;     /* Displays "..." for hidden content */
-            /* The max-width for these cells is implicitly controlled by their 'width' in columnDefs */
+            max-width: 450px !important; /* Explicitly constrain visual width of these cells */
+            overflow: hidden !important;            /* Hides content that overflows */
+            text-overflow: ellipsis !important;     /* Displays "..." for hidden content */
         }
         /* --- END NEW CSS --- */
 
@@ -155,7 +156,7 @@
 
                         // List of columns that should have visual truncation (ellipsis)
                         const columnsToTruncateVisually = [
-                            'title',
+                            'title', // Truncate title
                             'curated_data_modalities_used',
                             'biological_context',
                             'main_goals',
@@ -166,6 +167,13 @@
                             const colIndex = originalHeaders.indexOf(colName);
                             if (colIndex === -1) {
                                 console.warn(`Column '${colName}' from desiredDisplayOrder not found in CSV headers. It might not display correctly.`);
+                            }
+                            // Special debug for title
+                            if (colName === 'title') {
+                                console.log(`Title column index: ${colIndex}`);
+                                if (colIndex !== -1) {
+                                    console.log(`First row title data (raw): ${data[0] ? data[0][colIndex] : 'N/A'}`);
+                                }
                             }
 
                             const colDef = {
@@ -204,8 +212,7 @@
 
                             fixedHeader: true, // Enable FixedHeader for robust alignment
 
-                            // Explicit Column Widths. Adjust these values for your content.
-                            // These widths control where the ellipsis appears for 'truncated-cell' columns.
+                            // Explicit Column Widths. These widths affect layout.
                             columnDefs: [
                                 { width: '450px', targets: originalHeaders.indexOf('title') },
                                 { width: '120px', targets: originalHeaders.indexOf('curated_data_modalities_used') },
