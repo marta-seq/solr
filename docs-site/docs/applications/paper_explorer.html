@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Papers Explorer</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        #paperTable { width: 100%; border-collapse: collapse; }
+        #paperTable th, #paperTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #paperTable th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>🔬 Application Papers Exploratory Framework</h1>
+    <p>Explore and filter the harmonized weak annotation pool for 'application' type papers directly in your browser.</p>
+
+    <table id="paperTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>DOI</th>
+                <th>Title</th>
+                <th>Paper Type</th>
+                <th>Relevance</th>
+                <th>Disease</th>
+                <th>Animal</th>
+                <th>Context</th>
+                <th>Modalities Used</th>
+                </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // --- IMPORTANT PATH ADJUSTMENT ---
+            // Assuming:
+            // - This HTML file is at `your-repo/docs/applications/paper_explorer.html`
+            // - Your CSV file is at `your-repo/data/weak_annotation_pool_application_papers_harmonized.csv`
+            // You need to go up two directories (`../../`) from docs/applications/ to the root,
+            // then down into `data/` to find the CSV.
+            const csvFilePath = '../../data/weak_annotation_pool_application_papers_harmonized.csv';
+
+            function loadCsvAndInitializeTable() {
+                $.ajax({
+                    url: csvFilePath,
+                    dataType: 'text',
+                    success: function(csvData) {
+                        const lines = csvData.split('\n');
+                        const headers = lines[0].split(',').map(h => h.trim());
+                        const data = [];
+
+                        for (let i = 1; i < lines.length; i++) {
+                            if (lines[i].trim() === '') continue;
+                            // Simple split, handles basic CSV. For complex CSV (commas/quotes in fields),
+                            // consider a robust JS CSV parser like PapaParse.js.
+                            data.push(lines[i].split(','));
+                        }
+
+                        $('#paperTable').DataTable({
+                            data: data,
+                            columns: headers.map(header => ({ title: header })), // Create column definitions
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            info: true,
+                            // Optional: Configure column visibility or specific filters here
+                            // For example, to initially show only some columns:
+                            // columnDefs: [
+                            //     { targets: [0, 1, 2, 3, headers.indexOf('disease'), headers.indexOf('animal'), headers.indexOf('biological_context')], visible: true },
+                            //     { targets: '_all', visible: false } // Hide all others
+                            // ]
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error loading CSV:", textStatus, errorThrown);
+                        alert("Could not load data file. Please check the console for more details.");
+                    }
+                });
+            }
+
+            loadCsvAndInitializeTable();
+        });
+    </script>
+</body>
+</html>
