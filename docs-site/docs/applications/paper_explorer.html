@@ -30,26 +30,21 @@
                 <th>Animal</th>
                 <th>Context</th>
                 <th>Modalities Used</th>
-                </tr>
+            </tr>
         </thead>
         <tbody>
-            </tbody>
+        </tbody>
     </table>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
     <script type="text/javascript" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
-            // --- IMPORTANT PATH ADJUSTMENT ---
-            // Assuming:
-            // - This HTML file is at `your-repo/docs/applications/paper_explorer.html`
-            // - Your CSV file is at `your-repo/data/weak_annotation_pool_application_papers_harmonized.csv`
-            // You need to go up two directories (`../../`) from docs/applications/ to the root,
-            // then down into `data/` to find the CSV.
-            const csvFilePath = '../../data/weak_annotation_pool_application_papers_harmonized.csv';
-
+            // --- CRITICAL PATH CORRECTION ---
+            // You need to replace 'your-repo-name' with the actual name of your GitHub repository.
+            // Example: If your repo is named 'phd-review', the path would be '/phd-review/data/...'
+            const csvFilePath = 'solr/data/weak_annotation_pool_application_papers_harmonized.csv';
             function loadCsvAndInitializeTable() {
                 $.ajax({
                     url: csvFilePath,
@@ -61,24 +56,16 @@
 
                         for (let i = 1; i < lines.length; i++) {
                             if (lines[i].trim() === '') continue;
-                            // Simple split, handles basic CSV. For complex CSV (commas/quotes in fields),
-                            // consider a robust JS CSV parser like PapaParse.js.
                             data.push(lines[i].split(','));
                         }
 
                         $('#paperTable').DataTable({
                             data: data,
-                            columns: headers.map(header => ({ title: header })), // Create column definitions
+                            columns: headers.map(header => ({ title: header })),
                             paging: true,
                             searching: true,
                             ordering: true,
-                            info: true,
-                            // Optional: Configure column visibility or specific filters here
-                            // For example, to initially show only some columns:
-                            // columnDefs: [
-                            //     { targets: [0, 1, 2, 3, headers.indexOf('disease'), headers.indexOf('animal'), headers.indexOf('biological_context')], visible: true },
-                            //     { targets: '_all', visible: false } // Hide all others
-                            // ]
+                            info: true
                         });
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
