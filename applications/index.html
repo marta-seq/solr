@@ -185,4 +185,92 @@
                                 title: colName,
                                 // Data index now corresponds to its position in desiredDisplayOrder (which is the same as the new 'data' array)
                                 data: desiredDisplayOrder.indexOf(colName),
-                                // Universal
+                                // Universal render for tooltips on all columns
+                                render: function (data, type, row) {
+                                    if (type === 'display' && data !== null && data !== undefined) {
+                                        let displayData = Array.isArray(data) ? data.join(', ') : String(data);
+                                        return '<span title="' + displayData.replace(/"/g, '&quot;') + '">' + displayData + '</span>';
+                                    }
+                                    return data;
+                                }
+                            };
+
+                            // Apply specific visual truncation class only to designated columns
+                            if (columnsToTruncateVisually.includes(colName)) {
+                                colDef.className = 'truncated-cell';
+                            }
+
+                            return colDef;
+                        });
+                        console.log("DataTables Column Definitions (generated):", dataTableColumns); // DEBUGGING: Check this too!
+
+                        const myTable = $('#paperTable').DataTable({
+                            data: data,
+                            columns: dataTableColumns,
+
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            info: true,
+
+                            scrollX: true,
+                            autoWidth: false,
+
+                            fixedHeader: true, // Enable FixedHeader for robust alignment
+
+                            // Explicit Column Widths. These widths affect layout.
+                            columnDefs: [
+                                // IMPORTANT: Targets for columnDefs must now use desiredDisplayOrder.indexOf()
+                                { width: '450px', targets: desiredDisplayOrder.indexOf('title') },
+                                { width: '120px', targets: desiredDisplayOrder.indexOf('curated_data_modalities_used') },
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('modalities_general') }, // Modalities general width
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('tissue') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('disease') },
+                                { width: '60px', targets: desiredDisplayOrder.indexOf('animal') },
+                                { width: '150px', targets: desiredDisplayOrder.indexOf('biological_context') },
+                                { width: '150px', targets: desiredDisplayOrder.indexOf('main_goals') },
+                                { width: '150px', targets: desiredDisplayOrder.indexOf('covered_analysis_steps') },
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('data_links_mentioned') },
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('doi') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('pmid') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('paper_type') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('annotation_status') },
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('llm_query_date') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('llm_model') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('relevance_score_llm') }
+                            ],
+                            // Callback to adjust columns after initialization
+                            initComplete: function() {
+                                this.api().columns.adjust().draw();
+                            }
+                        });
+
+                        $('#paperCount').text(myTable.rows().count());
+
+                        $.getJSON(datesFilePath)
+                            .done(function(data) {
+                                $('#lastPubMedScraping').text(data.last_pubmed_scraping || 'N/A');
+                                $('#lastLlmCuration').text(data.last_llm_curation || 'N/A');
+                                $('#lastApplicationCuration').text(data.last_application_curation || 'N/A');
+                            })
+                            .fail(function(jqxhr, textStatus, error) {
+                                console.error("Error loading dates file:", textStatus, error);
+                                $('#lastPubMedScraping').text('Error: N/A');
+                                $('#lastLlmCuration').text('Error: N/A');
+                                $('#lastApplicationCuration').text('Error: N/A');
+                            });
+
+                        console.log("Table initialized.");
+                    },
+                    error: function(err, file, inputElem, reason) {
+                        console.error("PapaParse loading error:", err, reason);
+                        alert("Error loading CSV file. Please check your browser's console for network errors.");
+                    }
+                });
+            }
+
+            loadCsvAndInitializeTable();
+        });
+    </script>
+</body>
+</html>
