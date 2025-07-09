@@ -136,23 +136,27 @@
 
                         // This is the definitive list and order of columns you want to display
                         const desiredDisplayOrder = [
-                            'title',
-                            'curated_data_modalities_used',
-                            'modalities_general',
-                            'tissue',
-                            'disease',
-                            'animal',
-                            'biological_context',
-                            'main_goals',
-                            'covered_analysis_steps',
-                            'doi',
-                            'pmid',
-                            'paper_type',
-                            'annotation_status',
-                            'llm_query_date',
-                            'llm_model',
-                            'relevance_score_llm'
-                        ];
+    'title',
+    'doi',
+    'pmid',
+    'pmcid',          // New: from your list
+    'year',           // New: from your list
+    'authors',        // New: from your list
+    'journal',        // New: from your list
+    'abstract',       // New: from your list
+    'tissue',
+    'disease',
+    'animal',
+    'category',       // New: from your list (e.g., 'Application')
+    'pipeline_category', // New: from your list (more specific type of method/application)
+    'kw_application_areas', // New: from your list (keywords for application)
+    'kw_methods',     // New: from your list (keywords for methods)
+    'relevance_score',// New: from your list (general relevance)
+    'annotation_score',// New: from your list (general annotation score)
+    'relevance_status',// New: from your list
+    'scrape_date',    // New: useful for showing when it was added
+    ];
+
 
                         // **** CRITICAL CHANGE HERE: Construct data array using ONLY desiredDisplayOrder ****
                         const data = results.data.map(row => desiredDisplayOrder.map(header => row[header]));
@@ -161,13 +165,13 @@
 
                         // List of columns that should have visual truncation (ellipsis)
                         const columnsToTruncateVisually = [
-                            'title',
-                            'curated_data_modalities_used',
-                            'modalities_general',
-                            'biological_context',
-                            'main_goals',
-                            'covered_analysis_steps'
-                        ];
+    'title',
+    'authors',
+    'journal',
+    'abstract',
+    'kw_application_areas',
+    'kw_methods'
+];
 
                         const dataTableColumns = desiredDisplayOrder.map(colName => {
                             const colIndex = originalHeaders.indexOf(colName);
