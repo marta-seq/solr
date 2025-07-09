@@ -5,7 +5,8 @@ It aims to continuously update and curate relevant scientific literature, method
 and resources within this rapidly evolving domain.
 
 
-![Man in boat on a sea of papers](figures/img_2.png)
+[//]: # (![Man in boat on a sea of papers]&#40;figures/img_2.png&#41;)
+<img src="figures/img_2.png" alt="Man in boat on a sea of papers" width="500">
 
 
 
@@ -27,7 +28,9 @@ by google LLMs to identify relevant papers and categorize methods/applications/t
 The entries are then manually curated by the author.
 
 
-![scheme](figures/scheme1.png)
+[//]: # (![scheme]&#40;figures/scheme1.png&#41;)
+<img src="figures/scheme1.png" alt="scheme" width="500">
+
 ## Contribution
 
 We welcome contributions from the community to help keep this living review up-to-date and comprehensive. If you have relevant papers, resources, or insights to share, please consider:
