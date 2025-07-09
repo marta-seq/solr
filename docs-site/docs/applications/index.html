@@ -119,170 +119,198 @@
 
             console.log("Attempting to load CSV from:", csvFilePath);
 
-            function loadCsvAndInitializeTable() {
-                Papa.parse(csvFilePath, {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        if (results.errors.length > 0) {
-                            console.error("PapaParse errors:", results.errors);
-                            alert("Error parsing CSV data. Please check the CSV file for issues (e.g., malformed lines).");
-                            return;
-                        }
+ // Function to dynamically get the base path for assets on GitHub Pages
+function getGithubPagesBasePath() {
+    const pathname = window.location.pathname;
+    const parts = pathname.split('/');
+    if (parts.length > 1 && parts[1] !== '') {
+        return '/' + parts[1];
+    }
+    return '';
+}
 
-                        let originalHeaders = results.meta.fields;
-                        console.log("CSV Original Headers (as seen by PapaParse):", originalHeaders); // DEBUGGING: Check this in console!
+$(document).ready(function() {
+    const basePath = getGithubPagesBasePath();
 
-                        // This is the definitive list and order of columns you want to display
-                        // This is the definitive list and order of columns you want to display
-                        const desiredDisplayOrder = [
-                            'title',
-                            'doi',
-                            'pmid',
-                            'pmcid',
-                            'year',
-                            'authors',
-                            'journal',
-                            'abstract',
-                            // Corrected to use 'kw_tissue', 'kw_disease', 'kw_animal'
-                            'kw_tissue',
-                            'kw_disease',
-                            'kw_animal',
-                            'category',
-                            'pipeline_category',
-                            'kw_application_areas',
-                            'kw_methods',
-                            'relevance_score',
-                            'annotation_score',
-                            'relevance_status',
-                            'scrape_date',
-                            // Add other 'kw_' columns if desired from your list:
-                            // 'kw_domain_inclusion',
-                            // 'kw_domain_exclusion',
-                            // 'kw_paper_types',
-                            // 'kw_pipeline_categories',
-                        ];
+    const csvFilePath = `${basePath}/data/application_papers.csv`;
+    const datesFilePath = `${basePath}/data/dates.json`;
 
-                        // DataTables should use the raw array of objects from PapaParse
-                        const data = results.data;
+    console.log("Attempting to load CSV from:", csvFilePath);
 
-                        // List of columns that should have visual truncation (ellipsis)
-                        const columnsToTruncateVisually = [
-                            'title',
-                            'authors',
-                            'journal',
-                            'abstract',
-                            'kw_tissue',           // Added kw_
-                            'kw_disease',          // Added kw_
-                            'kw_animal',           // Added kw_
-                            'kw_application_areas',
-                            'kw_methods',
-                            // Add other 'kw_' columns if they contain potentially long lists
-                            // 'kw_domain_inclusion',
-                            // 'kw_domain_exclusion',
-                            // 'kw_paper_types',
-                            // 'kw_pipeline_categories',
-                        ];
+    function loadCsvAndInitializeTable() {
+        Papa.parse(csvFilePath, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if (results.errors.length > 0) {
+                    console.error("PapaParse errors:", results.errors);
+                    alert("Error parsing CSV data. Please check the CSV file for issues (e.g., malformed lines).");
+                    return;
+                }
 
-                        // **** CRITICAL CHANGE 1: Data should be the raw array of objects from PapaParse ****
-                        const data = results.data; // DataTables can work directly with this array of objects
+                let originalHeaders = results.meta.fields;
+                console.log("CSV Original Headers (as seen by PapaParse):", originalHeaders); // DEBUGGING: Check this in console!
+                console.log("First data row object (from PapaParse):", results.data[0]); // Check this too!
+
+                // This is the definitive list and order of columns you want to display,
+                // strictly using the names from your provided list.
+                const desiredDisplayOrder = [
+                    'title',
+                    'doi',
+                    'pmid',
+                    'pmcid',
+                    'year',
+                    'authors',
+                    'journal',
+                    'abstract',
+                    // Corrected to use 'kw_tissue', 'kw_disease', 'kw_animal'
+                    'kw_tissue',
+                    'kw_disease',
+                    'kw_animal',
+                    'category',
+                    'pipeline_category',
+                    'kw_application_areas',
+                    'kw_methods',
+                    'relevance_score',
+                    'annotation_score',
+                    'relevance_status',
+                    'scrape_date',
+                    // Add other 'kw_' columns if desired from your list:
+                    // 'kw_domain_inclusion',
+                    // 'kw_domain_exclusion',
+                    // 'kw_paper_types',
+                    // 'kw_pipeline_categories',
+                ];
+
+                // DataTables should use the raw array of objects from PapaParse
+                const data = results.data; // <--- ONLY ONE DECLARATION FOR 'data'
+
+                // List of columns that should have visual truncation (ellipsis)
+                const columnsToTruncateVisually = [
+                    'title',
+                    'authors',
+                    'journal',
+                    'abstract',
+                    'kw_tissue',
+                    'kw_disease',
+                    'kw_animal',
+                    'kw_application_areas',
+                    'kw_methods',
+                    // Add other 'kw_' columns if they contain potentially long lists
+                    // 'kw_domain_inclusion',
+                    // 'kw_domain_exclusion',
+                    // 'kw_paper_types',
+                    // 'kw_pipeline_categories',
+                ];
 
 
-                        const dataTableColumns = desiredDisplayOrder.map(colName => {
-                            // No need for originalHeaders.indexOf(colName) here anymore for the 'data' property
-                            // because DataTables will look for the property by name directly.
-                            const colDef = {
-                                title: colName,
-                                // **** CRITICAL CHANGE 2: Data property is now the column's key name ****
-                                data: colName,
-                                // Universal render for tooltips on all columns
-                                render: function (data, type, row) { // 'row' here is the full object for the row
-                                    if (type === 'display' && data !== null && data !== undefined) {
-                                        // Assuming data could still be an array for some fields (like 'kw_application_areas')
-                                        let displayData = Array.isArray(data) ? data.join(', ') : String(data);
-                                        return '<span title="' + displayData.replace(/"/g, '&quot;') + '">' + displayData + '</span>';
+                const dataTableColumns = desiredDisplayOrder.map(colName => {
+                    const colDef = {
+                        title: colName,
+                        data: colName, // DataTables will look for the property by name
+                        render: function (data, type, row) {
+                            if (type === 'display' && data !== null && data !== undefined) {
+                                let displayData = String(data); // Ensure it's a string
+
+                                // Special handling for literal list strings like "['item1', 'item2']"
+                                if (displayData.startsWith("[") && displayData.endsWith("]")) {
+                                    try {
+                                        // Attempt to parse as JSON array (replace single quotes for valid JSON)
+                                        const parsedList = JSON.parse(displayData.replace(/'/g, '"'));
+                                        if (Array.isArray(parsedList)) {
+                                            displayData = parsedList.join(', ');
+                                        }
+                                    } catch (e) {
+                                        // If parsing fails, just use the original string (e.g., it was just a string starting/ending with brackets)
                                     }
-                                    return data;
                                 }
-                            };
+                                // Fallback: If it's an actual JavaScript array (e.g., from PapaParse if a cell contained JSON array), join it
+                                else if (Array.isArray(data)) {
+                                     displayData = data.join(', ');
+                                }
 
-                            // Apply specific visual truncation class only to designated columns
-                            if (columnsToTruncateVisually.includes(colName)) {
-                                colDef.className = 'truncated-cell';
+                                return '<span title="' + displayData.replace(/"/g, '&quot;') + '">' + displayData + '</span>';
                             }
+                            return data;
+                        }
+                    };
 
-                            return colDef;
-                        });
-                        console.log("DataTables Column Definitions (generated):", dataTableColumns);
+                    // Apply specific visual truncation class only to designated columns
+                    if (columnsToTruncateVisually.includes(colName)) {
+                        colDef.className = 'truncated-cell';
+                    }
 
-                        const myTable = $('#paperTable').DataTable({
-                            data: data, // Use the raw data array of objects
-                            columns: dataTableColumns,
+                    return colDef;
+                });
+                console.log("DataTables Column Definitions (generated):", dataTableColumns);
 
-                            paging: true,
-                            searching: true,
-                            ordering: true,
-                            info: true,
+                const myTable = $('#paperTable').DataTable({
+                    data: data, // Use the raw data array of objects
+                    columns: dataTableColumns,
 
-                            scrollX: true,
-                            autoWidth: false,
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
 
-                            fixedHeader: true,
+                    scrollX: true,
+                    autoWidth: false,
 
-                            // Explicit Column Widths. These widths affect layout.
-                            columnDefs: [
-                                // IMPORTANT: Targets for columnDefs must *still* use desiredDisplayOrder.indexOf()
-                                // because 'targets' refers to the numerical position of the column in your `dataTableColumns` array.
-                                { width: '350px', targets: desiredDisplayOrder.indexOf('title') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('doi') },
-                                { width: '70px', targets: desiredDisplayOrder.indexOf('pmid') },
-                                { width: '70px', targets: desiredDisplayOrder.indexOf('pmcid') },
-                                { width: '50px', targets: desiredDisplayOrder.indexOf('year') },
-                                { width: '150px', targets: desiredDisplayOrder.indexOf('authors') },
-                                { width: '120px', targets: desiredDisplayOrder.indexOf('journal') },
-                                { width: '400px', targets: desiredDisplayOrder.indexOf('abstract') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('tissue') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('disease') },
-                                { width: '60px', targets: desiredDisplayOrder.indexOf('animal') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('category') },
-                                { width: '120px', targets: desiredDisplayOrder.indexOf('pipeline_category') },
-                                { width: '150px', targets: desiredDisplayOrder.indexOf('kw_application_areas') },
-                                { width: '150px', targets: desiredDisplayOrder.indexOf('kw_methods') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('relevance_score') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('annotation_score') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('relevance_status') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('scrape_date') }
-                            ],
-                            initComplete: function() {
-                                this.api().columns.adjust().draw();
-                            }
-                        });
-                        $('#paperCount').text(myTable.rows().count());
+                    fixedHeader: true,
 
-                        $.getJSON(datesFilePath)
-                            .done(function(data) {
-                                $('#lastPubMedScraping').text(data.last_pubmed_scraping || 'N/A');
-                                $('#lastLlmCuration').text(data.last_llm_curation || 'N/A');
-                                $('#lastApplicationCuration').text(data.last_application_curation || 'N/A');
-                            })
-                            .fail(function(jqxhr, textStatus, error) {
-                                console.error("Error loading dates file:", textStatus, error);
-                                $('#lastPubMedScraping').text('Error: N/A');
-                                $('#lastLlmCuration').text('Error: N/A');
-                                $('#lastApplicationCuration').text('Error: N/A');
-                            });
-
-                        console.log("Table initialized.");
-                    },
-                    error: function(err, file, inputElem, reason) {
-                        console.error("PapaParse loading error:", err, reason);
-                        alert("Error loading CSV file. Please check your browser's console for network errors.");
+                    // Explicit Column Widths. These widths affect layout.
+                    columnDefs: [
+                        { width: '350px', targets: desiredDisplayOrder.indexOf('title') },
+                        { width: '80px', targets: desiredDisplayOrder.indexOf('doi') },
+                        { width: '70px', targets: desiredDisplayOrder.indexOf('pmid') },
+                        { width: '70px', targets: desiredDisplayOrder.indexOf('pmcid') },
+                        { width: '50px', targets: desiredDisplayOrder.indexOf('year') },
+                        { width: '150px', targets: desiredDisplayOrder.indexOf('authors') },
+                        { width: '120px', targets: desiredDisplayOrder.indexOf('journal') },
+                        { width: '400px', targets: desiredDisplayOrder.indexOf('abstract') },
+                        { width: '80px', targets: desiredDisplayOrder.indexOf('kw_tissue') },
+                        { width: '80px', targets: desiredDisplayOrder.indexOf('kw_disease') },
+                        { width: '60px', targets: desiredDisplayOrder.indexOf('kw_animal') },
+                        { width: '100px', targets: desiredDisplayOrder.indexOf('category') },
+                        { width: '120px', targets: desiredDisplayOrder.indexOf('pipeline_category') },
+                        { width: '150px', targets: desiredDisplayOrder.indexOf('kw_application_areas') },
+                        { width: '150px', targets: desiredDisplayOrder.indexOf('kw_methods') },
+                        { width: '80px', targets: desiredDisplayOrder.indexOf('relevance_score') },
+                        { width: '80px', targets: desiredDisplayOrder.indexOf('annotation_score') },
+                        { width: '100px', targets: desiredDisplayOrder.indexOf('relevance_status') },
+                        { width: '100px', targets: desiredDisplayOrder.indexOf('scrape_date') }
+                    ],
+                    initComplete: function() {
+                        this.api().columns.adjust().draw();
                     }
                 });
-            }
+                $('#paperCount').text(myTable.rows().count());
 
-            loadCsvAndInitializeTable();
+                $.getJSON(datesFilePath)
+                    .done(function(data) {
+                        $('#lastPubMedScraping').text(data.last_pubmed_scraping || 'N/A');
+                        $('#lastLlmCuration').text(data.last_llm_curation || 'N/A');
+                        $('#lastApplicationCuration').text(data.last_application_curation || 'N/A');
+                    })
+                    .fail(function(jqxhr, textStatus, error) {
+                        console.error("Error loading dates file:", textStatus, error);
+                        $('#lastPubMedScraping').text('Error: N/A');
+                        $('#lastLlmCuration').text('Error: N/A');
+                        $('#lastApplicationCuration').text('Error: N/A');
+                    });
+
+                console.log("Table initialized.");
+            },
+            error: function(err, file, inputElem, reason) {
+                console.error("PapaParse loading error:", err, reason);
+                alert("Error loading CSV file. Please check your browser's console for network errors.");
+            }
+        });
+    }
+
+    loadCsvAndInitializeTable();
+});
         });
     </script>
 </body>
