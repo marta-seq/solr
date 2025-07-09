@@ -6,7 +6,7 @@ and resources within this rapidly evolving domain.
 
 
 [//]: # (![Man in boat on a sea of papers]&#40;figures/img_2.png&#41;)
-<img src="figures/img_2.png" alt="Man in boat on a sea of papers" width="500">
+<img src="figures/img_2.png" alt="Man in boat on a sea of papers" width="700">
 
 
 
