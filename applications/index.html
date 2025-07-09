@@ -145,9 +145,10 @@
                             'authors',
                             'journal',
                             'abstract',
-                            'tissue',
-                            'disease',
-                            'animal',
+                            // Corrected to use 'kw_tissue', 'kw_disease', 'kw_animal'
+                            'kw_tissue',
+                            'kw_disease',
+                            'kw_animal',
                             'category',
                             'pipeline_category',
                             'kw_application_areas',
@@ -155,8 +156,16 @@
                             'relevance_score',
                             'annotation_score',
                             'relevance_status',
-                            'scrape_date'
+                            'scrape_date',
+                            // Add other 'kw_' columns if desired from your list:
+                            // 'kw_domain_inclusion',
+                            // 'kw_domain_exclusion',
+                            // 'kw_paper_types',
+                            // 'kw_pipeline_categories',
                         ];
+
+                        // DataTables should use the raw array of objects from PapaParse
+                        const data = results.data;
 
                         // List of columns that should have visual truncation (ellipsis)
                         const columnsToTruncateVisually = [
@@ -164,8 +173,16 @@
                             'authors',
                             'journal',
                             'abstract',
+                            'kw_tissue',           // Added kw_
+                            'kw_disease',          // Added kw_
+                            'kw_animal',           // Added kw_
                             'kw_application_areas',
-                            'kw_methods'
+                            'kw_methods',
+                            // Add other 'kw_' columns if they contain potentially long lists
+                            // 'kw_domain_inclusion',
+                            // 'kw_domain_exclusion',
+                            // 'kw_paper_types',
+                            // 'kw_pipeline_categories',
                         ];
 
                         // **** CRITICAL CHANGE 1: Data should be the raw array of objects from PapaParse ****
