@@ -6,8 +6,7 @@ and resources within this rapidly evolving domain.
 
 
 ![Man in boat on a sea of papers](figures/img_2.png)
-![Man in boat on a sea of papers](figures/img_1.png)
-![Man in boat on a sea of papers](figures/img.png)
+
 
 
 ## About this Living Review
@@ -27,6 +26,8 @@ The review is based on the scrap of pubmed, with papers being weakly annotated
 by google LLMs to identify relevant papers and categorize methods/applications/tools. 
 The entries are then manually curated by the author.
 
+
+![scheme](figures/scheme1.png)
 ## Contribution
 
 We welcome contributions from the community to help keep this living review up-to-date and comprehensive. If you have relevant papers, resources, or insights to share, please consider:
@@ -44,3 +45,9 @@ TODO
 **Note:** The image above metaphorically represents the challenge and ongoing 
 effort of navigating the vast and ever-growing sea of scientific literature in 
 spatial omics to find relevant and valuable information.
+
+
+
+
+![Man in boat on a sea of papers](figures/img_1.png)
+![Man in boat on a sea of papers](figures/img.png)
