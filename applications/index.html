@@ -135,65 +135,54 @@
                         console.log("CSV Original Headers (as seen by PapaParse):", originalHeaders); // DEBUGGING: Check this in console!
 
                         // This is the definitive list and order of columns you want to display
+                        // This is the definitive list and order of columns you want to display
                         const desiredDisplayOrder = [
-    'title',
-    'doi',
-    'pmid',
-    'pmcid',          // New: from your list
-    'year',           // New: from your list
-    'authors',        // New: from your list
-    'journal',        // New: from your list
-    'abstract',       // New: from your list
-    'tissue',
-    'disease',
-    'animal',
-    'category',       // New: from your list (e.g., 'Application')
-    'pipeline_category', // New: from your list (more specific type of method/application)
-    'kw_application_areas', // New: from your list (keywords for application)
-    'kw_methods',     // New: from your list (keywords for methods)
-    'relevance_score',// New: from your list (general relevance)
-    'annotation_score',// New: from your list (general annotation score)
-    'relevance_status',// New: from your list
-    'scrape_date',    // New: useful for showing when it was added
-    ];
-
-
-                        // **** CRITICAL CHANGE HERE: Construct data array using ONLY desiredDisplayOrder ****
-                        const data = results.data.map(row => desiredDisplayOrder.map(header => row[header]));
-                        // This ensures that the 'data' array only contains values for the columns you want to display.
-
+                            'title',
+                            'doi',
+                            'pmid',
+                            'pmcid',
+                            'year',
+                            'authors',
+                            'journal',
+                            'abstract',
+                            'tissue',
+                            'disease',
+                            'animal',
+                            'category',
+                            'pipeline_category',
+                            'kw_application_areas',
+                            'kw_methods',
+                            'relevance_score',
+                            'annotation_score',
+                            'relevance_status',
+                            'scrape_date'
+                        ];
 
                         // List of columns that should have visual truncation (ellipsis)
                         const columnsToTruncateVisually = [
-    'title',
-    'authors',
-    'journal',
-    'abstract',
-    'kw_application_areas',
-    'kw_methods'
-];
+                            'title',
+                            'authors',
+                            'journal',
+                            'abstract',
+                            'kw_application_areas',
+                            'kw_methods'
+                        ];
+
+                        // **** CRITICAL CHANGE 1: Data should be the raw array of objects from PapaParse ****
+                        const data = results.data; // DataTables can work directly with this array of objects
+
 
                         const dataTableColumns = desiredDisplayOrder.map(colName => {
-                            const colIndex = originalHeaders.indexOf(colName);
-                            if (colIndex === -1) {
-                                console.warn(`Column '${colName}' from desiredDisplayOrder not found in CSV headers. It might not display correctly.`);
-                            }
-                            // Special debug for title
-                            if (colName === 'title') {
-                                console.log(`Title column index: ${colIndex}`);
-                                if (colIndex !== -1) {
-                                    // Note: data[0][desiredDisplayOrder.indexOf('title')] would be more accurate here
-                                    console.log(`First row title data (raw): ${data[0] ? data[0][desiredDisplayOrder.indexOf('title')] : 'N/A'}`);
-                                }
-                            }
-
+                            // No need for originalHeaders.indexOf(colName) here anymore for the 'data' property
+                            // because DataTables will look for the property by name directly.
                             const colDef = {
                                 title: colName,
-                                // Data index now corresponds to its position in desiredDisplayOrder (which is the same as the new 'data' array)
-                                data: desiredDisplayOrder.indexOf(colName),
+                                // **** CRITICAL CHANGE 2: Data property is now the column's key name ****
+                                data: colName,
                                 // Universal render for tooltips on all columns
-                                render: function (data, type, row) {
+                                render: function (data, type, row) { // 'row' here is the full object for the row
                                     if (type === 'display' && data !== null && data !== undefined) {
+                                        // Assuming data could still be an array for some fields (like 'kw_application_areas')
                                         let displayData = Array.isArray(data) ? data.join(', ') : String(data);
                                         return '<span title="' + displayData.replace(/"/g, '&quot;') + '">' + displayData + '</span>';
                                     }
@@ -208,10 +197,10 @@
 
                             return colDef;
                         });
-                        console.log("DataTables Column Definitions (generated):", dataTableColumns); // DEBUGGING: Check this too!
+                        console.log("DataTables Column Definitions (generated):", dataTableColumns);
 
                         const myTable = $('#paperTable').DataTable({
-                            data: data,
+                            data: data, // Use the raw data array of objects
                             columns: dataTableColumns,
 
                             paging: true,
@@ -222,35 +211,36 @@
                             scrollX: true,
                             autoWidth: false,
 
-                            fixedHeader: true, // Enable FixedHeader for robust alignment
+                            fixedHeader: true,
 
                             // Explicit Column Widths. These widths affect layout.
                             columnDefs: [
-                                // IMPORTANT: Targets for columnDefs must now use desiredDisplayOrder.indexOf()
-                                { width: '450px', targets: desiredDisplayOrder.indexOf('title') },
-                                { width: '120px', targets: desiredDisplayOrder.indexOf('curated_data_modalities_used') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('modalities_general') },
+                                // IMPORTANT: Targets for columnDefs must *still* use desiredDisplayOrder.indexOf()
+                                // because 'targets' refers to the numerical position of the column in your `dataTableColumns` array.
+                                { width: '350px', targets: desiredDisplayOrder.indexOf('title') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('doi') },
+                                { width: '70px', targets: desiredDisplayOrder.indexOf('pmid') },
+                                { width: '70px', targets: desiredDisplayOrder.indexOf('pmcid') },
+                                { width: '50px', targets: desiredDisplayOrder.indexOf('year') },
+                                { width: '150px', targets: desiredDisplayOrder.indexOf('authors') },
+                                { width: '120px', targets: desiredDisplayOrder.indexOf('journal') },
+                                { width: '400px', targets: desiredDisplayOrder.indexOf('abstract') },
                                 { width: '80px', targets: desiredDisplayOrder.indexOf('tissue') },
                                 { width: '80px', targets: desiredDisplayOrder.indexOf('disease') },
                                 { width: '60px', targets: desiredDisplayOrder.indexOf('animal') },
-                                { width: '150px', targets: desiredDisplayOrder.indexOf('biological_context') },
-                                { width: '150px', targets: desiredDisplayOrder.indexOf('main_goals') },
-                                { width: '150px', targets: desiredDisplayOrder.indexOf('covered_analysis_steps') },
-                                // { width: '100px', targets: desiredDisplayOrder.indexOf('data_links_mentioned') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('doi') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('pmid') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('paper_type') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('annotation_status') },
-                                { width: '100px', targets: desiredDisplayOrder.indexOf('llm_query_date') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('llm_model') },
-                                { width: '80px', targets: desiredDisplayOrder.indexOf('relevance_score_llm') }
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('category') },
+                                { width: '120px', targets: desiredDisplayOrder.indexOf('pipeline_category') },
+                                { width: '150px', targets: desiredDisplayOrder.indexOf('kw_application_areas') },
+                                { width: '150px', targets: desiredDisplayOrder.indexOf('kw_methods') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('relevance_score') },
+                                { width: '80px', targets: desiredDisplayOrder.indexOf('annotation_score') },
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('relevance_status') },
+                                { width: '100px', targets: desiredDisplayOrder.indexOf('scrape_date') }
                             ],
-                            // Callback to adjust columns after initialization
                             initComplete: function() {
                                 this.api().columns.adjust().draw();
                             }
                         });
-
                         $('#paperCount').text(myTable.rows().count());
 
                         $.getJSON(datesFilePath)
