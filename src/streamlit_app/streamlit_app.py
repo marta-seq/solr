@@ -9,7 +9,7 @@ from streamlit_plotly_events import plotly_events  # <-- NEW IMPORT
 
 # --- Configuration ---
 # Adjust this path if your 'data' directory is located differently relative to where you run the Streamlit app
-GRAPH_DATA_FILE = "../../data/methods/graph_data.json"
+GRAPH_DATA_FILE = "data/methods/graph_data.json"
 
 # Node sizing parameters (can be adjusted via Streamlit sliders in the app)
 DEFAULT_BASE_NODE_SIZE = 8
