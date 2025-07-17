@@ -16,4 +16,4 @@ colored by their primary tool type and sized by citation count. Hover over nodes
 For an enhanced and more interactive exploration of this graph, including filtering and dynamic insights,
 please visit our dedicated Streamlit application:
 
-[Launch Interactive Graph App (Streamlit)](YOUR_STREAMLIT_APP_URL_HERE)
+[Launch Interactive Graph App (Streamlit)](https://spatialomicslivereview.streamlit.app/)
