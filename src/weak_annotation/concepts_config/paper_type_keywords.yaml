@@ -1,0 +1,21 @@
+'computational analysis - method':
+  - "\\bcomputational\\s*analysis\\b"
+  - "\\bframework\\b"
+  - "\\btool\\b"
+  - "\\bsoftware\\b"
+  - "\\bplatform\\b"
+  - "\\balgorithm\\b"
+  - "\\btechnique\\b"
+  - "\\bpipeline\\b"
+Review:
+  - "\\breview\\b"
+Benchmarking:
+  - "\\bbenchmarking\\b"
+  - "\\bcomparison\\b"
+Application: [] # An empty list for this category
+#//category of paper
+#//computational analysis - review; Benchmarking
+#//application review; tecnhical review; General omics review
+#//application review
+#//Application
+#//Technical Methods; Application

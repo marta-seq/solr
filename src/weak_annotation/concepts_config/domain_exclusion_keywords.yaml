@@ -1,0 +1,24 @@
+broad_domain_exclusions:
+  - "\\brobotics\\b"
+  - "\\bmeteorological\\b"
+  - "\\bgeographical\\b"
+  - "\\bGeographic\\b"
+  - "\\bclimate\\b"
+  - "\\bfield\\s*observations\\b"
+  - "\\bastronomy\\b"
+  - "\\bengineering\\b"
+  - "\\bgeology\\b"
+  - "\\bturbidity\\b"
+  - "\\bvirtual\\s*reality\\b"
+  - "\\baugmented\\s*reality\\b"
+  - "\\bphotography\\b"
+  - "\\bart\\b"
+  - "\\bdesign\\b"
+  - "\\bspace\\b"
+  - "\\bfluid\\s*dynamics\\b"
+  - "\\bmaterial\\s*science\\b"
+
+
+
+
+

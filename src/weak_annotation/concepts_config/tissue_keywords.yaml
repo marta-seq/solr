@@ -1,0 +1,72 @@
+'Nervous System (Brain/CNS)':
+  - "\\b(?:cerebellum|hippocampus|cortex|spinal\\s*cords?|white\\s*matter|locus\\s*coeruleus|choroid\\s*plexus|olfactory\\s*bulb|hypothalamus|dorsal\\s*root\\s*ganglia|DRG|posterior\\s*fossa)\\b"
+  - "\\b(?:brain(?:s)?|neural|neurological|cerebral|glioma(?:s)?|glioblastoma|neuron(?:s)?|pituitary|ependymoma)\\b"
+  - "\\b(?:parkinson|alzheimer|schizophrenia|stroke|subarachnoid\\s*hemorrhage|SAH|epilepsy|intracerebral\\s*hemorrhage|ICH|neuroblastoma|medulloblastoma|multiple\\s*sclerosis|MS|amyotrophic\\s*lateral\\s*sclerosis|ALS|spinal\\s*muscular\\s*atrophy|SMA)\\b"
+  - "\\b(?:CNS|central\\s*nervous\\s*system|nerve(?:s)?|neuropath(?:y|ies)|temporal\\s*lobe)\\b"
+  - "\\b(?:hippocampal|Hypothalamic)\\b"
+'Oral/Pharyngeal/Head & Neck':
+  - "\\b(?:oral|gingiva|buccal\\s*mucosa|pharyngeal|mouth|laryngeal|vocal\\s*cord|lip|epipharynx|periodontitis|tooth|eyelid)\\b"
+  - "\\b(?:nasopharyngeal|rhinosinusitis|sinusitis|adenoid\\s*cystic\\s*carcinoma)\\b"
+  - "\\b(?:HNSCC|head\\s*and\\s*neck|craniofacial|palatogenesis|mandibular)\\b"
+'Gastrointestinal_colorectal':
+  - "\\b(?:colon|rectum|colorectal|colitis|crohn(?:s)?\\s*disease|ileum|j-pouch|ileal|colectomy|anastomosis|IBD)\\b"
+'Gastrointestinal_other':
+  - "\\b(?:gastric|stomach|intestine|esophageal|gastroesophageal|celiac|hemorrhoids|intestin)\\b"
+'Breast':
+  - "\\bbreast\\b"
+'Liver':
+  - "\\b(?:liver|hepatic|hepato|cholangiocarcinoma|hepatocellular|hepatitis)\\b"
+  - "\\b(?:HCC|ICC)\\b"
+Kidney:
+  - "\\bkidney(?:s)?\\b"
+  - "\\brenal\\b"
+  - "\\b(?:wilms\\s*tumor|nephritis|nephropathy|glomerular)\\b"
+Skin:
+  - "\\bskin\\b"
+  - "\\b(?:epidermal|cutaneous|melanoma|acne|dermatitis|psoriasis|mycosis\\s*fungoides|pyoderma\\s*gangrenosum|merkel|squamous)\\b"
+'Lung':
+  - "\\blung(?:s)?\\b"
+  - "\\bpulmonary\\b"
+  - "\\bbronchial\\b"
+  - "\\b(?:airway(?:s)?|ARDS|acute\\s*respiratory\\s*distress\\s*syndrome|asthma|asthmatic)\\b"
+'Blood/Immune System':
+  - "\\bblood\\b"
+  - "\\bimmune\\b"
+  - "\\blymph(?:ocyte)?(?:s)?\\b"
+  - "\\b(?:PBMC|peripheral blood mononuclear cells)\\b"
+  - "\\bserum\\b"
+  - "\\bplasma\\b"
+  - "\\b(?:T-?cells?|B-?cells?)\\b"
+  - "\\bleukemia\\b"
+  - "\\b(?:lymphoma|hodgkin|chronic\\s*granulomatous\\s*disease|CGD|castleman\\s*disease)\\b"
+'Bone/Joint':
+  - "\\b(?:bone|joint|skeletal|cartilage|arthritis|osteoarthritis|ossification|knee|chordoma|synovium|hamstring\\s*tendon|tendon|limb)\\b"
+  - "\\b(?:HO|osteosarcoma)\\b"
+Pancreas:
+  - "\\bpancreatic\\b"
+  - "\\bislets?\\b"
+  - "\\b(?:type\\s*1\\s*diabetes|T1D|type\\s*2\\s*diabetes|T2D|diabetes(?:\\s*mellitus)?)\\b"
+Heart:
+  - "\\bheart\\b"
+  - "\\bcardi(?:ac)?\\b"
+  - "\\b(?:cardiomyopathy|myocarditis|myocardial\\s*infarction|MI|ventricular)\\b"
+Prostate:
+  - "\\bprostate\\b"
+  - "\\b(?:benign\\s*prostatic\\s*hyperplasia|BPH)\\b"
+Reproductive:
+  - "\\b(?:uterus|ovar(?:y|ian)?|testis|gonad|genital|penile|cervical|endometrioid|endometrial|vulvar|implantation)\\b"
+  - "\\b(?:endometriotic\\s*lesions?)\\b"
+Thyroid:
+  - "\\bthyroid\\b"
+Eye:
+  - "\\b(?:eye|cornea|retina|optic\\s*nerve|retinal|ocular)\\b"
+Vascular:
+  - "\\b(?:aortic|aneurysm|atherosclerotic\\s*plaques?|atherosclerosis|arteriovenous\\s*malformations|eAVMs|artery(?:ies)?|vein(?:s)?|vessel(?:s)?|vascular)\\b"
+Placenta:
+  - "\\bplacenta\\b"
+'Adipose Tissue':
+  - "\\b(?:adipose\\s*tissue|fat)\\b"
+'Embryonic/Developmental Stage':
+  - "\\b(?:embryo(?:nic)?|fetal|carnegie\\s*stage|development|palatogenesis)\\b"
+'Other Tissue/Organ':
+  - "\\b(?:spleen|gland|muscle|adrenal)\\b"

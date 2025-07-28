@@ -1,0 +1,61 @@
+Preprocessing:
+  - "\\bdenoising\\b"
+  - "\\bnoise\\s*reduction\\b"
+  - "\\bbackground\\s*subtraction\\b"
+  - "\\billumination\\s*correction\\b"
+  - "\\bregistration\\b"
+  - "\\balignment\\b"
+  - "\\bimage\\s*enhancement\\b"
+'Cell segmentation - Imaging based':
+  - "\\bsegmentation\\b"
+  - "\\bcell\\s*detection\\b"
+  - "\\bnucleus\\s*detection\\b"
+  - "\\bobject\\s*detection\\b"
+  - "\\bboundary\\s*detection\\b"
+  - "\\binstance\\s*segmentation\\b"
+  - "\\bsemantic\\s*segmentation\\b"
+  - "\\bwatershed\\b"
+Phenotyping:
+  - "\\bphenotyping\\b"
+  - "\\bcell\\s*classification\\b"
+  - "\\bcell\\s*type\\s*identification\\b"
+  - "\\bcell\\s*type\\s*classification\\b"
+  - "\\bcell\\s*type\\s*annotation\\b"
+  - "\\bcell\\s*type\\s*prediction\\b"
+'Niche/Neighborhood/domain analysis':
+  - "\\bniche\\s*analysis\\b"
+  - "\\bneighborhood\\s*analysis\\b"
+  - "\\bdomain\\s*analysis\\b"
+  - "\\bdomain\\s*identification\\b"
+  - "\\bniche\\s*identification\\b"
+  - "\\bneighborhood\\s*identification\\b"
+'Spatial Variable Genes':
+  - "\\bspatial\\s*variable\\s*genes\\b"
+  - "\\bspatially\\s*variable\\s*genes\\b"
+  - "\\bspatially\\s*variable\\s*gene\\s*detection\\b"
+  - "\\bspatially\\s*variable\\s*gene\\s*analysis\\b"
+'Cell-Cell Interaction':
+  - "\\bcell-cell\\s*interaction\\b"
+  - "\\bcell-cell\\s*communication\\b"
+  - "\\bcell\\s*communication\\b"
+  - "\\bcell\\s*signaling\\b"
+  - "\\bcellular\\s*interaction\\b"
+'Label separation/pattern extraction - ML':
+  - "\\blabel\\s*separation\\b"
+  - "\\bpattern\\s*extraction\\b"
+  - "\\bmachine\\s*learning\\b"
+  - "\\bML-based\\s*pattern\\s*extraction\\b"
+  - "\\bML-based\\s*label\\s*separation\\b"
+'spatiotemporal dynamics':
+  - "\\bspatiotemporal\\s*dynamics\\b"
+  - "\\bspatiotemporal\\s*analysis\\b"
+  - "\\btemporal\\s*dynamics\\b"
+'Integration of modalities':
+  - "\\bintegration\\s*of\\s*modalities\\b"
+  - "\\bmulti-modal\\s*integration\\b"
+  - "\\bmulti-omics\\s*integration\\b"
+'Subcellular localization':
+  - "\\bsubcellular\\s*localization\\b"
+  - "\\bsubcellular\\s*compartment\\s*analysis\\b"
+'Cell type Deconvolution':
+  - "\\bcell\\s*type\\s*deconvolution\\b"

@@ -1,0 +1,102 @@
+# config/pipeline_config.yaml
+
+# --- Paths Configuration ---
+paths:
+  # Raw data inputs
+  curated_dois_file: "data/inputs/curated_dois.txt"
+  paper_classification_excel: "data/inputs/paper_classification.xlsx"
+  paper_classification_cleaned_csv: "data/inputs/paper_classification_cleaned.csv"
+  raw_scraped_articles: "data/raw/scraped_pubmed_articles.jsonl"
+
+  # Intermediate processed data
+  intermediate_cleaned_papers: "data/intermediate/cleaned_papers.jsonl"
+  intermediate_papers_with_extracted_concepts: "data/intermediate/papers_with_extracted_concepts.jsonl"
+  intermediate_papers_filtered_scored: "data/intermediate/papers_filtered_scored.jsonl"
+  intermediate_extracted_sections_log: "data/intermediate/extracted_sections_log.jsonl"
+  intermediate_llm_broad_annotated_papers: "data/intermediate/llm_broad_annotated_papers.jsonl"
+  intermediate_computational_papers: "data/intermediate/computational_papers.jsonl"
+  intermediate_non_computational_papers: "data/intermediate/non_computational_papers.jsonl"
+  intermediate_llm_detailed_annotated_papers: "data/intermediate/llm_detailed_annotated_papers.jsonl"
+
+  # Manual review files (JSONL for human editing)
+  manual_computational_for_review_jsonl: "data/manual_curation/computational_for_review.jsonl"
+  manual_non_computational_for_review_jsonl: "data/manual_curation/non_computational_for_review.jsonl" # <--- THIS IS THE LINE THAT MUST BE PRESENT
+  manual_papers_to_delete_csv: "data/manual_curation/papers_to_delete.csv"
+
+  # Final master output files (JSONL)
+  final_master_computational_papers: "data/final/master_computational_papers.jsonl"
+  final_master_non_computational_papers: "data/final/master_non_computational_papers.jsonl"
+
+  # Logs
+  log_dir: "data/logs/"
+
+# --- Scraper Configuration ---
+scraper:
+  pubmed_email: "id9417@alunos.uminho.pt"
+  keywords:
+    - "spatial transcriptomics"
+    - "spatial proteomics"
+    - "spatial omics"
+    - "spatial metabolomics"
+    - "spatial data analysis"
+    - "spatial data preprocessing"
+    - "cell segmentation"
+    - "neighborhood analysis"
+    - "spatial variable genes"
+    - "niche analysis"
+    - "domain identification"
+    - "CODEX"
+    - "IMC"
+    - "Imaging Mass Cytometry"
+    - "MIBI"
+    - "MERFISH"
+    - "seqFISH"
+    - "Visium"
+    - "10x Genomics"
+    - "Xenium"
+    - "CosMx"
+    - "GeoMx"
+    - "Slide-seq"
+    - "Slide-seqV2"
+    - "HDST"
+    - "High Definition Spatial Transcriptomics"
+    - "MALSI-MSI"
+    - "MALDI Imaging Mass Spectrometry"
+
+# --- Clean Scraped Data Configuration ---
+clean_scraped_data:
+  sample_size: 80 # Use -1 for all papers, or a positive integer for a sample
+
+# --- Concept Extractor Configuration ---
+concept_extractor:
+  concepts_config_dir: "src/weak_annotation/concepts_config"
+
+# --- Filter and Score Configuration ---
+filter_score:
+  base_annotation_score: 50 # Base score for papers that pass initial filtering
+
+# --- Full-Text Extraction Configuration ---
+full_text_extraction:
+  unpaywall_email: "id9417@alunos.uminho.pt"
+
+# --- LLM Broad Classification Configuration ---
+llm_broad_classification:
+  llm_schema_path: "config/llm_schemas/llm_broad_classification_schema.json"
+  ollama_model_name: "llama3"
+  force_reannotate: false
+  broad_llm_target_score: 60 # Target score for papers after broad LLM classification
+
+# --- LLM Detailed Annotation Configuration ---
+llm_detailed_annotation:
+  llm_schema_path: "config/llm_schemas/llm_detailed_schema.json"
+  ollama_model_name: "llama3"
+  force_reannotate: false
+  detailed_llm_target_score: 70 # Target score for papers after detailed LLM annotation
+
+# --- Manual Review Configuration ---
+manual_review:
+  final_manual_review_score: 100 # Score assigned to papers after manual review
+  llm_broad_schema_path: "config/llm_schemas/llm_broad_classification_schema.json"
+  llm_detailed_schema_path: "config/llm_schemas/llm_detailed_schema.json"
+
+# --- LLM Schemas (Moved to separate files) ---

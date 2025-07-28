@@ -1,0 +1,193 @@
+{
+  "type": "object",
+  "properties": {
+    "package_algorithm_name": {
+      "type": "string",
+      "description": "Exact name of the computational package or algorithm. If multiple, list the primary one. If no specific name, use 'N/A'."
+    },
+    "pipeline_analysis_steps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Data Preprocessing",
+          "Normalization",
+          "Dimensionality Reduction",
+          "Clustering",
+          "Spatial Domain Identification",
+          "Cell Type Deconvolution",
+          "Spatial Variable Gene Detection",
+          "Cell-Cell Interaction Analysis",
+          "Trajectory Inference",
+          "Integration with Single-cell RNA-seq",
+          "Visualization",
+          "Benchmarking/Comparison",
+          "Other"
+        ]
+      },
+      "description": "List the main computational analysis steps performed or enabled by the method/software."
+    },
+    "tested_data_modalities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Transcriptomics",
+          "Proteomics",
+          "Metabolomics",
+          "Lipidomics",
+          "Imaging",
+          "Histology",
+          "Genomics",
+          "Epigenomics",
+          "Other"
+        ]
+      },
+      "description": "List the data modalities the method is designed for or tested on."
+    },
+    "tested_assay_types_platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List specific assay types or platforms the method is designed for or tested on (e.g., Visium, Xenium, MERFISH, CODEX, IMC, Slide-seq, GeoMx, CosMx, ST-seq, HDST). Leave empty if general."
+    },
+    "compared_algorithms_packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the compared algorithm/package."
+          },
+          "comparison_details": {
+            "type": "string",
+            "description": "Brief details on what aspect was compared (e.g., 'clustering performance', 'runtime', 'accuracy')."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "description": "List algorithms or packages this method was compared against, and what was compared."
+    },
+    "code_availability_details": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "Available",
+            "Not Available",
+            "Available Upon Request",
+            "Partially Available",
+            "N/A"
+          ],
+          "description": "Status of code availability."
+        },
+        "link": {
+          "type": "string",
+          "format": "uri",
+          "description": "Direct link to the code repository (e.g., GitHub, GitLab, Zenodo). Use 'N/A' if status is not 'Available'."
+        },
+        "version": {
+          "type": "string",
+          "description": "Specific version of the code/software, if mentioned. Use 'N/A' if not specified."
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "description": "Details about the availability of the method's code/software."
+    },
+    "data_used_details": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dataset_name": {
+            "type": "string",
+            "description": "Name or identifier of the dataset used (e.g., 'Mouse Brain Visium', 'Human Breast Cancer Xenium')."
+          },
+          "data_modalities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "spatial transcriptomics",
+                "spatial proteomics",
+                "spatial metabolomics",
+                "spatial lipidomics",
+                "imaging",
+                "histology",
+                "genomics",
+                "epigenomics",
+                "other"
+              ]
+            },
+            "description": "Modalities of data in this dataset."
+          },
+          "sample_info": {
+            "type": "object",
+            "properties": {
+              "species": {
+                "type": "string",
+                "description": "Species (e.g., 'Homo sapiens', 'Mus musculus')."
+              },
+              "tissue": {
+                "type": "string",
+                "description": "Tissue type (e.g., 'brain', 'tumor', 'kidney')."
+              },
+              "disease_state": {
+                "type": "string",
+                "description": "Disease state, if applicable (e.g., 'healthy', 'adenocarcinoma')."
+              }
+            },
+            "required": [
+              "species",
+              "tissue"
+            ]
+          }
+        },
+        "required": [
+          "dataset_name",
+          "data_modalities"
+        ]
+      },
+      "description": "Details about the specific datasets used to test or demonstrate the method."
+    },
+    "primary_programming_languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Python",
+          "R",
+          "Julia",
+          "MATLAB",
+          "C++",
+          "Java",
+          "Other",
+          "Not Specified"
+        ]
+      },
+      "description": "Primary programming languages used for the method/software."
+    },
+    "llm_notes": {
+      "type": "string",
+      "nullable": true,
+      "description": "Any additional relevant notes or ambiguities identified during extraction."
+    }
+  },
+  "required": [
+    "package_algorithm_name",
+    "pipeline_analysis_steps",
+    "tested_data_modalities",
+    "tested_assay_types_platforms",
+    "compared_algorithms_packages",
+    "code_availability_details",
+    "data_used_details",
+    "primary_programming_languages"
+  ]
+}

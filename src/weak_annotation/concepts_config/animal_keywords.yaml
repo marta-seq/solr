@@ -1,0 +1,15 @@
+Human:
+  - "\\bhuman(?:s)?\\b"
+  - "\\bpatient(?:s)?\\b"
+Rodent:
+  - "\\bmouse(?:s)?\\b"
+  - "\\bmice\\b"
+  - "\\brat(?:s)?\\b"
+  - "\\bmurine\\b"
+  - "\\brodent(?:s)?\\b"
+  - "\\bxenograft(?:s)?\\b"
+Vegetal:
+  - "\\b(?:plant|alga(?:e)?|peach|barley|rice|germinat|roots|tea)\\b"
+'Other Animal': # Use quotes because the key contains a space
+  - "\\b(?:zebrafish|axolot|toxoplasma|fish|drosophila|honeybees|elegans)\\b"
+  - "\\b(?:pig|dog|cat|monkey|primate|rabbit|chicken|cow|sheep|bovine|porcine|canine|feline)\\b"

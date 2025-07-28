@@ -1,0 +1,65 @@
+Alzheimer:
+  - "\\balzheimer(?:s)?\\s*disease\\b"
+  - "\\bAD\\b"
+  - "\\balzheimer(?:s)?\\b"
+Parkinson:
+  - "\\bparkinson(?:s)?\\s*disease\\b"
+  - "\\bparkinson(?:s)?\\b"
+Schizophrenia:
+  - "\\bschizophrenia(?:s)?\\s*disease\\b"
+  - "\\bschizophrenia(?:s)?\\b"
+'Cancer (General)':
+  - "\\bcancer\\b"
+  - "\\bcarcinoma\\b"
+  - "\\btumor(?:s)?\\b"
+  - "\\bglioblastoma\\b"
+  - "\\bGBM\\b"
+  - "\\bsarcoma\\b"
+  - "\\blymphoma\\b"
+  - "\\bleukemia\\b"
+  - "\\bmelanoma\\b"
+  - "\\bosteosarcoma\\b"
+  - "\\badenocarcinoma\\b"
+  - "\\bmetastasis\\b"
+  - "\\bmetastas\\b"
+  - "\\b(adenomas|adenoma|glioma|glioblastoma)\\b"
+  - "\\b(?:oncology|malignanc(?:y|ies))\\b"
+'Normal/Healthy':
+  - "\\bnormal\\b"
+  - "\\bhealthy\\b"
+  - "\\bcontrol\\b"
+'Infectious Disease':
+  - "\\b(?:COVID-19|SARS-CoV-2|malaria|schistosomiasis|infection(?:s)?|viral|bacterial|fungal)\\b"
+'Inflammatory Disease':
+  - "\\binflammation\\b"
+  - "\\barthritis\\b"
+  - "\\bpsoriasis\\b"
+  - "\\b(?:colitis|Crohn's|ulcerative)\\b" # Crohn's can remain as is if within double quotes, or as Crohn''s in single quotes
+'Autoimmune Disease':
+  - "\\b(?:autoimmune|lupus|MS|multiple\\s*sclerosis)\\b"
+'Neurological Disorder (General)':
+  - "\\bALS\\b"
+  - "\\bPD\\b"
+  - "\\bHuntington(?:s)?\\s*disease\\b"
+  - "\\bneurodegen(?:erative)?\\b"
+'Cardiovascular Disease':
+  - "\\bheart\\b"
+  - "\\bcardiac\\b"
+  - "\\bvascular\\b"
+  - "\\bischemia\\b"
+  - "\\b(?:myocardial\\s*infarction|MI|stroke)\\b"
+'Metabolic Disorder':
+  - "\\b(?:metabolic|metabolism)\\b"
+  - "\\b(?:diabetes|T1D|T2D|obesity|diabetic)\\b" # Adjusted 'obesity!diabetic' to 'obesity|diabetic'
+'Developmental Disorder':
+  - "\\b(?:developmental|autism|ASD)\\b"
+'Wound Healing/Scarring':
+  - "\\b(?:wound\\s*healing|scarring|keloid)\\b"
+'Skin disorders': # Corrected spelling based on your input
+  - "\\b(?:acne|dermatitis)\\b"
+'Respiratory Disease':
+  - "\\b(?:respiratory|asthma|COPD|chronic\\s*obstructive\\s*pulmonary\\s*disease)\\b"
+  - "\\b(?:lung\\s*disease|pulmonary\\s*disease)\\b"
+  - "\\b(?:pneumonia|bronchitis|tuberculosis)\\b"
+'Aging':
+    - "\\b(?:aging|ageing|elderly)\\b"

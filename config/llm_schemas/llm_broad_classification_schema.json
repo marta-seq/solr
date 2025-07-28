@@ -1,0 +1,69 @@
+{
+  "type": "object",
+  "properties": {
+    "classification": {
+      "type": "object",
+      "properties": {
+        "is_relevant_to_spatial_omics_analysis": {
+          "type": "boolean",
+          "description": "Is the paper directly relevant to spatial omics data analysis, methods, or tools? (True/False)"
+        },
+        "primary_focus_area": {
+          "type": "string",
+          "enum": [
+            "Method Development",
+            "Application Study",
+            "Review",
+            "Data Resource",
+            "Other"
+          ],
+          "description": "The primary focus of the paper."
+        },
+        "spatial_omics_technology_mentioned": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List specific spatial omics technologies mentioned (e.g., Visium, Xenium, MERFISH, CODEX, IMC, Slide-seq, GeoMx, CosMx). Leave empty if none."
+        },
+        "data_analysis_task": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Cell Segmentation",
+              "Cell Type Deconvolution",
+              "Spatial Variable Gene Detection",
+              "Spatial Domain Identification",
+              "Cell-Cell Interaction Analysis",
+              "Trajectory Inference",
+              "Integration with Single-cell RNA-seq",
+              "Visualization",
+              "Other"
+            ]
+          },
+          "description": "List the main spatial data analysis tasks performed or addressed. Leave empty if none directly applicable."
+        },
+        "biological_context": {
+          "type": "string",
+          "description": "Briefly describe the biological system or disease studied (e.g., 'human brain development', 'mouse cancer metastasis', 'plant root architecture')."
+        }
+      },
+      "required": [
+        "is_relevant_to_spatial_omics_analysis",
+        "primary_focus_area",
+        "spatial_omics_technology_mentioned",
+        "data_analysis_task",
+        "biological_context"
+      ]
+    },
+    "summary_and_justification": {
+      "type": "string",
+      "description": "A concise summary (2-3 sentences) of the paper's main contribution related to spatial omics and a brief justification for the 'is_relevant_to_spatial_omics_analysis' classification."
+    }
+  },
+  "required": [
+    "classification",
+    "summary_and_justification"
+  ]
+}
