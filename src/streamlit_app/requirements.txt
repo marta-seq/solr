@@ -3,3 +3,10 @@ pandas
 plotly
 streamlit
 streamlit_plotly_events
+streamlit
+pandas
+sqlalchemy
+psycopg2-binary
+plotly
+openpyxl
+python-dotenv
