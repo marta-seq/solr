@@ -29,7 +29,7 @@ The entries are then manually curated by the author.
 
 
 [//]: # (![scheme]&#40;figures/scheme1.png&#41;)
-<img src="figures/scheme1.png" alt="scheme" width="500">
+<img src="figures/filegraph.svg" alt="scheme" width="500">
 
 ## Contribution
 
@@ -51,6 +51,8 @@ spatial omics to find relevant and valuable information.
 
 
 
+[//]: # (![scheme]&#40;figures/scheme1.png&#41;)
+<img src="figures/scheme1.png" alt="scheme" width="500">
 
 ![Man in boat on a sea of papers](figures/img_1.png)
 ![Man in boat on a sea of papers](figures/img.png)
