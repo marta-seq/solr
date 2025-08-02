@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import json
+import streamlit as st # Import streamlit for caching
 
 # Define paths relative to the script's location
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,6 +9,7 @@ DATA_DIR = os.path.join(current_dir, '..', 'data')
 RAW_PAPERS_PATH = os.path.join(DATA_DIR, 'raw_papers.csv')
 GRAPH_DATA_PATH = os.path.join(DATA_DIR, 'graph_data.json')
 
+@st.cache_data # Add caching back
 def load_raw_papers_data() -> pd.DataFrame:
     """
     Loads raw papers data from a CSV file.
@@ -24,6 +26,7 @@ def load_raw_papers_data() -> pd.DataFrame:
         print(f"Error loading raw papers data: {e}")
         return pd.DataFrame()
 
+@st.cache_data # Add caching back
 def get_categorized_papers() -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Loads raw papers data and categorizes them into computational
@@ -43,7 +46,8 @@ def get_categorized_papers() -> tuple[pd.DataFrame, pd.DataFrame]:
     # Ensure 'category' column exists
     if 'category' not in df_papers_raw.columns:
         print("Warning: 'category' column not found in raw papers data. Cannot categorize.")
-        return df_papers_raw, pd.DataFrame() # Return all as computational if no category
+        # If no category column, return all as computational for now, or handle as per app logic
+        return df_papers_raw, pd.DataFrame()
 
     df_computational = df_papers_raw[df_papers_raw['category'] == 'Computational'].copy()
     df_non_computational = df_papers_raw[df_papers_raw['category'] == 'Non-Computational'].copy()
@@ -51,6 +55,7 @@ def get_categorized_papers() -> tuple[pd.DataFrame, pd.DataFrame]:
     print(f"Categorized {len(df_computational)} computational papers and {len(df_non_computational)} non-computational papers.")
     return df_computational, df_non_computational
 
+@st.cache_data # Consider caching this if the input DataFrame doesn't change often
 def get_exploded_counts(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Explodes a DataFrame column (assuming it contains lists/strings of items)
@@ -70,6 +75,7 @@ def get_exploded_counts(df: pd.DataFrame, column: str) -> pd.DataFrame:
     counts.columns = ['item', 'count']
     return counts
 
+@st.cache_data # Consider caching this if graph data doesn't change often
 def load_graph_data() -> dict | None:
     """
     Loads graph data from a JSON file.
