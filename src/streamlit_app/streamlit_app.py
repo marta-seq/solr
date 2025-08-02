@@ -6,14 +6,16 @@ from db_utils import get_categorized_papers, load_raw_papers_data, get_exploded_
 
 # Set Streamlit page configuration
 st.set_page_config(
-    page_title="PhD Review Dashboard",
+    page_title="Computational Spatial Data Analysis Platform", # Overall app title
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    # icon="📊" # Optional: You might want a spatial data related emoji here
 )
-
-st.title("Welcome to the PhD Review Dashboard!")
-st.markdown("Explore and analyze papers and datasets related to spatial omics and computational methods.")
-
+st.title("Welcome to the Computational Spatial Data Analysis Explorer!")
+st.markdown("""
+This platform helps you explore and visualize methods related to computational spatial data analysis.
+Use the sidebar to navigate through different sections, including an interactive graph of methods.
+""")
 # Load and categorize papers once
 df_papers_raw = load_raw_papers_data()
 df_computational_papers, df_non_computational_papers = get_categorized_papers()
