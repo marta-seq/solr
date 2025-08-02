@@ -15,12 +15,12 @@ INTERNAL_DATASETS_XLSX_PATH = os.path.join(BASE_DATA_DIR, 'inputs', 'internal_da
 # --- Data Loading Functions ---
 
 @st.cache_data(ttl=3600) # Cache data for 1 hour
-def load_raw_papers_data() -> pd.DataFrame:
+def load_raw_papers_data(delimiter=',') -> pd.DataFrame: # Added delimiter parameter
     """
     Loads raw papers data from 'processed_final_deploy.csv'.
-    Includes enhanced debugging.
+    Includes enhanced debugging and delimiter option.
     """
-    print(f"DEBUG: Attempting to load papers from absolute path: {PAPERS_CSV_PATH}")
+    print(f"DEBUG: Attempting to load papers from absolute path: {PAPERS_CSV_PATH} with delimiter: '{delimiter}'")
 
     if not os.path.exists(PAPERS_CSV_PATH):
         st.error(f"Error: '{os.path.basename(PAPERS_CSV_PATH)}' not found at {PAPERS_CSV_PATH}. Please ensure the file exists and the path is correct.")
@@ -28,7 +28,7 @@ def load_raw_papers_data() -> pd.DataFrame:
         return pd.DataFrame()
 
     try:
-        df = pd.read_csv(PAPERS_CSV_PATH)
+        df = pd.read_csv(PAPERS_CSV_PATH, delimiter=delimiter) # Use the passed delimiter
         print(f"DEBUG: Successfully read CSV. DataFrame is empty: {df.empty}")
         if df.empty:
             st.warning(f"Warning: The CSV file at {PAPERS_CSV_PATH} was read, but the resulting DataFrame is empty.")
@@ -96,7 +96,7 @@ def get_categorized_papers() -> tuple[pd.DataFrame, pd.DataFrame]:
     Loads raw papers data and categorizes them into computational
     and non-computational papers based on the 'is_computational' column.
     """
-    df_papers_raw = load_raw_papers_data()
+    df_papers_raw = load_raw_papers_data() # Now defaults to comma, can be overridden if needed
 
     if df_papers_raw.empty:
         print("DEBUG: No raw papers data available for categorization (DataFrame was empty).")
