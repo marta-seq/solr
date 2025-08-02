@@ -6,8 +6,8 @@ import streamlit as st # Import streamlit for caching
 # Define paths relative to the script's location
 current_dir = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(current_dir, '..', 'data')
-RAW_PAPERS_PATH = os.path.join(DATA_DIR, 'raw_papers.csv')
-GRAPH_DATA_PATH = os.path.join(DATA_DIR, 'graph_data.json')
+RAW_PAPERS_PATH = os.path.join(DATA_DIR, 'database/processed_final_deploy.csv')
+GRAPH_DATA_PATH = os.path.join(DATA_DIR, 'methods/graph_data.json')
 
 @st.cache_data # Add caching back
 def load_raw_papers_data() -> pd.DataFrame:
