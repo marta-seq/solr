@@ -12,7 +12,7 @@ st.markdown("Browse and search papers that are classified as computational.")
 df_computational_papers, _ = get_categorized_papers()
 
 if df_computational_papers.empty:
-    st.info("No computational papers found in the data (based on 'llm_annotation_status' == 'detailed_llm_annotated').")
+    st.info("No computational papers found in the data.")
 else:
     st.subheader(f"Total Computational Papers: {len(df_computational_papers)}")
 

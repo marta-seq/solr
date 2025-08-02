@@ -4,11 +4,10 @@ import pandas as pd
 import os
 
 # Define the base path for your project (assuming this script is in src/streamlit_app/)
-# This will go up two directories from the current script to the 'review' folder
 BASE_PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Define specific data paths relative to the BASE_PROJECT_PATH
-PAPERS_CSV_PATH = os.path.join(BASE_PROJECT_PATH, 'data', 'database', 'processed_final.csv')
+PAPERS_CSV_PATH = os.path.join(BASE_PROJECT_PATH, 'data', 'database', 'processed_final_deploy.csv')
 INTERNAL_DATASETS_XLSX_PATH = os.path.join(BASE_PROJECT_PATH, 'data', 'inputs', 'internal_datasets.xlsx')
 
 # --- Data Loading Functions ---
@@ -55,20 +54,20 @@ def load_internal_datasets_data():
 @st.cache_data(ttl=3600)
 def get_categorized_papers():
     """
-    Loads all papers and categorizes them into computational and non-computational.
-    This function centralizes the logic for distinguishing paper types.
+    Loads all papers and categorizes them into computational and non-computational
+    based on the 'is_computational' column.
     """
     df_papers = load_raw_papers_data()
     if df_papers.empty:
         return pd.DataFrame(), pd.DataFrame() # Return two empty DataFrames
 
-    # Rule for distinguishing computational papers (can be easily changed here)
-    if 'llm_annotation_status' in df_papers.columns:
-        df_computational = df_papers[df_papers['llm_annotation_status'] == 'detailed_llm_annotated'].copy()
-        df_non_computational = df_papers[df_papers['llm_annotation_status'] != 'detailed_llm_annotated'].copy()
+    # Rule for distinguishing computational papers: directly use 'is_computational' column
+    if 'is_computational' in df_papers.columns:
+        df_computational = df_papers[df_papers['is_computational'] == True].copy()
+        df_non_computational = df_papers[df_papers['is_computational'] == False].copy()
     else:
-        st.warning("Column 'llm_annotation_status' not found. All papers treated as non-computational for categorization.")
-        df_computational = pd.DataFrame() # No computational papers if status is missing
+        st.warning("Column 'is_computational' not found. All papers treated as non-computational for categorization.")
+        df_computational = pd.DataFrame() # No computational papers if column is missing
         df_non_computational = df_papers.copy() # All papers are non-computational by default
 
     return df_computational, df_non_computational
@@ -86,9 +85,4 @@ def get_exploded_counts(df, column_name, title_prefix="Top"):
     exploded_series = df[column_name].dropna().astype(str).str.split(', ').explode()
 
     if exploded_series.empty:
-        st.info(f"No data found in '{column_name}' after processing.")
-        return pd.DataFrame()
-
-    counts = exploded_series.value_counts().reset_index()
-    counts.columns = [column_name.replace('kw_', '').replace('llm_annot_', '').replace('_', ' ').title(), 'Count']
-    return counts
+        st.info(f"No data found in '{column_name
