@@ -1,88 +1,185 @@
-# src/streamlit_app/db_utils.py
-import streamlit as st
 import pandas as pd
+import json
 import os
 
-# Define the base path for your project (assuming this script is in src/streamlit_app/)
-BASE_PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# --- Configuration for Data Paths ---
+# Define the base directory for your data.
+# This assumes your 'data' folder is a sibling to 'streamlit_app'
+# For example:
+# solr/
+# └── src/
+#     └── streamlit_app/
+#     └── data/
+#         └── methods/
+#             └── graph_data.json
+#         └── raw_papers.csv (or .json, etc.)
 
-# Define specific data paths relative to the BASE_PROJECT_PATH
-PAPERS_CSV_PATH = os.path.join(BASE_PROJECT_PATH, 'data', 'database', 'processed_final_deploy.csv')
-INTERNAL_DATASETS_XLSX_PATH = os.path.join(BASE_PROJECT_PATH, 'data', 'inputs', 'internal_datasets.xlsx')
+# Adjust this path if your 'data' directory is located elsewhere relative to db_utils.py
+# If db_utils.py is in 'streamlit_app' and 'data' is also in 'streamlit_app':
+# DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+# If 'data' is one level up from 'streamlit_app':
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
-# --- Data Loading Functions ---
+RAW_PAPERS_PATH = os.path.join(DATA_DIR, "raw_papers.csv") # Example: assuming a CSV file
+GRAPH_DATA_PATH = os.path.join(DATA_DIR, "methods", "graph_data.json")
 
-@st.cache_data(ttl=3600) # Cache data for 1 hour
-def load_raw_papers_data():
-    """Loads raw papers data from 'processed_final.csv'."""
-    if not os.path.exists(PAPERS_CSV_PATH):
-        st.error(f"Error: 'processed_final.csv' not found at {PAPERS_CSV_PATH}. Please ensure it's in data/database/")
-        return pd.DataFrame()
+# --- Mock Data Generation (for testing if you don't have actual files yet) ---
+def _generate_mock_papers_data():
+    """Generates a mock DataFrame for raw papers."""
+    data = {
+        'paper_id': [f'P{i:03d}' for i in range(1, 101)],
+        'title': [f'Paper Title {i}' for i in range(1, 101)],
+        'abstract': [f'Abstract for paper {i} discussing various topics.' for i in range(1, 101)],
+        'category': ['Computational' if i % 2 == 0 else 'Non-Computational' for i in range(1, 101)],
+        'keywords': [
+            ['ML', 'AI', 'Algorithm'] if i % 3 == 0 else
+            ['Survey', 'Review'] if i % 3 == 1 else
+            ['Data', 'Analysis']
+            for i in range(1, 101)
+        ],
+        'publication_year': [2020 + (i % 5) for i in range(1, 101)]
+    }
+    df = pd.DataFrame(data)
+    # Save to CSV for persistent mock data
+    os.makedirs(os.path.dirname(RAW_PAPERS_PATH), exist_ok=True)
+    df.to_csv(RAW_PAPERS_PATH, index=False)
+    print(f"Mock raw papers data saved to: {RAW_PAPERS_PATH}")
+    return df
+
+def _generate_mock_graph_data():
+    """Generates mock graph data for methods."""
+    mock_data = {
+        "nodes": [
+            {"id": "MethodA", "label": "Method A", "group": "Computational"},
+            {"id": "MethodB", "label": "Method B", "group": "Non-Computational"},
+            {"id": "MethodC", "label": "Method C", "group": "Computational"},
+            {"id": "MethodD", "label": "Method D", "group": "Non-Computational"},
+        ],
+        "edges": [
+            {"from": "MethodA", "to": "MethodC"},
+            {"from": "MethodB", "to": "MethodD"},
+            {"from": "MethodA", "to": "MethodB"},
+        ]
+    }
+    os.makedirs(os.path.dirname(GRAPH_DATA_PATH), exist_ok=True)
+    with open(GRAPH_DATA_PATH, 'w') as f:
+        json.dump(mock_data, f, indent=4)
+    print(f"Mock graph data saved to: {GRAPH_DATA_PATH}")
+    return mock_data
+
+# Call mock data generation if files don't exist (optional, for initial setup)
+if not os.path.exists(RAW_PAPERS_PATH):
+    _generate_mock_papers_data()
+if not os.path.exists(GRAPH_DATA_PATH):
+    _generate_mock_graph_data()
+
+# --- Database Utility Functions ---
+
+def load_raw_papers_data() -> pd.DataFrame:
+    """
+    Loads raw papers data from a specified source (e.g., CSV, JSON, database).
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the raw papers data.
+    """
     try:
-        df = pd.read_csv(PAPERS_CSV_PATH)
-        # Ensure 'year' is numeric and handle potential NaNs for plotting
-        if 'year' in df.columns:
-            df['year'] = pd.to_numeric(df['year'], errors='coerce').astype('Int64')
-        # Ensure dates are datetime objects for plotting
-        for col in ['scrape_date', 'full_text_extraction_timestamp', 'llm_annotation_timestamp']:
-            if col in df.columns:
-                df[col] = pd.to_datetime(df[col], errors='coerce')
+        # Example: Loading from a CSV file
+        df = pd.read_csv(RAW_PAPERS_PATH)
+        print(f"Successfully loaded raw papers data from {RAW_PAPERS_PATH}")
         return df
+    except FileNotFoundError:
+        print(f"Error: Raw papers data file not found at {RAW_PAPERS_PATH}. Generating mock data.")
+        return _generate_mock_papers_data()
     except Exception as e:
-        st.error(f"Error loading papers data from CSV: {e}")
-        return pd.DataFrame()
+        print(f"An error occurred while loading raw papers data: {e}")
+        return pd.DataFrame() # Return empty DataFrame on error
 
-@st.cache_data(ttl=3600)
-def load_internal_datasets_data():
-    """Loads internal datasets data from 'internal_datasets.xlsx'."""
-    if not os.path.exists(INTERNAL_DATASETS_XLSX_PATH):
-        st.error(f"Error: 'internal_datasets.xlsx' not found at {INTERNAL_DATASETS_XLSX_PATH}. Please ensure it's in data/inputs/")
-        return pd.DataFrame()
+def get_categorized_papers(category: str = None) -> pd.DataFrame:
+    """
+    Retrieves papers, optionally filtered by category.
+
+    Args:
+        category (str, optional): The category to filter by (e.g., 'Computational', 'Non-Computational').
+                                  If None, all papers are returned.
+
+    Returns:
+        pd.DataFrame: A DataFrame of categorized papers.
+    """
+    papers_df = load_raw_papers_data()
+    if not papers_df.empty and category:
+        # Ensure 'category' column exists before filtering
+        if 'category' in papers_df.columns:
+            filtered_df = papers_df[papers_df['category'] == category].copy()
+            print(f"Filtered papers for category: {category}. Found {len(filtered_df)} papers.")
+            return filtered_df
+        else:
+            print("Warning: 'category' column not found in papers data. Returning all papers.")
+            return papers_df
+    print(f"Returning all {len(papers_df)} papers (no category filter or empty data).")
+    return papers_df
+
+def get_exploded_counts(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    """
+    Explodes a list-like column (e.g., 'keywords') in a DataFrame and counts occurrences.
+
+    Args:
+        df (pd.DataFrame): The input DataFrame.
+        column (str): The name of the column to explode (expected to contain lists).
+
+    Returns:
+        pd.DataFrame: A DataFrame with counts of each item in the exploded column.
+                      Columns: 'item', 'count'.
+    """
+    if df.empty or column not in df.columns:
+        print(f"Warning: DataFrame is empty or column '{column}' not found for exploding.")
+        return pd.DataFrame(columns=['item', 'count'])
+
+    # Ensure the column contains iterable items (e.g., lists)
+    # If your 'keywords' column is stored as a string representation of a list,
+    # you might need to convert it first: df[column].apply(ast.literal_eval)
+    # For this example, we assume it's already a list or can be iterated.
+    exploded_series = df[column].explode()
+    counts = exploded_series.value_counts().reset_index()
+    counts.columns = ['item', 'count']
+    print(f"Exploded counts for column '{column}': {len(counts)} unique items found.")
+    return counts
+
+def load_graph_data():
+    """
+    Loads graph data from a JSON file.
+
+    Returns:
+        dict: The loaded graph data (nodes and edges).
+    """
     try:
-        df = pd.read_excel(INTERNAL_DATASETS_XLSX_PATH)
-        # Ensure 'year', 'n_patients', 'n_samples', 'n_regions' are numeric
-        for col in ['year', 'n_patients', 'n_samples', 'n_regions']:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors='coerce').astype('Int64')
-        return df
+        with open(GRAPH_DATA_PATH, 'r') as f:
+            graph_data = json.load(f)
+        print(f"Successfully loaded graph data from {GRAPH_DATA_PATH}")
+        return graph_data
+    except FileNotFoundError:
+        print(f"Error: Graph data file not found at {GRAPH_DATA_PATH}. Generating mock data.")
+        return _generate_mock_graph_data()
+    except json.JSONDecodeError:
+        print(f"Error: Could not decode JSON from {GRAPH_DATA_PATH}. Check file format.")
+        return {"nodes": [], "edges": []}
     except Exception as e:
-        st.error(f"Error loading internal datasets data from XLSX: {e}")
-        return pd.DataFrame()
+        print(f"An error occurred while loading graph data: {e}")
+        return {"nodes": [], "edges": []}
 
-# --- Paper Categorization and Utility Functions ---
+# Example Usage (for testing db_utils.py directly)
+if __name__ == "__main__":
+    print("\n--- Testing load_raw_papers_data ---")
+    papers = load_raw_papers_data()
+    print(papers.head())
 
-@st.cache_data(ttl=3600)
-def get_categorized_papers():
-    """
-    Loads all papers and categorizes them into computational and non-computational
-    based on the 'is_computational' column.
-    """
-    df_papers = load_raw_papers_data()
-    if df_papers.empty:
-        return pd.DataFrame(), pd.DataFrame() # Return two empty DataFrames
+    print("\n--- Testing get_categorized_papers (Computational) ---")
+    comp_papers = get_categorized_papers(category='Computational')
+    print(comp_papers.head())
 
-    # Rule for distinguishing computational papers: directly use 'is_computational' column
-    if 'is_computational' in df_papers.columns:
-        df_computational = df_papers[df_papers['is_computational'] == True].copy()
-        df_non_computational = df_papers[df_papers['is_computational'] == False].copy()
-    else:
-        st.warning("Column 'is_computational' not found. All papers treated as non-computational for categorization.")
-        df_computational = pd.DataFrame() # No computational papers if column is missing
-        df_non_computational = df_papers.copy() # All papers are non-computational by default
+    print("\n--- Testing get_exploded_counts (Keywords) ---")
+    keyword_counts = get_exploded_counts(papers, 'keywords')
+    print(keyword_counts.head())
 
-    return df_computational, df_non_computational
-
-def get_exploded_counts(df, column_name, title_prefix="Top"):
-    """
-    Helper function to explode a comma-separated column and return value counts.
-    Handles missing columns gracefully.
-    """
-    if column_name not in df.columns:
-        st.info(f"Column '{column_name}' not found for plotting.")
-        return pd.DataFrame()
-
-    # Dropna first, then convert to string, split, and explode
-    exploded_series = df[column_name].dropna().astype(str).str.split(', ').explode()
-
-    if exploded_series.empty:
-        st.info(f"No data found in '{column_name
+    print("\n--- Testing load_graph_data ---")
+    graph = load_graph_data()
+    print(f"Graph nodes: {len(graph.get('nodes', []))}, edges: {len(graph.get('edges', []))}")
