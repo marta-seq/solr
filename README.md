@@ -4,10 +4,46 @@ This repository serves as a living review for the field of spatial omics.
 It aims to continuously update and curate relevant scientific literature, methodologies,
 and resources within this rapidly evolving domain.
 
+This project provides an interactive platform for exploring computational neuroscience papers. It leverages semantic similarity to build a dynamic graph, allowing researchers to discover connections, filter by various attributes, and delve into the methodologies discussed in the literature.
+
+<br>
+
+<p align="center">
+  <a href="https://marta-seq.github.io/solr/" target="_blank" style="
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #2ea44f; /* GitHub green */
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  " onmouseover="this.style.backgroundColor='#2c974b'" onmouseout="this.style.backgroundColor='#2ea44f'">
+    🚀 View on GitHub Pages
+  </a>
+  <a href="https://spatialomicslivereview.streamlit.app/" target="_blank" style="
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #FF4B4B; /* Streamlit red */
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  " onmouseover="this.style.backgroundColor='#e04242'" onmouseout="this.style.backgroundColor='#FF4B4B'">
+    💡 Launch Streamlit App
+  </a>
+</p>
+
 
 [//]: # (![Man in boat on a sea of papers]&#40;figures/img_2.png&#41;)
 <img src="figures/img_2.png" alt="Man in boat on a sea of papers" width="700">
-
 
 
 ## About this Living Review
