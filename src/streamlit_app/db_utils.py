@@ -3,25 +3,9 @@ import os
 import json
 import streamlit as st # Import streamlit for caching
 
-# --- Configuration for Data Paths ---
-# Define paths relative to the script's location (src/streamlit_app/db_utils.py)
-# This assumes:
-# /home/martinha/PycharmProjects/phd/review/
-# ├── src/
-# │   └── streamlit_app/
-# │       └── db_utils.py
-# └── data/
-#     ├── database/
-#     │   └── processed_final.csv  <--- Your main papers data
-#     ├── methods/
-#     │   └── graph_data.json      <--- Your graph data
-#     └── inputs/
-#         └── internal_datasets.xlsx <--- Your internal datasets
-#
-# So, to go from 'src/streamlit_app' to 'data', we go up one level (..) then into 'data'
 BASE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data')
 
-PAPERS_CSV_PATH = os.path.join(BASE_DATA_DIR, 'database', 'processed_final.csv') # Corrected filename and path
+PAPERS_CSV_PATH = os.path.join(BASE_DATA_DIR, 'database', 'processed_final_deploy.csv') # Corrected filename and path
 GRAPH_DATA_JSON_PATH = os.path.join(BASE_DATA_DIR, 'methods', 'graph_data.json') # Corrected path
 INTERNAL_DATASETS_XLSX_PATH = os.path.join(BASE_DATA_DIR, 'inputs', 'internal_datasets.xlsx') # Added for completeness
 
