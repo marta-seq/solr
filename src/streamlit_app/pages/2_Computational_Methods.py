@@ -53,7 +53,7 @@ import plotly.express as px
 
 # Assuming db_utils is in the same directory as your main streamlit_app.py
 # If db_utils is in a 'src' folder at the root, you might need:
-from src.streamlit_app import db_utils # Adjust import based on your project structure
+import db_utils # Adjust import based on your project structure
 
 # --- Load Data (specific to this page) ---
 @st.cache_data(ttl=3600)
