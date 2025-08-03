@@ -11,7 +11,9 @@ import json # For handling JSON specific errors
 # Define the path to your processed data file.
 # Adjust this path if your 'data' directory is located differently relative to this page file.
 # For example, if this file is in 'pages/' and 'data/' is in the root, this path is correct.
-PROCESSED_DATA_FILE = 'data/methods/graph_data.json'
+BASE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data')
+GRAPH_DATA_JSON_PATH = os.path.join(BASE_DATA_DIR, 'methods', 'graph_data.json')
+
 
 # --- Helper Functions ---
 
