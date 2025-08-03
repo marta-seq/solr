@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://marta-seq.github.io/solr/index.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
     <url>
-         <loc>https://marta-seq.github.io/solr/applications/index_to_delete.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/applications/index_to_delete/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
     <url>
-         <loc>https://marta-seq.github.io/solr/book/index.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/book/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
     <url>
-         <loc>https://marta-seq.github.io/solr/book/chapter1.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/book/chapter1/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
     <url>
-         <loc>https://marta-seq.github.io/solr/book/chapter2.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/book/chapter2/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
     <url>
-         <loc>https://marta-seq.github.io/solr/datasets/index.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/datasets/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
     <url>
-         <loc>https://marta-seq.github.io/solr/methods/index.html</loc>
-         <lastmod>2025-08-02</lastmod>
+         <loc>https://marta-seq.github.io/solr/methods/</loc>
+         <lastmod>2025-08-03</lastmod>
     </url>
 </urlset>
