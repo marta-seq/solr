@@ -6,14 +6,15 @@ import ast # For safely evaluating string representations of lists
 import numpy as np
 import colorsys # For generating distinct colors
 import hashlib # For consistent color hashing
+import json # For handling JSON specific errors
 
 # --- Configuration ---
 # Set Streamlit page configuration
 st.set_page_config(layout="wide", page_title="Paper Network Explorer")
 
 # Define the path to your processed data file.
-# IMPORTANT: Replace 'your_processed_data.csv' with the actual path to your CSV file.
-PROCESSED_DATA_FILE = 'data/database/processed_final_deploy.csv'
+# IMPORTANT: This is now set to 'graph_data.json' as per your reminder!
+PROCESSED_DATA_FILE = 'graph_data.json'
 
 # --- Helper Functions ---
 
@@ -21,6 +22,7 @@ def safe_literal_eval(val):
     """
     Safely evaluates a string representation of a list or converts a comma-separated
     string into a list. Handles cases where the input is already a list.
+    This is often needed if JSON values that should be arrays are sometimes strings.
     """
     if isinstance(val, str):
         try:
@@ -53,30 +55,35 @@ def get_hashed_color(text: str) -> str:
     saturation = 0.7 # Keep saturation high for vivid colors
     value = 0.85 # Keep value high for brightness
     r, g, b = [int(x * 255) for x in colorsys.hsv_to_rgb(hue, saturation, value)]
-    return f"#{r:02x}{g:02x}{b:02x}"
+    return f"#{r:02x}{b:02x}{g:02x}" # Adjusted to f"#{r:02x}{b:02x}{g:02x}" for slightly different color distribution
 
 # --- Load Data ---
 @st.cache_data
 def load_data(file_path):
     """
-    Loads and preprocesses the paper data from a CSV file.
+    Loads and preprocesses the paper data from a JSON file.
 
     Args:
-        file_path (str): The path to the CSV file containing the paper data.
+        file_path (str): The path to the JSON file containing the paper data.
 
     Returns:
         pd.DataFrame: The loaded and preprocessed DataFrame.
     """
     try:
-        df = pd.read_csv(file_path)
+        # --- MAJOR CHANGE: Reading JSON instead of CSV ---
+        df = pd.read_json(file_path)
     except FileNotFoundError:
-        st.error(f"Error: The file '{file_path}' was not found. Please ensure the CSV is in the correct directory.")
+        st.error(f"Error: The file '{file_path}' was not found. Please ensure the JSON is in the correct directory.")
         st.stop() # Stop the app if file is not found
+    except json.JSONDecodeError as e:
+        st.error(f"Error: Could not decode JSON from '{file_path}'. Please check if it's a valid JSON file. Details: {e}")
+        st.stop()
     except Exception as e:
-        st.error(f"An error occurred while loading the CSV file: {e}")
+        st.error(f"An unexpected error occurred while loading the JSON file: {e}")
         st.stop()
 
     # Define columns that are expected to be lists and apply safe_literal_eval
+    # This is still important as some JSON fields might contain string representations of lists
     list_cols = [
         'kw_pipeline_category',
         'llm_annot_tested_assay_types_platforms',
@@ -86,7 +93,9 @@ def load_data(file_path):
     ]
     for col in list_cols:
         if col in df.columns:
-            df[col] = df[col].apply(safe_literal_eval)
+            # Apply safe_literal_eval only if the column contains strings that need parsing
+            # If the JSON already provides actual lists, this will just return them as is.
+            df[col] = df[col].apply(lambda x: safe_literal_eval(x) if isinstance(x, str) else x)
         else:
             # If a list column is missing, create an empty list column to prevent errors
             df[col] = [[] for _ in range(len(df))]
