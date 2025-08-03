@@ -67,7 +67,7 @@ def get_exploded_counts(df, column_name):
     exploded_series = exploded_series.astype(str)
 
     counts = exploded_series.value_counts().reset_index()
-    # IMPORTANT: Ensure these column names are lowercase 'item' and 'count'
+    # IMPORTANT: These column names are lowercase 'item' and 'count'
     counts.columns = ['item', 'count']
     return counts
 
