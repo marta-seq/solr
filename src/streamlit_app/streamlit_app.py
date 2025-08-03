@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from db_utils import get_categorized_papers, load_raw_papers_data, get_exploded_counts
-
+import ast
 # Set Streamlit page configuration
 st.set_page_config(
     page_title="Computational Spatial Data Analysis Platform", # Overall app title
