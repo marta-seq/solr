@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import json
 import streamlit as st # Import streamlit for caching
-
+import ast
 # --- Configuration for Data Paths ---
 # Define paths relative to the script's location (src/streamlit_app/db_utils.py)
 BASE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data')
