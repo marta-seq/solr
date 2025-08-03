@@ -14,7 +14,7 @@ st.set_page_config(layout="wide", page_title="Paper Network Explorer")
 
 # Define the path to your processed data file.
 # IMPORTANT: This is now set to 'graph_data.json' as per your reminder!
-PROCESSED_DATA_FILE = 'graph_data.json'
+PROCESSED_DATA_FILE = 'data/methods/graph_data.json'
 
 # --- Helper Functions ---
 
