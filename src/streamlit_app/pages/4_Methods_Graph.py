@@ -17,7 +17,7 @@ GRAPH_DATA_JSON_PATH = os.path.join(BASE_DATA_DIR, 'methods', 'graph_data.json')
 PROCESSED_DATA_FILE = os.path.join(
     os.path.dirname(__file__), '..', '..', 'data', 'methods', 'graph_data.json'
 )
-
+PROCESSED_DATA_FILE = 'data/methods/graph_data.json' # Relative path for Streamlit to find the file
 # --- Helper Functions ---
 
 def safe_literal_eval(val):
