@@ -13,7 +13,7 @@ st.set_page_config(layout="wide", page_title="Paper Network Explorer")
 
 # Define the path to your processed data file.
 # IMPORTANT: Replace 'your_processed_data.csv' with the actual path to your CSV file.
-PROCESSED_DATA_FILE = 'your_processed_data.csv'
+PROCESSED_DATA_FILE = 'data/database/processed_final_deploy.csv'
 
 # --- Helper Functions ---
 
