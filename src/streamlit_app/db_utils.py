@@ -89,6 +89,27 @@ def load_internal_datasets_data() -> pd.DataFrame:
         st.error(f"Error loading internal datasets data from XLSX: {e}. Please check the XLSX format.")
         print(f"DEBUG: General Exception during XLSX loading: {e}")
         return pd.DataFrame()
+def safe_literal_eval(val):
+    """
+    Safely evaluates a string representation of a list or converts a comma-separated
+    string into a list. Handles cases where the input is already a list or non-string.
+    This is crucial because JSON fields might store lists as strings (e.g., "['item1', 'item2']")
+    and we need to parse them into actual Python lists for filtering.
+    """
+    if isinstance(val, str):
+        try:
+            evaluated = ast.literal_eval(val)
+            if isinstance(evaluated, list):
+                return evaluated
+            else:
+                # If it's a string that's not a list representation, treat as a single item list
+                return [str(evaluated)]
+        except (ValueError, SyntaxError):
+            # Fallback for comma-separated strings that aren't valid literal_eval
+            return [item.strip() for item in val.split(',') if item.strip()]
+    elif isinstance(val, list):
+        return val
+    return [] # Return empty list for NaN or other unexpected types
 
 @st.cache_data(ttl=3600)
 def get_categorized_papers() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -116,24 +137,40 @@ def get_categorized_papers() -> tuple[pd.DataFrame, pd.DataFrame]:
     return df_computational, df_non_computational
 
 @st.cache_data # Consider caching this if the input DataFrame doesn't change often
-def get_exploded_counts(df: pd.DataFrame, column: str) -> pd.DataFrame:
+def get_exploded_counts(df, column_name):
     """
-    Explodes a DataFrame column (assuming it contains lists/strings of items)
-    and counts the occurrences of each item.
+    Explodes a column containing lists, counts the occurrences of each item,
+    and returns a DataFrame suitable for Plotly bar charts.
+    Ensures the output DataFrame has 'Count' and a display-friendly column name.
     """
-    if df.empty or column not in df.columns:
-        print(f"DEBUG: Warning: DataFrame is empty or column '{column}' not found for exploding counts.")
-        return pd.DataFrame(columns=['item', 'count'])
+    # Define a display-friendly name for the category column
+    display_column_name = column_name.replace('kw_', '').replace('llm_annot_', '').replace('_', ' ').title()
 
-    exploded_series = df[column].dropna().astype(str).str.split(', ').explode()
+    if df.empty or column_name not in df.columns or df[column_name].isnull().all():
+        # Return an empty DataFrame with the expected column names
+        return pd.DataFrame(columns=[display_column_name, 'Count'])
+
+    df_copy = df.copy()
+    # Ensure the column contains actual lists; this is a safeguard, ideally done during initial load
+    df_copy[column_name] = df_copy[column_name].apply(safe_literal_eval)
+
+    # Filter out empty lists before exploding to avoid empty strings/NaNs from explode
+    exploded_series = df_copy[column_name].explode()
+
+    # Drop any potential NaN values that might result from empty lists or None after explode
+    exploded_series = exploded_series.dropna()
 
     if exploded_series.empty:
-        print(f"DEBUG: No data found in '{column}' after processing for exploded counts.")
-        return pd.DataFrame(columns=['item', 'count'])
+        # Return an empty DataFrame with the expected column names if no valid data after explode
+        return pd.DataFrame(columns=[display_column_name, 'Count'])
 
     counts = exploded_series.value_counts().reset_index()
-    counts.columns = ['item', 'count']
-    return counts
+    counts.columns = [display_column_name, 'Count']  # Rename columns for Plotly Express
+
+    # Ensure the 'Count' column is numeric
+    counts['Count'] = pd.to_numeric(counts['Count'], errors='coerce').fillna(0)
+
+    return counts.sort_values(by='Count', ascending=False)
 
 @st.cache_data # Consider caching this if graph data doesn't change often
 def load_graph_data() -> dict | None:
