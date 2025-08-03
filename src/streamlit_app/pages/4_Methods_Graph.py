@@ -14,7 +14,9 @@ import os
 BASE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data')
 GRAPH_DATA_JSON_PATH = os.path.join(BASE_DATA_DIR, 'methods', 'graph_data.json')
 
-PROCESSED_DATA_FILE = GRAPH_DATA_JSON_PATH
+PROCESSED_DATA_FILE = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'data', 'methods', 'graph_data.json'
+)
 
 # --- Helper Functions ---
 
