@@ -57,10 +57,14 @@ def get_hashed_color(text: str) -> str:
 def load_data(file_path):
     """
     Loads and preprocesses the paper data from a JSON file.
+    Uses json.load to read the file first, then creates a DataFrame,
+    which is more robust to inconsistent nested structures than pd.read_json directly.
     Applies safe_literal_eval to list-like columns and handles missing columns.
     """
     try:
-        df = pd.read_json(file_path)
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f) # Load the entire JSON into a Python list of dicts
+        df = pd.DataFrame(data) # Create DataFrame from the list of dicts
     except FileNotFoundError:
         st.error(f"Error: The file '{file_path}' was not found. Please ensure the JSON is in the correct directory.")
         st.stop()
@@ -83,7 +87,8 @@ def load_data(file_path):
     for col in list_cols:
         if col in df.columns:
             # Apply safe_literal_eval to ensure all are proper lists for filtering
-            df[col] = df[col].apply(safe_literal_eval)
+            # Fill NaN/None with empty strings before applying safe_literal_eval
+            df[col] = df[col].fillna('').apply(safe_literal_eval)
         else:
             # Add missing list columns as empty lists to prevent errors in filtering
             df[col] = [[] for _ in range(len(df))]
@@ -233,7 +238,7 @@ if not filtered_df.empty:
         if row['kw_pipeline_category']:
             node_color = category_colors.get(row['kw_pipeline_category'][0], "#CCCCCC")
 
-        # Tooltip content - 'Accession Number' line has been removed
+        # Tooltip content
         tooltip = f"""
         <b>Title:</b> {title}<br>
         <b>DOI:</b> {node_id}<br>
