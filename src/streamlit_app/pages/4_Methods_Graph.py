@@ -103,11 +103,14 @@ def load_data(file_path):
         df['year'] = 2000 # Default year if column is missing
         st.warning("Column 'year' not found in your data. Defaulting to year 2000 for all papers.")
 
-    # Ensure other display columns exist to prevent errors in tooltips
+    # Ensure 'doi', 'title', 'abstract' columns exist and are strings
     for col in ['doi', 'title', 'abstract']:
         if col not in df.columns:
             df[col] = ''
             st.warning(f"Column '{col}' not found in your data. It will be empty in display.")
+        # Ensure 'doi' is always a string, as it's used as the node ID
+        if col == 'doi':
+            df[col] = df[col].astype(str)
 
     return df
 
@@ -208,7 +211,7 @@ if not filtered_df.empty:
 
     # Add nodes to the network
     for idx, row in filtered_df.iterrows():
-        node_id = row['doi']
+        node_id = row['doi'] # This is correctly using DOI as the node ID
         title = row['title']
         citations = row['citations'] if 'citations' in row else 0
         year = row['year']
@@ -230,7 +233,7 @@ if not filtered_df.empty:
         if row['kw_pipeline_category']:
             node_color = category_colors.get(row['kw_pipeline_category'][0], "#CCCCCC")
 
-        # Tooltip content - includes all categories and other details
+        # Tooltip content - 'Accession Number' line has been removed
         tooltip = f"""
         <b>Title:</b> {title}<br>
         <b>DOI:</b> {node_id}<br>
@@ -289,4 +292,3 @@ if not filtered_df.empty:
 
 else:
     st.info("No papers match the selected filters. Please adjust your criteria in the sidebar.")
-
