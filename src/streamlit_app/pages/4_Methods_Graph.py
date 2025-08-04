@@ -54,8 +54,8 @@ def preprocess_data(data):
         else:
             nodes_df[col] = [[] for _ in range(len(nodes_df))]  # Add empty list column if missing
 
-    # Ensure 'title', 'abstract', 'doi' columns exist and are strings
-    for col in ['title', 'abstract', 'doi']:
+    # Ensure 'title', 'abstract' columns exist and are strings
+    for col in ['title', 'abstract']:
         if col not in nodes_df.columns:
             nodes_df[col] = ''
             st.warning(f"Column '{col}' not found in node data. It will be empty in display.")
@@ -85,6 +85,9 @@ def preprocess_data(data):
 
     # Set 'id' as index for easier lookup
     nodes_df.set_index('id', inplace=True)
+
+    # FIX: Ensure 'doi' column exists and is a copy of the unique 'id' (index)
+    nodes_df['doi'] = nodes_df.index.astype(str)
 
     # Extract unique values for filtering from the processed list columns
     unique_categories = sorted(list(set(item for sublist in nodes_df["kw_pipeline_category"] for item in sublist)))
@@ -151,7 +154,8 @@ def filter_nodes(nodes_df, year_range, selected_categories, selected_methods,
         filtered_df = filtered_df[mask]
 
     # Methods filter: Only apply if methods are selected
-    if selected_methods and methods_df.columns:
+    # FIX: Corrected column check from methods_df.columns to methods_col in filtered_df.columns
+    if selected_methods and methods_col in filtered_df.columns:
         mask = filtered_df[methods_col].apply(
             lambda x: any(method in x for method in selected_methods)
         )
@@ -342,7 +346,8 @@ def main():
         )
 
         # Edge toggle
-        show_edges = st.checkbox("Show edges", value=True, key="edge_toggle")
+        # FIX: Changed label to "Show similarity edges"
+        show_edges = st.checkbox("Show similarity edges", value=True, key="edge_toggle")
 
         st.markdown("---")
         st.subheader("📊 Statistics")
@@ -410,6 +415,7 @@ def main():
             st.info("Click on a node to see details (or use 'Simulate Click' button).")
 
         # --- Custom Color Legend ---
+        # FIX: Moved legend to right panel and refined for first category
         st.subheader("🎨 Color Legend (Pipeline Category)")
         unique_pipeline_parts = processed_data['unique_pipeline_parts_for_color']
         colors = px.colors.qualitative.Alphabet + px.colors.qualitative.Dark24
