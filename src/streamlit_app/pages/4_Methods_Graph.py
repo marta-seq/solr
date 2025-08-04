@@ -255,7 +255,7 @@ if not filtered_nodes_df.empty:
         assay_types = ", ".join(row['kw_detected_methods']) if row['kw_detected_methods'] else "N/A"
         data_modalities = ", ".join(row['llm_annot_tested_data_modalities']) if row['llm_annot_tested_data_modalities'] else "N/A"
         abstract = row['abstract']
-
+        print(abstract) # Debugging line to check abstract content
         # Node size based on citations (logarithmic scale for better visual distinction)
         # Scale size between a min (e.g., 10) and max (e.g., 40)
         if max_citations_for_scaling > 1: # Check if there's actual variation in citations
