@@ -83,7 +83,7 @@ def load_data(file_path):
 
         # Create DataFrame for edges from the 'edges' key (if present and valid)
         df_edges = pd.DataFrame() # Initialize as empty
-        if 'links' in full_json_data and isinstance(full_json_data['edges'], list):
+        if 'links' in full_json_data and isinstance(full_json_data['links'], list):
             df_edges = pd.DataFrame(full_json_data['links'])
             logging.debug(f"Edges DataFrame created with shape: {df_edges.shape}.")
         else:
