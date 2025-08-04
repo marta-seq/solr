@@ -69,6 +69,7 @@ def load_data(file_path):
         # Create DataFrame for nodes from the 'nodes' key
         if 'nodes' in full_json_data and isinstance(full_json_data['nodes'], list):
             df_nodes = pd.DataFrame(full_json_data['nodes'])
+            df_nodes.drop_duplicates(subset=['id'], inplace=True)
             df_nodes['id'] = df_nodes['id'].astype(str) # Ensure 'id' is a string for node IDs
             df_nodes['doi'] = df_nodes['id'].astype(str) # Ensure 'doi' is a string for node IDs
         else:
