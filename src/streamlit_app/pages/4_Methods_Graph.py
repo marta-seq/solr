@@ -1,188 +1,408 @@
 import streamlit as st
-import pandas as pd
 import json
-from pyvis.network import Network
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
 import numpy as np
-import ast
-from collections import defaultdict
+from typing import List, Dict, Any, Optional
 import logging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configure page
+st.set_page_config(page_title="Methods Graph", layout="wide")
 
-# Load the data
+
+# Cache data loading for performance
 @st.cache_data
-def load_data(file_path):
-    nodes = []
-    links = []
-    with open(file_path, 'r') as file:
-        for line_number, line in enumerate(file, 1):
-            try:
-                data = json.loads(line)
-                if 'nodes' in data:
-                    nodes.extend(data['nodes'])
-                if 'links' in data:
-                    links.extend(data['links'])
-            except json.JSONDecodeError as e:
-                logger.error(f"Error parsing JSON on line {line_number}: {e}")
-                continue
-    return pd.DataFrame(nodes), pd.DataFrame(links)
+def load_graph_data():
+    """Load and preprocess graph data"""
+    try:
+        with open('data/methods/graph_data.json.jsonl', 'r') as f:
+            data = json.load(f)
+        return data
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+        return {"nodes": [], "links": []}
 
-# Define the path to your data file
-DATA_FILE = 'data/methods/graph_data.json'
 
-# Load the data
-try:
-    df_nodes, df_links = load_data(DATA_FILE)
-except Exception as e:
-    st.error(f"An error occurred while loading the data: {e}")
-    st.stop()
+@st.cache_data
+def preprocess_data(data):
+    """Preprocess data for efficient filtering"""
+    nodes_df = pd.DataFrame(data['nodes'])
+    links_df = pd.DataFrame(data['links'])
 
-# Define the column names
-PIPELINE_PART_COLUMN = 'kw_pipeline_category'  # Replace with your actual column name
-CATEGORY_COLUMN = 'category'  # Replace with your actual column name
-DETECTED_METHODS_COLUMN = 'kw_detected_methods'  # Replace with your actual column name
+    # Handle missing values and convert lists
+    for col in nodes_df.columns:
+        if nodes_df[col].dtype == 'object':
+            nodes_df[col] = nodes_df[col].fillna('None')
 
-# Ensure the columns are treated as lists
-def safe_literal_eval(val):
-    if isinstance(val, str):
-        try:
-            return ast.literal_eval(val)
-        except (ValueError, SyntaxError):
-            return []
-    elif isinstance(val, list):
-        return val
-    return []
+    # Extract unique values for filtering
+    category_col = "CATEGORY_COLUMN_NAME"  # Replace with actual column name
+    methods_col = "DETECTED_METHODS_COLUMN_NAME"  # Replace with actual column name
+    pipeline_col = "PIPELINE_PART_COLUMN_NAME"  # Replace with actual column name
 
-if PIPELINE_PART_COLUMN in df_nodes.columns:
-    df_nodes[PIPELINE_PART_COLUMN] = df_nodes[PIPELINE_PART_COLUMN].apply(safe_literal_eval)
-if CATEGORY_COLUMN in df_nodes.columns:
-    df_nodes[CATEGORY_COLUMN] = df_nodes[CATEGORY_COLUMN].apply(safe_literal_eval)
-if DETECTED_METHODS_COLUMN in df_nodes.columns:
-    df_nodes[DETECTED_METHODS_COLUMN] = df_nodes[DETECTED_METHODS_COLUMN].apply(safe_literal_eval)
+    # Get unique values from list columns
+    unique_categories = set()
+    unique_methods = set()
+    unique_pipeline_parts = set()
 
-# Function to get unique values from a list column
-def get_unique_values(df, column):
-    if column not in df.columns:
-        return []
-    unique_values = set()
-    for sublist in df[column]:
-        if isinstance(sublist, list):
-            for item in sublist:
-                unique_values.add(item)
-    return sorted(unique_values)
+    for idx, row in nodes_df.iterrows():
+        # Handle category column
+        if category_col in row and row[category_col] is not None:
+            if isinstance(row[category_col], list):
+                unique_categories.update(row[category_col])
+            else:
+                unique_categories.add(str(row[category_col]))
+        else:
+            unique_categories.add('None')
 
-# Get unique values for filters
-unique_categories = get_unique_values(df_nodes, CATEGORY_COLUMN)
-unique_methods = get_unique_values(df_nodes, DETECTED_METHODS_COLUMN)
-unique_years = sorted(df_nodes['year'].unique()) if 'year' in df_nodes.columns else []
+        # Handle methods column
+        if methods_col in row and row[methods_col] is not None:
+            if isinstance(row[methods_col], list):
+                unique_methods.update(row[methods_col])
+            else:
+                unique_methods.add(str(row[methods_col]))
+        else:
+            unique_methods.add('None')
 
-# Streamlit app
-st.title("Paper Network Visualization")
+        # Handle pipeline parts column for coloring
+        if pipeline_col in row and row[pipeline_col] is not None:
+            if isinstance(row[pipeline_col], list):
+                unique_pipeline_parts.update(row[pipeline_col])
+            else:
+                unique_pipeline_parts.add(str(row[pipeline_col]))
+        else:
+            unique_pipeline_parts.add('None')
 
-# Sidebar filters
-st.sidebar.header("Filters")
-
-# Year filter
-selected_years = st.sidebar.multiselect(
-    "Filter by Year",
-    options=unique_years,
-    default=unique_years
-)
-
-# Category filter
-selected_categories = st.sidebar.multiselect(
-    "Filter by Category",
-    options=unique_categories,
-    default=unique_categories
-)
-
-# Detected Methods filter
-selected_methods = st.sidebar.multiselect(
-    "Filter by Detected Methods",
-    options=unique_methods,
-    default=unique_methods
-)
-
-# Toggle for edges
-show_edges = st.sidebar.checkbox("Show Edges", value=True)
-
-# Apply filters
-filtered_df = df_nodes.copy()
-if selected_years:
-    filtered_df = filtered_df[filtered_df['year'].isin(selected_years)]
-if selected_categories:
-    filtered_df = filtered_df[filtered_df[CATEGORY_COLUMN].apply(lambda x: any(cat in selected_categories for cat in x))]
-if selected_methods:
-    filtered_df = filtered_df[filtered_df[DETECTED_METHODS_COLUMN].apply(lambda x: any(method in selected_methods for method in x))]
-
-st.write(f"Displaying {len(filtered_df)} papers based on current filters.")
-
-# Generate the graph
-net = Network(height="750px", width="100%", notebook=True, cdn_resources='remote', directed=False)
-net.toggle_physics(True)
-
-# Function to determine node size based on citations
-def get_node_size(citations):
-    if citations < 5:
-        return 10
-    elif citations < 25:
-        return 20
-    elif citations < 75:
-        return 30
-    elif citations < 150:
-        return 40
-    else:
-        return 50
-
-# Generate colors for categories
-unique_pipeline_parts = get_unique_values(df_nodes, PIPELINE_PART_COLUMN)
-color_map = {part: f"#{np.random.choice(range(256), 3).tobytes().hex()}" for part in unique_pipeline_parts}
-
-# Add nodes to the network
-for idx, row in filtered_df.iterrows():
-    node_id = row['id']
-    title = row['title']
-    citations = row.get('citations', 0)
-    x = row.get('x', None)
-    y = row.get('y', None)
-    pipeline_part = row[PIPELINE_PART_COLUMN][0] if row[PIPELINE_PART_COLUMN] else None
-
-    size = get_node_size(citations)
-    color = color_map.get(pipeline_part, "#CCCCCC")
-
-    node_kwargs = {
-        'id': node_id,
-        'label': "",
-        'title': title,
-        'size': size,
-        'color': color
+    return {
+        'nodes_df': nodes_df,
+        'links_df': links_df,
+        'unique_categories': sorted(list(unique_categories)),
+        'unique_methods': sorted(list(unique_methods)),
+        'unique_pipeline_parts': sorted(list(unique_pipeline_parts)),
+        'category_col': category_col,
+        'methods_col': methods_col,
+        'pipeline_col': pipeline_col
     }
-    if x is not None and y is not None:
-        node_kwargs['x'] = x
-        node_kwargs['y'] = y
 
-    net.add_node(**node_kwargs)
 
-# Add edges to the network
-if show_edges and not df_links.empty:
-    for idx, row in df_links.iterrows():
-        source = row['source']
-        target = row['target']
-        if source in filtered_df['id'].values and target in filtered_df['id'].values:
-            net.add_edge(source, target)
+def get_node_color(pipeline_parts, color_map):
+    """Get color for node based on pipeline parts"""
+    if isinstance(pipeline_parts, list) and len(pipeline_parts) > 0:
+        return color_map.get(pipeline_parts[0], '#808080')
+    elif pipeline_parts and pipeline_parts != 'None':
+        return color_map.get(str(pipeline_parts), '#808080')
+    else:
+        return '#808080'  # Gray for None/empty
 
-# Save and display the graph
-try:
-    path = "paper_network.html"
-    net.save_graph(path)
-    with open(path, 'r', encoding='utf-8') as html_file:
-        html_content = html_file.read()
-    st.components.v1.html(html_content, height=750, scrolling=True)
-except Exception as e:
-    st.error(f"An error occurred while rendering the graph: {e}")
 
-# Display detailed information on click (placeholder for actual implementation)
-st.sidebar.header("Detailed Information")
-st.sidebar.write("Click on a node to see detailed information here.")
+def get_node_size(citations):
+    """Get node size based on citation count"""
+    try:
+        cit_count = int(citations) if citations else 0
+    except:
+        cit_count = 0
+
+    if cit_count == 0:
+        return 8
+    elif cit_count < 5:
+        return 12
+    elif cit_count < 25:
+        return 16
+    elif cit_count < 75:
+        return 20
+    elif cit_count < 150:
+        return 24
+    else:
+        return 28
+
+
+def filter_nodes(nodes_df, year_range, selected_categories, selected_methods,
+                 category_col, methods_col):
+    """Filter nodes based on criteria"""
+    filtered_df = nodes_df.copy()
+
+    # Year filter
+    if 'year' in filtered_df.columns:
+        filtered_df = filtered_df[
+            (filtered_df['year'] >= year_range[0]) &
+            (filtered_df['year'] <= year_range[1])
+            ]
+
+    # Category filter
+    if selected_categories and category_col in filtered_df.columns:
+        mask = filtered_df[category_col].apply(
+            lambda x: any(cat in (x if isinstance(x, list) else [str(x)])
+                          for cat in selected_categories) if x is not None else False
+        )
+        filtered_df = filtered_df[mask]
+
+    # Methods filter
+    if selected_methods and methods_col in filtered_df.columns:
+        mask = filtered_df[methods_col].apply(
+            lambda x: any(method in (x if isinstance(x, list) else [str(x)])
+                          for method in selected_methods) if x is not None else False
+        )
+        filtered_df = filtered_df[mask]
+
+    return filtered_df
+
+
+def create_graph(filtered_nodes_df, links_df, show_edges, processed_data):
+    """Create the interactive graph"""
+    if filtered_nodes_df.empty:
+        return go.Figure()
+
+    # Create color mapping
+    unique_pipeline_parts = processed_data['unique_pipeline_parts']
+    colors = px.colors.qualitative.Set3[:len(unique_pipeline_parts)]
+    color_map = dict(zip(unique_pipeline_parts, colors))
+
+    # Get filtered node IDs
+    filtered_node_ids = set(filtered_nodes_df.index)
+
+    # Prepare node data
+    node_x = []
+    node_y = []
+    node_colors = []
+    node_sizes = []
+    node_text = []
+    node_ids = []
+
+    for idx, row in filtered_nodes_df.iterrows():
+        node_x.append(row.get('x', 0))
+        node_y.append(row.get('y', 0))
+
+        # Color based on pipeline parts
+        pipeline_parts = row.get(processed_data['pipeline_col'])
+        node_colors.append(get_node_color(pipeline_parts, color_map))
+
+        # Size based on citations
+        citations = row.get('citations', 0)
+        node_sizes.append(get_node_size(citations))
+
+        # Hover text (title only)
+        title = row.get('title', 'No title')
+        node_text.append(title)
+        node_ids.append(idx)
+
+    fig = go.Figure()
+
+    # Add edges if enabled
+    if show_edges and not links_df.empty:
+        edge_x = []
+        edge_y = []
+
+        for _, link in links_df.iterrows():
+            source_id = link.get('source')
+            target_id = link.get('target')
+
+            # Only show edges between filtered nodes
+            if source_id in filtered_node_ids and target_id in filtered_node_ids:
+                source_row = filtered_nodes_df.loc[source_id]
+                target_row = filtered_nodes_df.loc[target_id]
+
+                edge_x.extend([source_row.get('x', 0), target_row.get('x', 0), None])
+                edge_y.extend([source_row.get('y', 0), target_row.get('y', 0), None])
+
+        if edge_x:  # Only add if there are edges to show
+            fig.add_trace(go.Scatter(
+                x=edge_x, y=edge_y,
+                mode='lines',
+                line=dict(width=0.5, color='rgba(125,125,125,0.3)'),
+                hoverinfo='none',
+                showlegend=False,
+                name='edges'
+            ))
+
+    # Add nodes
+    fig.add_trace(go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers',
+        marker=dict(
+            size=node_sizes,
+            color=node_colors,
+            line=dict(width=1, color='white'),
+            opacity=0.8
+        ),
+        text=node_text,
+        hovertemplate='<b>%{text}</b><extra></extra>',
+        customdata=node_ids,
+        name='nodes'
+    ))
+
+    # Update layout
+    fig.update_layout(
+        showlegend=False,
+        hovermode='closest',
+        margin=dict(b=20, l=5, r=5, t=40),
+        annotations=[
+            dict(
+                text="Methods Network Graph",
+                showarrow=False,
+                xref="paper", yref="paper",
+                x=0.005, y=-0.002,
+                xanchor='left', yanchor='bottom',
+                font=dict(size=14)
+            )
+        ],
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        plot_bgcolor='white',
+        height=600
+    )
+
+    return fig
+
+
+def display_node_details(node_data, processed_data):
+    """Display detailed information about selected node"""
+    st.subheader(f"📄 {node_data.get('title', 'No title')}")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.write(f"**Year:** {node_data.get('year', 'N/A')}")
+        st.write(f"**Citations:** {node_data.get('citations', 'N/A')}")
+
+        # Authors
+        authors = node_data.get('authors', 'N/A')
+        if isinstance(authors, list):
+            authors = ', '.join(authors[:3]) + ('...' if len(authors) > 3 else '')
+        st.write(f"**Authors:** {authors}")
+
+    with col2:
+        # Pipeline parts
+        pipeline_parts = node_data.get(processed_data['pipeline_col'])
+        if isinstance(pipeline_parts, list):
+            pipeline_parts = ', '.join(pipeline_parts)
+        st.write(f"**Pipeline Parts:** {pipeline_parts}")
+
+        # Categories
+        categories = node_data.get(processed_data['category_col'])
+        if isinstance(categories, list):
+            categories = ', '.join(categories)
+        st.write(f"**Categories:** {categories}")
+
+    # Methods
+    methods = node_data.get(processed_data['methods_col'])
+    if isinstance(methods, list) and methods:
+        st.write("**Detected Methods:**")
+        st.write(', '.join(methods))
+
+    # Abstract if available
+    if 'abstract' in node_data:
+        st.write("**Abstract:**")
+        st.write(node_data['abstract'])
+
+
+# Main app
+def main():
+    st.title("🔬 Methods Graph Visualization")
+
+    # Load and preprocess data
+    with st.spinner("Loading graph data..."):
+        raw_data = load_graph_data()
+        processed_data = preprocess_data(raw_data)
+
+    nodes_df = processed_data['nodes_df']
+    links_df = processed_data['links_df']
+
+    # Create layout columns
+    left_sidebar = st.sidebar
+    main_col, right_panel = st.columns([3, 1])
+
+    # Sidebar filters
+    with left_sidebar:
+        st.header("🔍 Filters")
+
+        # Year filter
+        if 'year' in nodes_df.columns:
+            min_year = int(nodes_df['year'].min())
+            max_year = int(nodes_df['year'].max())
+            year_range = st.slider(
+                "Year Range",
+                min_value=min_year,
+                max_value=max_year,
+                value=(min_year, max_year),
+                key="year_filter"
+            )
+        else:
+            year_range = (2000, 2024)
+
+        # Category filter
+        st.subheader("Categories")
+        selected_categories = st.multiselect(
+            "Select categories:",
+            options=processed_data['unique_categories'],
+            key="category_filter"
+        )
+
+        # Methods filter
+        st.subheader("Detected Methods")
+        selected_methods = st.multiselect(
+            "Select methods:",
+            options=processed_data['unique_methods'],
+            key="methods_filter"
+        )
+
+        # Edge toggle
+        show_edges = st.checkbox("Show edges", value=True, key="edge_toggle")
+
+        st.markdown("---")
+
+    # Filter nodes
+    filtered_nodes = filter_nodes(
+        nodes_df, year_range, selected_categories, selected_methods,
+        processed_data['category_col'], processed_data['methods_col']
+    )
+
+    # Display paper count
+    with left_sidebar:
+        st.metric("📊 Papers Displayed", len(filtered_nodes))
+
+    # Main graph
+    with main_col:
+        if not filtered_nodes.empty:
+            fig = create_graph(filtered_nodes, links_df, show_edges, processed_data)
+
+            # Handle click events
+            clicked_point = st.plotly_chart(
+                fig,
+                use_container_width=True,
+                key="main_graph"
+            )
+
+        else:
+            st.warning("No papers match the current filters.")
+
+    # Right panel for node details
+    with right_panel:
+        st.header("📋 Details")
+
+        # Store selected node in session state
+        if 'selected_node' not in st.session_state:
+            st.session_state.selected_node = None
+
+        # You would need to implement click handling here
+        # This is a simplified version - in practice you'd need to capture
+        # the clicked point from the plotly chart
+
+        if st.session_state.selected_node is not None:
+            node_data = filtered_nodes.loc[st.session_state.selected_node]
+            display_node_details(node_data.to_dict(), processed_data)
+        else:
+            st.info("Click on a node to see details")
+
+            # Show legend
+            st.subheader("🎨 Legend")
+            st.write("**Node Size (Citations):**")
+            st.write("• Small: 0-4 citations")
+            st.write("• Medium: 5-24 citations")
+            st.write("• Large: 25-74 citations")
+            st.write("• X-Large: 75-149 citations")
+            st.write("• XX-Large: 150+ citations")
+
+
+if __name__ == "__main__":
+    main()
