@@ -74,15 +74,15 @@ def load_data(file_path):
             logging.DEBUG(f"Loaded {len(data)} records from '{file_path}'.")
         df = pd.DataFrame(data) # Create DataFrame from the list of dicts
         logging.DEBUG(f"DataFrame created with shape: {df.shape} from '{file_path}'.")
-    except FileNotFoundError:
-        st.error(f"Error: The file '{file_path}' was not found. Please ensure the JSON is in the correct directory.")
-        st.stop()
-    except json.JSONDecodeError as e:
-        st.error(f"Error: Could not decode JSON from '{file_path}'. Please check if it's a valid JSON file. Details: {e}")
-        st.stop()
-    except Exception as e:
-        st.error(f"An unexpected error occurred while loading the JSON file: {e}")
-        st.stop()
+    # except FileNotFoundError:
+    #     st.error(f"Error: The file '{file_path}' was not found. Please ensure the JSON is in the correct directory.")
+    #     st.stop()
+    # except json.JSONDecodeError as e:
+    #     st.error(f"Error: Could not decode JSON from '{file_path}'. Please check if it's a valid JSON file. Details: {e}")
+    #     st.stop()
+    # except Exception as e:
+    #     st.error(f"An unexpected error occurred while loading the JSON file: {e}")
+    #     st.stop()
 
     # Columns expected to contain lists (or string representations of lists)
     list_cols = [
