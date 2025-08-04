@@ -90,8 +90,12 @@ def preprocess_data(data):
     unique_categories = sorted(list(set(item for sublist in nodes_df["kw_pipeline_category"] for item in sublist)))
     unique_methods = sorted(list(set(item for sublist in nodes_df["kw_detected_methods"] for item in sublist)))
 
-    # Use kw_pipeline_category for coloring as well
-    unique_pipeline_parts_for_color = unique_categories  # Use the same set for coloring
+    # FIX: Collect only the FIRST category for coloring and legend
+    unique_pipeline_parts_for_color = set()
+    for category_list in nodes_df["kw_pipeline_category"]:
+        if category_list:  # If the list is not empty
+            unique_pipeline_parts_for_color.add(category_list[0])
+    unique_pipeline_parts_for_color = sorted(list(unique_pipeline_parts_for_color))
 
     return {
         'nodes_df': nodes_df,
@@ -147,7 +151,7 @@ def filter_nodes(nodes_df, year_range, selected_categories, selected_methods,
         filtered_df = filtered_df[mask]
 
     # Methods filter: Only apply if methods are selected
-    if selected_methods and methods_col in filtered_df.columns:
+    if selected_methods and methods_df.columns:
         mask = filtered_df[methods_col].apply(
             lambda x: any(method in x for method in selected_methods)
         )
@@ -226,33 +230,15 @@ def create_graph(filtered_nodes_df, links_df, show_edges, processed_data):
         name='nodes'
     ))
 
-    # Add color legend separately
-    for category, color in color_map.items():
-        fig.add_trace(go.Scatter(
-            x=[None], y=[None],  # Dummy points for legend
-            mode='markers',
-            marker=dict(size=10, color=color, symbol='circle'),
-            name=category,
-            showlegend=True
-        ))
-
-    # Update layout
+    # FIX: Remove Plotly's built-in legend and legend items, we'll create a custom one
     fig.update_layout(
-        showlegend=True,  # Show legend for categories
+        showlegend=False,
         hovermode='closest',
         margin=dict(b=20, l=5, r=5, t=40),
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         plot_bgcolor='white',
-        height=600,
-        legend=dict(
-            x=1.02, y=1,
-            xanchor='left', yanchor='top',
-            bgcolor='rgba(255,255,255,0.7)',
-            bordercolor='rgba(0,0,0,0.2)',
-            borderwidth=1,
-            title='Pipeline Category'
-        )
+        height=600
     )
 
     return fig
@@ -423,13 +409,25 @@ def main():
         else:
             st.info("Click on a node to see details (or use 'Simulate Click' button).")
 
-            # Show legend for node sizes
-            st.subheader("🎨 Node Size Legend (Citations)")
-            st.write("• Size 5: 0-4 citations")
-            st.write("• Size 8: 5-24 citations")
-            st.write("• Size 12: 25-49 citations")
-            st.write("• Size 16: 50-99 citations")
-            st.write("• Size 20: 100+ citations")
+        # --- Custom Color Legend ---
+        st.subheader("🎨 Color Legend (Pipeline Category)")
+        unique_pipeline_parts = processed_data['unique_pipeline_parts_for_color']
+        colors = px.colors.qualitative.Alphabet + px.colors.qualitative.Dark24
+        color_map = dict(zip(unique_pipeline_parts, colors[:len(unique_pipeline_parts)]))
+
+        for category, color in color_map.items():
+            st.markdown(f"<div style='display: flex; align-items: center; margin-bottom: 5px;'>"
+                        f"<div style='width: 15px; height: 15px; background-color: {color}; border-radius: 3px; margin-right: 8px;'></div>"
+                        f"<span>{category}</span>"
+                        f"</div>", unsafe_allow_html=True)
+
+        # Show legend for node sizes
+        st.subheader("📏 Node Size Legend (Citations)")
+        st.write("• Size 5: 0-4 citations")
+        st.write("• Size 8: 5-24 citations")
+        st.write("• Size 12: 25-49 citations")
+        st.write("• Size 16: 50-99 citations")
+        st.write("• Size 20: 100+ citations")
 
 
 if __name__ == "__main__":
