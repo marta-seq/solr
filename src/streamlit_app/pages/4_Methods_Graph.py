@@ -178,7 +178,7 @@ else:
 
 # Get all unique values for multiselect filters from the entire dataset (df_nodes)
 all_categories = sorted(list(set(item for sublist in df_nodes['kw_pipeline_category'] for item in sublist))) if 'kw_pipeline_category' in df_nodes.columns else []
-all_assay_types = sorted(list(set(item for sublist in df_nodes['llm_annot_tested_assay_types_platforms'] for item in sublist))) if 'llm_annot_tested_assay_types_platforms' in df_nodes.columns else []
+all_assay_types = sorted(list(set(item for sublist in df_nodes['kw_detected_methods'] for item in sublist))) if 'kw_detected_methods' in df_nodes.columns else []
 all_data_modalities = sorted(list(set(item for sublist in df_nodes['llm_annot_tested_data_modalities'] for item in sublist))) if 'llm_annot_tested_data_modalities' in df_nodes.columns else []
 
 # Multiselect filters for list-based columns
@@ -217,9 +217,9 @@ if selected_categories and 'kw_pipeline_category' in filtered_nodes_df.columns:
         filtered_nodes_df['kw_pipeline_category'].apply(lambda x: any(cat in selected_categories for cat in x))
     ]
 
-if selected_assay_types and 'llm_annot_tested_assay_types_platforms' in filtered_nodes_df.columns:
+if selected_assay_types and 'kw_detected_methods' in filtered_nodes_df.columns:
     filtered_nodes_df = filtered_nodes_df[
-        filtered_nodes_df['llm_annot_tested_assay_types_platforms'].apply(lambda x: any(assay in selected_assay_types for assay in x))
+        filtered_nodes_df['kw_detected_methods'].apply(lambda x: any(assay in selected_assay_types for assay in x))
     ]
 
 if selected_data_modalities and 'llm_annot_tested_data_modalities' in filtered_nodes_df.columns:
@@ -252,7 +252,7 @@ if not filtered_nodes_df.empty:
         year = row['year']
         # Join lists for display in tooltip to show all values
         categories = ", ".join(row['kw_pipeline_category']) if row['kw_pipeline_category'] else "N/A"
-        assay_types = ", ".join(row['llm_annot_tested_assay_types_platforms']) if row['llm_annot_tested_assay_types_platforms'] else "N/A"
+        assay_types = ", ".join(row['kw_detected_methods']) if row['kw_detected_methods'] else "N/A"
         data_modalities = ", ".join(row['llm_annot_tested_data_modalities']) if row['llm_annot_tested_data_modalities'] else "N/A"
         abstract = row['abstract']
 
