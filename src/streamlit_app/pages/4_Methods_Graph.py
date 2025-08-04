@@ -315,8 +315,8 @@ if not filtered_nodes_df.empty:
 
                 # Check if edge already exists to prevent duplicates in undirected graph
                 # Pyvis handles this somewhat, but explicit check can be safer
-                if not net.has_edge(source_node, target_node) and not net.has_edge(target_node, source_node):
-                    net.add_edge(
+                # if not net.has_edge(source_node, target_node) and not net.has_edge(target_node, source_node):
+                net.add_edge(
                         source_node,
                         target_node,
                         title=edge_title,
