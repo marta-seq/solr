@@ -375,8 +375,8 @@ with graph_col:
                         nodes: new vis.DataSet({json.dumps(net.nodes)}),
                         edges: new vis.DataSet({json.dumps(net.edges)})
                     }};
-                    // FIX: Use net.options.dump() to get a JSON-serializable dictionary
-                    var options = {json.dumps(net.options.dump())}; 
+                    // FIX: Use net.options.to_dict() to get a JSON-serializable dictionary
+                    var options = {json.dumps(net.options.to_dict())}; 
                     network = new vis.Network(container, data, options);
 
                     network.on("click", function (params) {{
@@ -433,4 +433,4 @@ with details_col:
         else:
             st.info("Select a paper from the graph to see its details here, or the selected paper is no longer in the filtered view.")
     else:
-        st.info("Click on a node in the graph to display its details here.")
+        st.info("Click on a node in the gr
