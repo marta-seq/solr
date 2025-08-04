@@ -433,4 +433,4 @@ with details_col:
         else:
             st.info("Select a paper from the graph to see its details here, or the selected paper is no longer in the filtered view.")
     else:
-        st.info("Click on a node in the gr
+        st.info("Click on a node in the graph to display its details here.")
