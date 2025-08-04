@@ -272,17 +272,18 @@ if 'selected_doi' not in st.session_state:
     st.session_state.selected_doi = None
 
 # Get selected DOI from query params if available (from node click)
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 if "selected_doi" in query_params:
-    st.session_state.selected_doi = query_params["selected_doi"][0]
+    # Ensure it's a string, as query_params can sometimes return a list if multiple values exist
+    st.session_state.selected_doi = str(query_params["selected_doi"])
     # Clear query param to prevent re-triggering on subsequent runs unless clicked again
-    st.experimental_set_query_params(selected_doi=None)  # Clear it after reading
+    st.query_params["selected_doi"] = None  # Directly modify query_params dict
 
 with graph_col:
     if not filtered_nodes_df.empty:
         net = Network(height="750px", width="100%", notebook=True, cdn_resources='remote', directed=False)
-        # FIX: Disable physics to make nodes static and improve performance
-        net.toggle_physics(False)
+        # Physics is already disabled, ensuring static nodes.
+        # net.toggle_physics(False)
 
         # Calculate max citations for node sizing
         max_citations = filtered_nodes_df['citations'].max() if 'citations' in filtered_nodes_df.columns else 0
@@ -397,22 +398,63 @@ with graph_col:
                         edges: new vis.DataSet({json.dumps(net.edges)})
                     }};
                     var options = {json.dumps(json.loads(net.options.to_json()))}; 
+
+                    // FIX: Explicitly set node options to ensure no labels and control interaction
+                    options.nodes = options.nodes || {{}};
+                    options.nodes.label = ''; // Ensure no label is displayed on the node
+                    options.nodes.font = options.nodes.font || {{}};
+                    options.nodes.font.size = 0; // Make font size 0 to ensure it's hidden
+                    options.interaction = options.interaction || {{}};
+                    options.interaction.tooltipDelay = 100; // Small delay for hover tooltip
+                    options.interaction.hover = true; // Enable hover
+                    options.interaction.hoverConnectedEdges = false; // Don't highlight connected edges on hover
+                    options.interaction.selectConnectedEdges = false; // Don't select connected edges on click
+                    options.interaction.zoomView = true; // Allow zooming
+                    options.interaction.dragView = true; // Allow dragging the view
+
                     network = new vis.Network(container, data, options);
 
                     network.on("click", function (params) {{
                         if (params.nodes.length > 0) {{
                             var nodeId = params.nodes[0];
                             console.log("Node clicked:", nodeId); // Debug log
+
+                            // Update URL query parameter without reloading the whole page
                             var url = new URL(window.location.href);
                             url.searchParams.set('selected_doi', nodeId);
                             window.history.pushState({{path:url.href}},'',url.href);
+
                             // Send message to parent (Streamlit) to trigger re-run and update state
                             window.parent.postMessage({{
                                 type: 'streamlit:setComponentValue',
                                 key: 'selected_node_trigger', // Dummy key to trigger re-run
                                 value: nodeId
                             }}, '*');
+
+                            // FIX: Attempt to hide the native Pyvis tooltip on click
+                            var tooltip = document.querySelector('.vis-tooltip');
+                            if (tooltip) {{
+                                tooltip.style.display = 'none';
+                            }
+                            // Also hide any active tooltips from Pyvis directly
+                            network.hidePopup();
                         }}
+                    }});
+
+                    // FIX: Ensure native tooltip is hidden when graph is loaded or interacted with
+                    network.on("stabilized", function() {{
+                        var tooltip = document.querySelector('.vis-tooltip');
+                        if (tooltip) {{
+                            tooltip.style.display = 'none';
+                        }}
+                        network.hidePopup(); // Also hide any active popups
+                    }});
+                    network.on("afterDrawing", function() {{
+                        var tooltip = document.querySelector('.vis-tooltip');
+                        if (tooltip) {{
+                            tooltip.style.display = 'none';
+                        }}
+                        network.hidePopup(); // Also hide any active popups
                     }});
                 }}
                 document.addEventListener('DOMContentLoaded', initializeNetwork);
@@ -450,7 +492,7 @@ with details_col:
             # Button to close/clear the details panel
             if st.button("Close Details"):
                 st.session_state.selected_doi = None
-                st.experimental_set_query_params(selected_doi=None)  # Also clear URL param
+                st.query_params["selected_doi"] = None  # Also clear URL param
                 st.rerun()  # Force rerun to clear the panel
         else:
             st.info(
