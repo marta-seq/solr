@@ -1,3 +1,5 @@
+import logging
+
 import streamlit as st
 import pandas as pd
 import networkx as nx
@@ -69,7 +71,9 @@ def load_data(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f) # Load the entire JSON into a Python list of dicts
+            logging.DEBUG(f"Loaded {len(data)} records from '{file_path}'.")
         df = pd.DataFrame(data) # Create DataFrame from the list of dicts
+        logging.DEBUG(f"DataFrame created with shape: {df.shape} from '{file_path}'.")
     except FileNotFoundError:
         st.error(f"Error: The file '{file_path}' was not found. Please ensure the JSON is in the correct directory.")
         st.stop()
