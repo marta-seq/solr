@@ -1,6 +1,6 @@
 # Spatial Omics Living Review
 
-This repository serves as a living review for the field of spatial omics. 
+This repository serves as a living review for the field of spatial omics.
 It aims to continuously update and curate relevant scientific literature, methodologies,
 and resources within this rapidly evolving domain.
 
@@ -9,40 +9,15 @@ This project provides an interactive platform for exploring computational neuros
 <br>
 
 <p align="center">
-  <a href="https://marta-seq.github.io/solr/" target="_blank" style="
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    background-color: #2ea44f; /* GitHub green */
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-  " onmouseover="this.style.backgroundColor='#2c974b'" onmouseout="this.style.backgroundColor='#2ea44f'">
-    🚀 View on GitHub Pages
+  <a href="https://marta-seq.github.io/solr/" target="_blank">
+    <img src="https://img.shields.io/badge/View_on_GitHub_Pages-2ea44f?style=for-the-badge&logo=github&logoColor=white" alt="View on GitHub Pages">
   </a>
-  <a href="https://spatialomicslivereview.streamlit.app/" target="_blank" style="
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    background-color: #FF4B4B; /* Streamlit red */
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-  " onmouseover="this.style.backgroundColor='#e04242'" onmouseout="this.style.backgroundColor='#FF4B4B'">
-    💡 Launch Streamlit App
+  <a href="https://spatialomicslivereview.streamlit.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Launch_Streamlit_App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Launch Streamlit App">
   </a>
 </p>
 
 
-[//]: # (![Man in boat on a sea of papers]&#40;figures/img_2.png&#41;)
 <img src="figures/img_2.png" alt="Man in boat on a sea of papers" width="700">
 
 
@@ -56,16 +31,32 @@ Imaging Mass Cytometry, and more, generates vast amounts of data and new analyti
 * **Highlight emerging trends:** Identify and discuss new directions and technologies.
 * **Curate resources:** Point to useful tools, software, datasets, and community initiatives.
 
-The focus is on create a roadmap of the available methods to analyse spatial omics data and to 
+The focus is on create a roadmap of the available methods to analyse spatial omics data and to
 summarize the current spatial datasets available in the field.
 
 The review is based on the scrap of pubmed, with papers being weakly annotated
-by google LLMs to identify relevant papers and categorize methods/applications/tools. 
+by google LLMs to identify relevant papers and categorize methods/applications/tools.
 The entries are then manually curated by the author.
 
 
-[//]: # (![scheme]&#40;figures/scheme1.png&#41;)
 <img src="figures/filegraph.svg" alt="scheme" width="500">
+
+---
+
+## Pipeline Statistics
+
+<!-- STATS_TABLE_START -->
+| Metric | Value |
+|---|---|
+| Total Papers | 9784 |
+| Computational Papers | 2652 |
+| Non-Computational Papers | 7132 |
+| Last Scrape Date | 2025-07-18 17:12:11 |
+| Last Annotation Date | 2025-07-29 22:50:28 |
+| Last Manual Curation Date | N/A |
+<!-- STATS_TABLE_END -->
+
+---
 
 ## Contribution
 
@@ -81,12 +72,9 @@ TODO
 
 ---
 
-**Note:** The image above metaphorically represents the challenge and ongoing 
-effort of navigating the vast and ever-growing sea of scientific literature in 
+**Note:** The image above metaphorically represents the challenge and ongoing
+effort of navigating the vast and ever-growing sea of scientific literature in
 spatial omics to find relevant and valuable information.
-
-
-
 [//]: # (![scheme]&#40;figures/scheme1.png&#41;)
 <img src="figures/scheme1.png" alt="scheme" width="500">
 
