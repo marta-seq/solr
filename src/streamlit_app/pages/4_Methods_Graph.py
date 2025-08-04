@@ -236,8 +236,6 @@ filtered_nodes_df = filtered_nodes_df[
     (filtered_nodes_df['year'] >= selected_year_range[0]) &
     (filtered_nodes_df['year'] <= selected_year_range[1])
     ]
-# Debug print: Papers after year filter - REMOVED
-# st.write(f"Papers after year filter: {len(filtered_nodes_df)}")
 
 # Apply multiselect/checkbox filters: if NO categories are selected, it means NO filter is applied for this category.
 # If categories ARE selected, then filter to include papers with ANY of the selected categories.
@@ -245,15 +243,11 @@ if selected_categories:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['kw_pipeline_category'].apply(lambda x: any(cat in selected_categories for cat in x))
     ]
-# Debug print: Papers after pipeline category filter - REMOVED
-# st.write(f"Papers after pipeline category filter: {len(filtered_nodes_df)}")
 
 if selected_assay_types:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['kw_detected_methods'].apply(lambda x: any(assay in selected_assay_types for assay in x))
     ]
-# Debug print: Papers after assay types filter - REMOVED
-# st.write(f"Papers after assay types filter: {len(filtered_nodes_df)}")
 
 # Apply search query filter
 if search_query:
@@ -262,14 +256,12 @@ if search_query:
         filtered_nodes_df['title'].str.lower().str.contains(search_query_lower) |
         filtered_nodes_df['doi'].str.lower().str.contains(search_query_lower)
         ]
-# Debug print: Papers after search filter - REMOVED
-# st.write(f"Papers after search filter: {len(filtered_nodes_df)}")
 
 st.write(f"Displaying **{len(filtered_nodes_df)}** papers based on current filters.")
 
 # --- Graph Visualization and Details Panel Layout ---
 # Use columns to place the graph on the left and the details panel on the right
-graph_col, details_col = st.columns([0.7, 0.3])  # 70% for graph, 30% for details
+graph_col, details_col = st.columns([0.8, 0.2])  # Adjusted column ratio for wider graph
 
 # Initialize session state for selected DOI (for the details panel)
 if 'selected_doi' not in st.session_state:
@@ -291,21 +283,21 @@ with graph_col:
         # Physics is already disabled, ensuring static nodes.
         # net.toggle_physics(False)
 
-        # Define citation-based sizes
+        # Define citation-based sizes - ADJUSTED SIZES
         def get_node_size(citations):
             if citations <= 5:
-                return 10
+                return 5  # Smaller base size
             elif 5 < citations <= 25:
-                return 15
+                return 8
             elif 25 < citations <= 50:
-                return 20
+                return 12
             elif 50 < citations <= 100:
-                return 25
+                return 16
             else:  # citations > 100
-                return 30
+                return 20  # Max size
 
 
-        # --- Node Display Limit (NEW) ---
+        # --- Node Display Limit ---
         max_nodes_to_display = st.sidebar.slider(
             "Max Nodes to Display (for performance)",
             min_value=100,
@@ -342,7 +334,7 @@ with graph_col:
                 node_color = category_colors.get(row['kw_pipeline_category'][0], "#CCCCCC")
 
             # HTML-formatted tooltip for hover - ONLY TITLE
-            tooltip_html = f"<b>Title:</b> {title}"
+            tooltip_html = f"<b>Title:</b> {title}"  # FIX: Only title on hover
 
             net.add_node(
                 node_id,
@@ -394,10 +386,17 @@ with graph_col:
 
         # Generate HTML directly from network object
         try:
-            html_content = net.generate_html(notebook=True)  # FIX: Generate HTML directly
+            html_content = net.generate_html(notebook=True)  # Generate HTML directly
 
             # Inject JavaScript to handle node clicks and update query parameters
             js_injection = f"""
+            <style>
+                /* FIX: Remove border and padding from the network container */
+                #mynetwork {{
+                    border: none !important;
+                    padding: 0 !important;
+                }}
+            </style>
             <script type="text/javascript">
                 var network = null;
                 function initializeNetwork() {{
