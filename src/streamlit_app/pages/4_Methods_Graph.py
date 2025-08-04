@@ -414,7 +414,7 @@ def main():
             }
 
             # Capture click events and update session state
-            clicked_data = st.plotly_chart(
+            st.plotly_chart(
                 fig,
                 use_container_width=True,
                 key="main_graph",
@@ -423,9 +423,13 @@ def main():
             )
 
             # Check if a node was clicked and update selected_node
-            if isinstance(clicked_data, dict) and 'points' in clicked_data and clicked_data['points']:
+            # The click data is stored in st.session_state.main_graph_select
+            clicked_data_from_session = st.session_state.get('main_graph_select')
+
+            if isinstance(clicked_data_from_session, dict) and 'points' in clicked_data_from_session and \
+                    clicked_data_from_session['points']:
                 # The customdata contains the original node 'id' (DOI)
-                clicked_node_id = clicked_data['points'][0]['customdata']
+                clicked_node_id = clicked_data_from_session['points'][0]['customdata']
                 # Only update if a new node is clicked to avoid unnecessary reruns
                 if st.session_state.get('selected_node') != clicked_node_id:
                     st.session_state.selected_node = clicked_node_id
