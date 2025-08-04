@@ -287,4 +287,3 @@ if not df_nodes.empty:
 
 else:
     st.info("No papers loaded or available to display from your data file.")
-```
