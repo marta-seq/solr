@@ -105,12 +105,14 @@ def load_data(file_path):
     # Columns expected to contain lists (or string representations of lists)
     list_cols = [
         'kw_pipeline_category',
-        'llm_annot_tested_assay_types_platforms',
+        'kw_detected_methods',
+        # 'llm_annot_tested_assay_types_platforms',
         'llm_annot_tested_data_modalities',
         'llm_annot_compared_algorithms_packages',
         # 'similar_papers', # This column is now treated as a node property, not for direct edge drawing
         'kw_tissue'
     ]
+
     for col in list_cols:
         if col in df_nodes.columns:
             # Apply safe_literal_eval to ensure all are proper lists for filtering
