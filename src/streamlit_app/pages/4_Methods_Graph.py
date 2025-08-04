@@ -278,7 +278,7 @@ if not filtered_nodes_df.empty:
         <b>Categories:</b> {categories}<br>
         <b>Assay Types/Platforms:</b> {assay_types}<br>
         <b>Data Modalities:</b> {data_modalities}<br>
-        <b>Abstract:</b> {bstract_content}...
+        <b>Abstract:</b> {abstract_content}...
         """
 
         net.add_node(
