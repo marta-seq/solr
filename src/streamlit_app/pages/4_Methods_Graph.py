@@ -75,6 +75,7 @@ def load_data(file_path):
         # Create DataFrame for nodes from the 'nodes' key
         if 'nodes' in full_json_data and isinstance(full_json_data['nodes'], list):
             df_nodes = pd.DataFrame(full_json_data['nodes'])
+            df_nodes['doi'] = df_nodes['id'].astype(str) # Ensure 'doi' is a string for node IDs
             logging.debug(f"Nodes DataFrame created with shape: {df_nodes.shape}.")
         else:
             st.error(f"Error: JSON data from '{file_path}' does not contain a 'nodes' key or 'nodes' is not a list.")
@@ -82,8 +83,8 @@ def load_data(file_path):
 
         # Create DataFrame for edges from the 'edges' key (if present and valid)
         df_edges = pd.DataFrame() # Initialize as empty
-        if 'edges' in full_json_data and isinstance(full_json_data['edges'], list):
-            df_edges = pd.DataFrame(full_json_data['edges'])
+        if 'links' in full_json_data and isinstance(full_json_data['edges'], list):
+            df_edges = pd.DataFrame(full_json_data['links'])
             logging.debug(f"Edges DataFrame created with shape: {df_edges.shape}.")
         else:
             st.warning(f"JSON data from '{file_path}' does not contain an 'edges' key or 'edges' is not a list. No explicit edges will be loaded from 'edges' key.")
@@ -105,7 +106,7 @@ def load_data(file_path):
         'llm_annot_tested_assay_types_platforms',
         'llm_annot_tested_data_modalities',
         'llm_annot_compared_algorithms_packages',
-        'similar_papers', # This column is now treated as a node property, not for direct edge drawing
+        # 'similar_papers', # This column is now treated as a node property, not for direct edge drawing
         'kw_tissue'
     ]
     for col in list_cols:
