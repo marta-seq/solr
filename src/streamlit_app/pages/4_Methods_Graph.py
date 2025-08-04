@@ -37,9 +37,9 @@ def preprocess_data(data):
             nodes_df[col] = nodes_df[col].fillna('None')
 
     # Extract unique values for filtering
-    category_col = "CATEGORY_COLUMN_NAME"  # Replace with actual column name
-    methods_col = "DETECTED_METHODS_COLUMN_NAME"  # Replace with actual column name
-    pipeline_col = "PIPELINE_PART_COLUMN_NAME"  # Replace with actual column name
+    category_col = "kw_pipeline_category"  # Replace with actual column name
+    methods_col = "kw_detected_methods"  # Replace with actual column name
+    pipeline_col = "kw_pipeline_category"  # Replace with actual column name
 
     # Get unique values from list columns
     unique_categories = set()
