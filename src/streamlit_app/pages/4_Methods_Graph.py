@@ -30,7 +30,7 @@ def load_data(file_path):
     return pd.DataFrame(nodes), pd.DataFrame(links)
 
 # Define the path to your data file
-DATA_FILE = 'data/methods/graph_data.json.jsonl'
+DATA_FILE = 'data/methods/graph_data.json'
 
 # Load the data
 try:
