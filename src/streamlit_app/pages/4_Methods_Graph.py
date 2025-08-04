@@ -17,7 +17,7 @@ st.set_page_config(page_title="Methods Graph", layout="wide")
 def load_graph_data():
     """Load and preprocess graph data"""
     try:
-        with open('data/methods/graph_data.json.jsonl', 'r') as f:
+        with open('data/methods/graph_data.json', 'r') as f:
             data = json.load(f)
         return data
     except Exception as e:
