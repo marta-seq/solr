@@ -267,6 +267,7 @@ if not filtered_nodes_df.empty:
         node_color = "#CCCCCC" # Default grey if no category
         if row['kw_pipeline_category']:
             node_color = category_colors.get(row['kw_pipeline_category'][0], "#CCCCCC")
+        abstract_content = f"<b>Abstract:</b> {abstract[:300]}..." if abstract else "<b>Abstract:</b> Not available"
 
         # Tooltip content
         tooltip = f"""
@@ -277,7 +278,7 @@ if not filtered_nodes_df.empty:
         <b>Categories:</b> {categories}<br>
         <b>Assay Types/Platforms:</b> {assay_types}<br>
         <b>Data Modalities:</b> {data_modalities}<br>
-        <b>Abstract:</b> {abstract[:300]}...
+        <b>Abstract:</b> {bstract_content}...
         """
 
         net.add_node(
