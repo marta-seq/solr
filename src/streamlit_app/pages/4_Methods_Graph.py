@@ -370,6 +370,15 @@ def main():
         # Edge toggle
         show_edges = st.checkbox("Show similarity edges", value=True, key="edge_toggle")
 
+        # --- Node Display Limit (NEW) ---
+        max_nodes_to_display = st.slider(
+            "Max Nodes to Display (for performance)",
+            min_value=100,
+            max_value=len(nodes_df) if len(nodes_df) > 100 else 100,  # Max based on total nodes
+            value=min(1000, len(nodes_df)),  # Default to 1000 or total count
+            key="max_nodes_slider"
+        )
+
         st.markdown("---")
         st.subheader("📊 Statistics")
 
@@ -379,14 +388,20 @@ def main():
         processed_data['category_col'], processed_data['methods_col']
     )
 
+    # Apply display limit after filtering
+    nodes_to_draw = filtered_nodes.head(max_nodes_to_display)
+    if len(filtered_nodes) > max_nodes_to_display:
+        st.warning(
+            f"Displaying only the first {len(nodes_to_draw)} of {len(filtered_nodes)} filtered papers for performance. Adjust 'Max Nodes to Display' in the sidebar.")
+
     # Display paper count in sidebar
     with left_sidebar:
-        st.metric("Papers Displayed", len(filtered_nodes))
+        st.metric("Papers Displayed", len(nodes_to_draw))  # Metric reflects actual drawn nodes
 
     # Main graph
     with main_col:
-        if not filtered_nodes.empty:
-            fig = create_graph(filtered_nodes, links_df, show_edges, processed_data)
+        if not nodes_to_draw.empty:  # Use nodes_to_draw for graph creation
+            fig = create_graph(nodes_to_draw, links_df, show_edges, processed_data)
 
             # Configure Plotly chart for click events
             plotly_config = {
@@ -408,16 +423,16 @@ def main():
             )
 
             # Check if a node was clicked and update selected_node
-            # FIX: More robust check for clicked_data to prevent TypeError
             if isinstance(clicked_data, dict) and 'points' in clicked_data and clicked_data['points']:
                 # The customdata contains the original node 'id' (DOI)
                 clicked_node_id = clicked_data['points'][0]['customdata']
-                if st.session_state.selected_node != clicked_node_id:
+                # Only update if a new node is clicked to avoid unnecessary reruns
+                if st.session_state.get('selected_node') != clicked_node_id:
                     st.session_state.selected_node = clicked_node_id
                     st.rerun()  # Rerun to update the right panel
 
         else:
-            st.warning("No papers match the current filters.")
+            st.warning("No papers match the current filters or display limit.")
 
     # Right panel for node details
     with right_panel:
@@ -428,8 +443,8 @@ def main():
             st.session_state.selected_node = None
 
         # Display details if a node is selected
-        if st.session_state.selected_node is not None and st.session_state.selected_node in filtered_nodes.index:
-            node_data = filtered_nodes.loc[st.session_state.selected_node]
+        if st.session_state.selected_node is not None and st.session_state.selected_node in nodes_df.index:  # Check against full nodes_df
+            node_data = nodes_df.loc[st.session_state.selected_node]  # Get data from full df
             display_node_details(node_data.to_dict(), processed_data)
         else:
             st.info("Click on a node to see details.")
