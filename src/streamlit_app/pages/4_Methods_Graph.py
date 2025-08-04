@@ -443,4 +443,3 @@ with details_col:
     else:
         st.info("Click on a node in the graph to display its details here.")
 
-```
