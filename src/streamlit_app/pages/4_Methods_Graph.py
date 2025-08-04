@@ -69,12 +69,12 @@ def load_data(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             full_json_data = json.load(f)  # Load the entire JSON dictionary
 
-        # Debug print: Raw nodes loaded from JSON
-        if 'nodes' in full_json_data and isinstance(full_json_data['nodes'], list):
-            st.write(f"Raw nodes loaded from JSON: {len(full_json_data['nodes'])}")
-        else:
-            st.error(f"Error: JSON data from '{file_path}' does not contain a 'nodes' key or 'nodes' is not a list.")
-            st.stop()
+        # Debug print: Raw nodes loaded from JSON - REMOVED
+        # if 'nodes' in full_json_data and isinstance(full_json_data['nodes'], list):
+        #     st.write(f"Raw nodes loaded from JSON: {len(full_json_data['nodes'])}")
+        # else:
+        #     st.error(f"Error: JSON data from '{file_path}' does not contain a 'nodes' key or 'nodes' is not a list.")
+        #     st.stop()
 
         # Create DataFrame for nodes from the 'nodes' key
         df_nodes = pd.DataFrame(full_json_data['nodes'])
@@ -82,7 +82,8 @@ def load_data(file_path):
         df_nodes['id'] = df_nodes['id'].astype(str)
         df_nodes.drop_duplicates(subset=['id'], inplace=True)  # Remove duplicates
         df_nodes['doi'] = df_nodes['id'].astype(str)  # Ensure 'doi' is a string for node IDs
-        st.write(f"Nodes DataFrame shape after loading and deduplication: {df_nodes.shape}")  # Debug print
+        # Debug print: Nodes DataFrame shape after loading and deduplication - REMOVED
+        # st.write(f"Nodes DataFrame shape after loading and deduplication: {df_nodes.shape}")
 
         # Create DataFrame for edges from the 'links' key (if present and valid)
         df_edges = pd.DataFrame()  # Initialize as empty
@@ -129,10 +130,9 @@ def load_data(file_path):
     # Handle 'year' column for filtering
     if 'year' in df_nodes.columns:
         df_nodes['year'] = pd.to_numeric(df_nodes['year'], errors='coerce').fillna(0).astype(int)
-        # Debug print: Min/Max year after loading and conversion
+        # Debug print: Min/Max year after loading and conversion - REMOVED
         # if not df_nodes.empty:
-        #     st.write(
-        #         f"Min year in loaded data: {df_nodes['year'].min()}, Max year in loaded data: {df_nodes['year'].max()}")
+        #     st.write(f"Min year in loaded data: {df_nodes['year'].min()}, Max year in loaded data: {df_nodes['year'].max()}")
     else:
         df_nodes['year'] = 2000  # Default year if column is missing
         st.warning("Column 'year' not found in your nodes data. Defaulting to year 2000 for all papers.")
@@ -236,7 +236,8 @@ filtered_nodes_df = filtered_nodes_df[
     (filtered_nodes_df['year'] >= selected_year_range[0]) &
     (filtered_nodes_df['year'] <= selected_year_range[1])
     ]
-st.write(f"Papers after year filter: {len(filtered_nodes_df)}")  # Debug print
+# Debug print: Papers after year filter - REMOVED
+# st.write(f"Papers after year filter: {len(filtered_nodes_df)}")
 
 # Apply multiselect/checkbox filters: if NO categories are selected, it means NO filter is applied for this category.
 # If categories ARE selected, then filter to include papers with ANY of the selected categories.
@@ -244,13 +245,15 @@ if selected_categories:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['kw_pipeline_category'].apply(lambda x: any(cat in selected_categories for cat in x))
     ]
-st.write(f"Papers after pipeline category filter: {len(filtered_nodes_df)}")  # Debug print
+# Debug print: Papers after pipeline category filter - REMOVED
+# st.write(f"Papers after pipeline category filter: {len(filtered_nodes_df)}")
 
 if selected_assay_types:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['kw_detected_methods'].apply(lambda x: any(assay in selected_assay_types for assay in x))
     ]
-st.write(f"Papers after assay types filter: {len(filtered_nodes_df)}")  # Debug print
+# Debug print: Papers after assay types filter - REMOVED
+# st.write(f"Papers after assay types filter: {len(filtered_nodes_df)}")
 
 # Apply search query filter
 if search_query:
@@ -259,7 +262,8 @@ if search_query:
         filtered_nodes_df['title'].str.lower().str.contains(search_query_lower) |
         filtered_nodes_df['doi'].str.lower().str.contains(search_query_lower)
         ]
-st.write(f"Papers after search filter: {len(filtered_nodes_df)}")  # Debug print
+# Debug print: Papers after search filter - REMOVED
+# st.write(f"Papers after search filter: {len(filtered_nodes_df)}")
 
 st.write(f"Displaying **{len(filtered_nodes_df)}** papers based on current filters.")
 
@@ -282,19 +286,41 @@ if "selected_doi" in query_params:
 with graph_col:
     if not filtered_nodes_df.empty:
         net = Network(height="750px", width="100%", notebook=True, cdn_resources='remote', directed=False)
+
+
         # Physics is already disabled, ensuring static nodes.
         # net.toggle_physics(False)
 
-        # Calculate max citations for node sizing
-        max_citations = filtered_nodes_df['citations'].max() if 'citations' in filtered_nodes_df.columns else 0
-        min_node_size = 10  # Minimum size for nodes
-        max_node_size = 40  # Maximum size for nodes
+        # Define citation-based sizes
+        def get_node_size(citations):
+            if citations <= 5:
+                return 10
+            elif 5 < citations <= 25:
+                return 15
+            elif 25 < citations <= 50:
+                return 20
+            elif 50 < citations <= 100:
+                return 25
+            else:  # citations > 100
+                return 30
 
-        # Add 1 to max_citations to avoid log(0) if max_citations is 0, and to scale better
-        max_citations_for_scaling = max_citations + 1
+
+        # --- Node Display Limit (NEW) ---
+        max_nodes_to_display = st.sidebar.slider(
+            "Max Nodes to Display (for performance)",
+            min_value=100,
+            max_value=len(filtered_nodes_df) if len(filtered_nodes_df) > 100 else 100,
+            # Adjust max based on filtered count
+            value=min(1000, len(filtered_nodes_df))  # Default to 1000 or actual count if less
+        )
+
+        nodes_to_draw = filtered_nodes_df.head(max_nodes_to_display)
+        if len(filtered_nodes_df) > max_nodes_to_display:
+            st.warning(
+                f"Displaying only the first {max_nodes_to_display} of {len(filtered_nodes_df)} filtered papers for performance. Adjust 'Max Nodes to Display' in the sidebar.")
 
         # Add nodes to the network
-        for idx, row in filtered_nodes_df.iterrows():
+        for idx, row in nodes_to_draw.iterrows():  # Use nodes_to_draw
             node_id = row['doi']
             title = row['title']
             citations = row['citations'] if 'citations' in row else 0
@@ -307,34 +333,21 @@ with graph_col:
             node_x = row.get('x', 0)
             node_y = row.get('y', 0)
 
-            # Node size based on citations (logarithmic scale)
-            if max_citations_for_scaling > 1:
-                size = min_node_size + (np.log1p(citations) / np.log1p(max_citations_for_scaling)) * (
-                            max_node_size - min_node_size)
-            else:
-                size = (min_node_size + max_node_size) / 2  # Average size if all citations are 0 or constant
+            # Assign size based on citation ranges
+            size = get_node_size(citations)
 
             # Node color based on the FIRST pipeline category
             node_color = "#CCCCCC"  # Default grey if no category
             if row['kw_pipeline_category']:
                 node_color = category_colors.get(row['kw_pipeline_category'][0], "#CCCCCC")
 
-            # HTML-formatted tooltip for hover
-            abstract_content = f"<b>Abstract:</b> {abstract[:300]}..." if abstract else "<b>Abstract:</b> Not available"
-            tooltip_html = f"""
-            <b>Title:</b> {title}<br>
-            <b>DOI:</b> {node_id}<br>
-            <b>Citations:</b> {citations}<br>
-            <b>Year:</b> {year}<br>
-            <b>Categories:</b> {categories}<br>
-            <b>Assay Types/Platforms:</b> {assay_types}<br>
-            {abstract_content}
-            """
+            # HTML-formatted tooltip for hover - ONLY TITLE
+            tooltip_html = f"<b>Title:</b> {title}"
 
             net.add_node(
                 node_id,
                 label="",  # FIX: No label on the node itself
-                title=tooltip_html,  # Content for the hover tooltip
+                title=tooltip_html,  # Content for the hover tooltip (now only title)
                 size=size,
                 color=node_color,
                 borderWidth=1,
@@ -348,7 +361,7 @@ with graph_col:
         # Add edges based on the df_edges DataFrame, filtered by current nodes
         if show_similarity_edges and not df_edges.empty:
             # Create a set of DOIs currently in the filtered graph for efficient lookup
-            current_graph_dois = set(filtered_nodes_df['doi'].tolist())
+            current_graph_dois = set(nodes_to_draw['doi'].tolist())  # Use nodes_to_draw DOIs
 
             # Filter df_edges to only include edges where both source and target are in the current filtered nodes
             if 'source' in df_edges.columns and 'target' in df_edges.columns:
@@ -371,7 +384,7 @@ with graph_col:
                         width=1.5 + (edge_value * 2)  # Example: scale width by value
                     )
                 if filtered_edges_to_draw.empty:
-                    st.info("No similarity edges found between the currently filtered papers.")
+                    st.info("No similarity edges found between the currently displayed papers.")
             else:
                 st.warning("Cannot show similarity edges: 'source' or 'target' column missing in your edges data.")
         elif not show_similarity_edges:
@@ -379,13 +392,9 @@ with graph_col:
         elif df_edges.empty:
             st.warning("Cannot show similarity edges: No edge data loaded from your JSON file.")
 
-        # Save and display the graph HTML
+        # Generate HTML directly from network object
         try:
-            path = "paper_network.html"
-            net.save_graph(path)
-
-            with open(path, 'r', encoding='utf-8') as html_file:
-                html_content = html_file.read()
+            html_content = net.generate_html(notebook=True)  # FIX: Generate HTML directly
 
             # Inject JavaScript to handle node clicks and update query parameters
             js_injection = f"""
@@ -411,6 +420,9 @@ with graph_col:
                     options.interaction.selectConnectedEdges = false; // Don't select connected edges on click
                     options.interaction.zoomView = true; // Allow zooming
                     options.interaction.dragView = true; // Allow dragging the view
+
+                    // FIX: Ensure physics is explicitly disabled in vis.js options
+                    options.physics = {{ enabled: false }};
 
                     network = new vis.Network(container, data, options);
 
