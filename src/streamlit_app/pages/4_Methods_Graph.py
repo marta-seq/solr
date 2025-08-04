@@ -1,16 +1,17 @@
 import streamlit as st
 import pandas as pd
 from pyvis.network import Network
-import ast # For safely evaluating string representations of lists
+import ast  # For safely evaluating string representations of lists
 import numpy as np
-import colorsys # For generating distinct colors
-import hashlib # For consistent color hashing
-import json # For handling JSON specific errors
+import colorsys  # For generating distinct colors
+import hashlib  # For consistent color hashing
+import json  # For handling JSON specific errors
 import os
-import streamlit.components.v1 as components # For rendering custom HTML with JS
+import streamlit.components.v1 as components  # For rendering custom HTML with JS
 
 # Define the path to your processed data file.
 PROCESSED_DATA_FILE = 'data/methods/graph_data.json'
+
 
 # --- Helper Functions ---
 
@@ -32,7 +33,8 @@ def safe_literal_eval(val):
             return [item.strip() for item in val.split(',') if item.strip()]
     elif isinstance(val, list):
         return val
-    return [] # Return empty list for NaN or other unexpected types
+    return []  # Return empty list for NaN or other unexpected types
+
 
 def get_hashed_color(text: str) -> str:
     """
@@ -40,14 +42,15 @@ def get_hashed_color(text: str) -> str:
     This ensures that the same category always has the same color across the graph.
     """
     if not text:
-        return "#CCCCCC" # Default color for empty string/missing category
+        return "#CCCCCC"  # Default color for empty string/missing category
     hash_value = int(hashlib.md5(text.encode('utf-8')).hexdigest(), 16)
     # Use HSV to get more distinct colors
     hue = (hash_value % 360) / 360.0
-    saturation = 0.7 # Keep saturation high for vivid colors
-    value = 0.85     # Keep value high for brightness
+    saturation = 0.7  # Keep saturation high for vivid colors
+    value = 0.85  # Keep value high for brightness
     r, g, b = [int(x * 255) for x in colorsys.hsv_to_rgb(hue, saturation, value)]
     return f"#{r:02x}{g:02x}{b:02x}"
+
 
 @st.cache_data
 def load_data(file_path):
@@ -64,31 +67,37 @@ def load_data(file_path):
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            full_json_data = json.load(f) # Load the entire JSON dictionary
+            full_json_data = json.load(f)  # Load the entire JSON dictionary
 
-        # Create DataFrame for nodes from the 'nodes' key
+        # Debug print: Raw nodes loaded from JSON
         if 'nodes' in full_json_data and isinstance(full_json_data['nodes'], list):
-            df_nodes = pd.DataFrame(full_json_data['nodes'])
-            df_nodes.drop_duplicates(subset=['id'], inplace=True)
-            st.info(f"Loaded {len(df_nodes)} unique nodes from '{file_path}'.")
-            df_nodes['id'] = df_nodes['id'].astype(str) # Ensure 'id' is a string for node IDs
-            df_nodes['doi'] = df_nodes['id'].astype(str) # Ensure 'doi' is a string for node IDs
+            st.write(f"Raw nodes loaded from JSON: {len(full_json_data['nodes'])}")
         else:
             st.error(f"Error: JSON data from '{file_path}' does not contain a 'nodes' key or 'nodes' is not a list.")
             st.stop()
 
+        # Create DataFrame for nodes from the 'nodes' key
+        df_nodes = pd.DataFrame(full_json_data['nodes'])
+        # Ensure 'id' is a string for node IDs and remove duplicates based on 'id'
+        df_nodes['id'] = df_nodes['id'].astype(str)
+        df_nodes.drop_duplicates(subset=['id'], inplace=True)  # Remove duplicates
+        df_nodes['doi'] = df_nodes['id'].astype(str)  # Ensure 'doi' is a string for node IDs
+        st.write(f"Nodes DataFrame shape after loading and deduplication: {df_nodes.shape}")  # Debug print
+
         # Create DataFrame for edges from the 'links' key (if present and valid)
-        df_edges = pd.DataFrame() # Initialize as empty
+        df_edges = pd.DataFrame()  # Initialize as empty
         if 'links' in full_json_data and isinstance(full_json_data['links'], list):
             df_edges = pd.DataFrame(full_json_data['links'])
         else:
-            st.warning(f"JSON data from '{file_path}' does not contain a 'links' key or 'links' is not a list. No explicit edges will be loaded.")
+            st.warning(
+                f"JSON data from '{file_path}' does not contain a 'links' key or 'links' is not a list. No explicit edges will be loaded.")
 
     except FileNotFoundError:
         st.error(f"Error: The file '{file_path}' was not found. Please ensure the JSON is in the correct directory.")
         st.stop()
     except json.JSONDecodeError as e:
-        st.error(f"Error: Could not decode JSON from '{file_path}'. Please check if it's a valid JSON file. Details: {e}")
+        st.error(
+            f"Error: Could not decode JSON from '{file_path}'. Please check if it's a valid JSON file. Details: {e}")
         st.stop()
     except Exception as e:
         st.error(f"An unexpected error occurred while loading the JSON file: {e}")
@@ -99,7 +108,7 @@ def load_data(file_path):
     list_cols = [
         'kw_pipeline_category',
         'kw_detected_methods',
-        'llm_annot_tested_data_modalities',
+        # 'llm_annot_tested_data_modalities', # Removed as per user request
         'llm_annot_compared_algorithms_packages',
         'kw_tissue'
     ]
@@ -115,14 +124,18 @@ def load_data(file_path):
     if 'citations' in df_nodes.columns:
         df_nodes['citations'] = pd.to_numeric(df_nodes['citations'], errors='coerce').fillna(0).astype(int)
     else:
-        df_nodes['citations'] = 0 # Default citations if column is missing
+        df_nodes['citations'] = 0  # Default citations if column is missing
         st.warning("Column 'citations' not found in your nodes data. Node sizes will default to a minimum size.")
 
     # Handle 'year' column for filtering
     if 'year' in df_nodes.columns:
         df_nodes['year'] = pd.to_numeric(df_nodes['year'], errors='coerce').fillna(0).astype(int)
+        # Debug print: Min/Max year after loading and conversion
+        if not df_nodes.empty:
+            st.write(
+                f"Min year in loaded data: {df_nodes['year'].min()}, Max year in loaded data: {df_nodes['year'].max()}")
     else:
-        df_nodes['year'] = 2000 # Default year if column is missing
+        df_nodes['year'] = 2000  # Default year if column is missing
         st.warning("Column 'year' not found in your nodes data. Defaulting to year 2000 for all papers.")
 
     # Ensure 'doi', 'title', 'abstract' columns exist and are strings
@@ -134,6 +147,7 @@ def load_data(file_path):
             df_nodes[col] = df_nodes[col].astype(str)
 
     return df_nodes, df_edges
+
 
 # Load data when the page is run
 df_nodes, df_edges = load_data(PROCESSED_DATA_FILE)
@@ -162,31 +176,37 @@ elif not df_nodes.empty and 'year' in df_nodes.columns:
     selected_year_range = (int(df_nodes['year'].min()), int(df_nodes['year'].max()))
 else:
     st.sidebar.info("No data loaded or 'year' column missing to set year filter.")
-    selected_year_range = (0, 9999) # Broad default range if no year data
+    selected_year_range = (0, 9999)  # Broad default range if no year data
 
 # Get all unique values for checkbox filters from the entire dataset (df_nodes)
-all_categories = sorted(list(set(item for sublist in df_nodes['kw_pipeline_category'] for item in sublist))) if 'kw_pipeline_category' in df_nodes.columns else []
-all_assay_types = sorted(list(set(item for sublist in df_nodes['kw_detected_methods'] for item in sublist))) if 'kw_detected_methods' in df_nodes.columns else []
-all_data_modalities = sorted(list(set(item for sublist in df_nodes['llm_annot_tested_data_modalities'] for item in sublist))) if 'llm_annot_tested_data_modalities' in df_nodes.columns else []
+all_categories = sorted(list(set(item for sublist in df_nodes['kw_pipeline_category'] for item in
+                                 sublist))) if 'kw_pipeline_category' in df_nodes.columns else []
+all_assay_types = sorted(list(set(item for sublist in df_nodes['kw_detected_methods'] for item in
+                                  sublist))) if 'kw_detected_methods' in df_nodes.columns else []
+# all_data_modalities = sorted(list(set(item for sublist in df_nodes['llm_annot_tested_data_modalities'] for item in sublist))) if 'llm_annot_tested_data_modalities' in df_nodes.columns else [] # Removed
 
 # Checkbox filters (NEW: using expanders and individual checkboxes)
 selected_categories = []
 with st.sidebar.expander("Filter by Pipeline Category"):
     for cat in all_categories:
-        if st.checkbox(cat, value=True, key=f"cat_{cat}"): # Default to all selected
+        # Default to False (unchecked)
+        if st.checkbox(cat, value=False, key=f"cat_{cat}"):
             selected_categories.append(cat)
 
 selected_assay_types = []
 with st.sidebar.expander("Filter by Assay Types/Platforms"):
     for assay in all_assay_types:
-        if st.checkbox(assay, value=True, key=f"assay_{assay}"):
+        # Default to False (unchecked)
+        if st.checkbox(assay, value=False, key=f"assay_{assay}"):
             selected_assay_types.append(assay)
 
-selected_data_modalities = []
-with st.sidebar.expander("Filter by Data Modalities"):
-    for modality in all_data_modalities:
-        if st.checkbox(modality, value=True, key=f"modality_{modality}"):
-            selected_data_modalities.append(modality)
+# Removed Data Modalities filter section
+# selected_data_modalities = []
+# with st.sidebar.expander("Filter by Data Modalities"):
+#     for modality in all_data_modalities:
+#         # Default to False (unchecked)
+#         if st.checkbox(modality, value=False, key=f"modality_{modality}"):
+#             selected_data_modalities.append(modality)
 
 st.sidebar.header("Graph Options")
 # Toggle for similarity edges
@@ -215,31 +235,29 @@ filtered_nodes_df = df_nodes.copy()
 filtered_nodes_df = filtered_nodes_df[
     (filtered_nodes_df['year'] >= selected_year_range[0]) &
     (filtered_nodes_df['year'] <= selected_year_range[1])
-]
+    ]
+st.write(f"Papers after year filter: {len(filtered_nodes_df)}")  # Debug print
 
-# Apply multiselect/checkbox filters: check if ANY selected item is in the paper's list
-if selected_categories: # Only filter if categories are selected
+# Apply multiselect/checkbox filters: if NO categories are selected, it means NO filter is applied for this category.
+# If categories ARE selected, then filter to include papers with ANY of the selected categories.
+if selected_categories:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['kw_pipeline_category'].apply(lambda x: any(cat in selected_categories for cat in x))
     ]
-else: # If no categories are selected, show no papers for this filter
-    filtered_nodes_df = filtered_nodes_df[filtered_nodes_df['kw_pipeline_category'].apply(lambda x: False)]
-
+st.write(f"Papers after pipeline category filter: {len(filtered_nodes_df)}")  # Debug print
 
 if selected_assay_types:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['kw_detected_methods'].apply(lambda x: any(assay in selected_assay_types for assay in x))
     ]
-else:
-    filtered_nodes_df = filtered_nodes_df[filtered_nodes_df['kw_detected_methods'].apply(lambda x: False)]
+st.write(f"Papers after assay types filter: {len(filtered_nodes_df)}")  # Debug print
 
-
-if selected_data_modalities:
-    filtered_nodes_df = filtered_nodes_df[
-        filtered_nodes_df['llm_annot_tested_data_modalities'].apply(lambda x: any(modality in selected_data_modalities for modality in x))
-    ]
-else:
-    filtered_nodes_df = filtered_nodes_df[filtered_nodes_df['llm_annot_tested_data_modalities'].apply(lambda x: False)]
+# Removed Data Modalities filter application
+# if selected_data_modalities:
+#     filtered_nodes_df = filtered_nodes_df[
+#         filtered_nodes_df['llm_annot_tested_data_modalities'].apply(lambda x: any(modality in selected_data_modalities for modality in x))
+#     ]
+# st.write(f"Papers after data modalities filter: {len(filtered_nodes_df)}") # Debug print
 
 # Apply search query filter
 if search_query:
@@ -247,13 +265,14 @@ if search_query:
     filtered_nodes_df = filtered_nodes_df[
         filtered_nodes_df['title'].str.lower().str.contains(search_query_lower) |
         filtered_nodes_df['doi'].str.lower().str.contains(search_query_lower)
-    ]
+        ]
+st.write(f"Papers after search filter: {len(filtered_nodes_df)}")  # Debug print
 
 st.write(f"Displaying **{len(filtered_nodes_df)}** papers based on current filters.")
 
 # --- Graph Visualization and Details Panel Layout ---
 # Use columns to place the graph on the left and the details panel on the right
-graph_col, details_col = st.columns([0.7, 0.3]) # 70% for graph, 30% for details
+graph_col, details_col = st.columns([0.7, 0.3])  # 70% for graph, 30% for details
 
 # Initialize session state for selected DOI (for the details panel)
 if 'selected_doi' not in st.session_state:
@@ -264,17 +283,17 @@ query_params = st.experimental_get_query_params()
 if "selected_doi" in query_params:
     st.session_state.selected_doi = query_params["selected_doi"][0]
     # Clear query param to prevent re-triggering on subsequent runs unless clicked again
-    st.experimental_set_query_params(selected_doi=None) # Clear it after reading
+    st.experimental_set_query_params(selected_doi=None)  # Clear it after reading
 
 with graph_col:
     if not filtered_nodes_df.empty:
         net = Network(height="750px", width="100%", notebook=True, cdn_resources='remote', directed=False)
-        net.toggle_physics(True) # Enable physics for better layout
+        net.toggle_physics(True)  # Enable physics for better layout
 
         # Calculate max citations for node sizing
         max_citations = filtered_nodes_df['citations'].max() if 'citations' in filtered_nodes_df.columns else 0
-        min_node_size = 10 # Minimum size for nodes
-        max_node_size = 40 # Maximum size for nodes
+        min_node_size = 10  # Minimum size for nodes
+        max_node_size = 40  # Maximum size for nodes
 
         # Add 1 to max_citations to avoid log(0) if max_citations is 0, and to scale better
         max_citations_for_scaling = max_citations + 1
@@ -287,17 +306,18 @@ with graph_col:
             year = row['year']
             categories = ", ".join(row['kw_pipeline_category']) if row['kw_pipeline_category'] else "N/A"
             assay_types = ", ".join(row['kw_detected_methods']) if row['kw_detected_methods'] else "N/A"
-            data_modalities = ", ".join(row['llm_annot_tested_data_modalities']) if row['llm_annot_tested_data_modalities'] else "N/A"
+            # data_modalities = ", ".join(row['llm_annot_tested_data_modalities']) if row['llm_annot_tested_data_modalities'] else "N/A" # Removed
             abstract = row['abstract']
 
             # Node size based on citations (logarithmic scale)
             if max_citations_for_scaling > 1:
-                size = min_node_size + (np.log1p(citations) / np.log1p(max_citations_for_scaling)) * (max_node_size - min_node_size)
+                size = min_node_size + (np.log1p(citations) / np.log1p(max_citations_for_scaling)) * (
+                            max_node_size - min_node_size)
             else:
-                size = (min_node_size + max_node_size) / 2 # Average size if all citations are 0 or constant
+                size = (min_node_size + max_node_size) / 2  # Average size if all citations are 0 or constant
 
             # Node color based on the FIRST pipeline category
-            node_color = "#CCCCCC" # Default grey if no category
+            node_color = "#CCCCCC"  # Default grey if no category
             if row['kw_pipeline_category']:
                 node_color = category_colors.get(row['kw_pipeline_category'][0], "#CCCCCC")
 
@@ -310,14 +330,13 @@ with graph_col:
             <b>Year:</b> {year}<br>
             <b>Categories:</b> {categories}<br>
             <b>Assay Types/Platforms:</b> {assay_types}<br>
-            <b>Data Modalities:</b> {data_modalities}<br>
             {abstract_content}
             """
 
             net.add_node(
                 node_id,
-                label="", # No label on the node itself
-                title=tooltip_html, # Content for the hover tooltip
+                label="",  # No label on the node itself
+                title=tooltip_html,  # Content for the hover tooltip
                 size=size,
                 color=node_color,
                 borderWidth=1,
@@ -335,21 +354,21 @@ with graph_col:
                 filtered_edges_to_draw = df_edges[
                     (df_edges['source'].isin(current_graph_dois)) &
                     (df_edges['target'].isin(current_graph_dois))
-                ]
+                    ]
 
                 for idx, edge_row in filtered_edges_to_draw.iterrows():
                     source_node = edge_row['source']
                     target_node = edge_row['target']
-                    edge_value = edge_row.get('value', 1.0) # Default value if not present
-                    edge_title = f"Similarity: {edge_value:.2f}" # Default title
+                    edge_value = edge_row.get('value', 1.0)  # Default value if not present
+                    edge_title = f"Similarity: {edge_value:.2f}"  # Default title
 
                     net.add_edge(
-                            source_node,
-                            target_node,
-                            title=edge_title,
-                            color="#888888", # Default edge color
-                            width=1.5 + (edge_value * 2) # Example: scale width by value
-                        )
+                        source_node,
+                        target_node,
+                        title=edge_title,
+                        color="#888888",  # Default edge color
+                        width=1.5 + (edge_value * 2)  # Example: scale width by value
+                    )
                 if filtered_edges_to_draw.empty:
                     st.info("No similarity edges found between the currently filtered papers.")
             else:
@@ -377,7 +396,6 @@ with graph_col:
                         nodes: new vis.DataSet({json.dumps(net.nodes)}),
                         edges: new vis.DataSet({json.dumps(net.edges)})
                     }};
-                    // FIX: Use json.loads(net.options.to_json()) to get a JSON-serializable dictionary
                     var options = {json.dumps(json.loads(net.options.to_json()))}; 
                     network = new vis.Network(container, data, options);
 
@@ -406,7 +424,8 @@ with graph_col:
             components.html(html_content, height=780, scrolling=True)
         except Exception as e:
             st.error(f"An error occurred while rendering the graph: {e}")
-            st.info("This might happen if there are no papers matching your filters to display, or if the 'doi' column is missing/empty.")
+            st.info(
+                "This might happen if there are no papers matching your filters to display, or if the 'doi' column is missing/empty.")
 
     else:
         st.info("No papers match the selected filters. Please adjust your criteria in the sidebar.")
@@ -424,15 +443,16 @@ with details_col:
             st.markdown(f"**Year:** {paper['year']}")
             st.markdown(f"**Pipeline Categories:** {', '.join(paper['kw_pipeline_category'])}")
             st.markdown(f"**Assay Types/Platforms:** {', '.join(paper['kw_detected_methods'])}")
-            st.markdown(f"**Data Modalities:** {', '.join(paper['llm_annot_tested_data_modalities'])}")
+            # st.markdown(f"**Data Modalities:** {', '.join(paper['llm_annot_tested_data_modalities'])}") # Removed
             st.markdown(f"**Abstract:** {paper['abstract']}")
 
             # Button to close/clear the details panel
             if st.button("Close Details"):
                 st.session_state.selected_doi = None
-                st.experimental_set_query_params(selected_doi=None) # Also clear URL param
-                st.rerun() # Force rerun to clear the panel
+                st.experimental_set_query_params(selected_doi=None)  # Also clear URL param
+                st.rerun()  # Force rerun to clear the panel
         else:
-            st.info("Select a paper from the graph to see its details here, or the selected paper is no longer in the filtered view.")
+            st.info(
+                "Select a paper from the graph to see its details here, or the selected paper is no longer in the filtered view.")
     else:
         st.info("Click on a node in the graph to display its details here.")
