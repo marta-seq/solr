@@ -5,9 +5,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import numpy as np
+import ast  # Import ast for safe_literal_eval
 from typing import List, Dict, Any, Optional
 import logging
-import ast
+
 # Configure page
 st.set_page_config(page_title="Methods Graph", layout="wide")
 
@@ -71,7 +72,7 @@ def preprocess_data(data):
 
     for col in list_cols_to_process:
         if col in nodes_df.columns:
-            # FIX: Apply safe_literal_eval directly to parse string representations of lists
+            # Apply safe_literal_eval directly to parse string representations of lists
             nodes_df[col] = nodes_df[col].apply(safe_literal_eval)
         else:
             nodes_df[col] = [[] for _ in range(len(nodes_df))]  # Add empty list column if missing
@@ -121,15 +122,6 @@ def preprocess_data(data):
         if category_list:  # If the list is not empty
             unique_pipeline_parts_for_color.add(category_list[0])
     unique_pipeline_parts_for_color = sorted(list(unique_pipeline_parts_for_color))
-
-    # --- Temporary Debug Prints for Verification ---
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("Debug Info (Can be removed later)")
-    st.sidebar.write(f"Unique Categories for Filter: {unique_categories}")
-    st.sidebar.write(f"Unique Methods for Filter: {unique_methods}")
-    st.sidebar.write(f"Unique First Pipeline Categories for Color: {unique_pipeline_parts_for_color}")
-    st.sidebar.markdown("---")
-    # --- End Debug Prints ---
 
     return {
         'nodes_df': nodes_df,
@@ -396,25 +388,32 @@ def main():
         if not filtered_nodes.empty:
             fig = create_graph(filtered_nodes, links_df, show_edges, processed_data)
 
-            # Handle click events using Plotly's event system (requires custom JS)
-            # For simplicity, we'll use a placeholder for now.
-            # In a full app, you'd use streamlit-plotly-events to capture clicks.
-            st.plotly_chart(
+            # Configure Plotly chart for click events
+            plotly_config = {
+                'displayModeBar': True,
+                'modeBarButtonsToRemove': ['zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
+                                           'autoscale', 'resetscale', 'hoverclosest', 'v1hovermode', 'togglespikelines',
+                                           'togglehover', 'sendDataToCloud', 'resetViews'],
+                'displaylogo': False,
+                'staticPlot': False  # Allow interaction
+            }
+
+            # Capture click events and update session state
+            clicked_data = st.plotly_chart(
                 fig,
                 use_container_width=True,
-                # This key is important for Streamlit to manage the component state
-                key="main_graph"
+                key="main_graph",
+                on_click="select",  # Use on_click to capture selection
+                config=plotly_config
             )
 
-            # Placeholder for click handling - requires custom component
-            # To get actual click data, you'd integrate a library like:
-            # from streamlit_plotly_events import plotly_events
-            # selected_points = plotly_events(fig, click_event=True, key="plotly_click")
-            # if selected_points:
-            #     # Plotly returns a list of dictionaries for clicked points
-            #     clicked_node_id = filtered_nodes.iloc[selected_points[0]['pointIndex']].name
-            #     st.session_state.selected_node = clicked_node_id
-            #     st.rerun() # Rerun to update the right panel
+            # Check if a node was clicked and update selected_node
+            if clicked_data and clicked_data['points']:
+                # The customdata contains the original node 'id' (DOI)
+                clicked_node_id = clicked_data['points'][0]['customdata']
+                if st.session_state.selected_node != clicked_node_id:
+                    st.session_state.selected_node = clicked_node_id
+                    st.rerun()  # Rerun to update the right panel
 
         else:
             st.warning("No papers match the current filters.")
@@ -427,24 +426,16 @@ def main():
         if 'selected_node' not in st.session_state:
             st.session_state.selected_node = None
 
-        # For demonstration, let's allow a manual selection or use a dummy click
-        # In a real app, this would be populated by the plotly_events above
-        if st.button("Simulate Click (Select First Paper)", key="simulate_click_btn"):
-            if not filtered_nodes.empty:
-                st.session_state.selected_node = filtered_nodes.index[0]
-                st.rerun()
-            else:
-                st.info("No papers to select.")
-
         # Display details if a node is selected
         if st.session_state.selected_node is not None and st.session_state.selected_node in filtered_nodes.index:
             node_data = filtered_nodes.loc[st.session_state.selected_node]
             display_node_details(node_data.to_dict(), processed_data)
         else:
-            st.info("Click on a node to see details (or use 'Simulate Click' button).")
+            st.info("Click on a node to see details.")
 
         # --- Custom Color Legend ---
-        st.subheader("🎨 Color Legend (Pipeline Category)")
+        # FIX: Changed subheader to markdown for smaller title
+        st.markdown("**🎨 Color Legend (Pipeline Category)**")
         unique_pipeline_parts = processed_data['unique_pipeline_parts_for_color']
         colors = px.colors.qualitative.Alphabet + px.colors.qualitative.Dark24
         color_map = dict(zip(unique_pipeline_parts, colors[:len(unique_pipeline_parts)]))
@@ -456,7 +447,8 @@ def main():
                         f"</div>", unsafe_allow_html=True)
 
         # Show legend for node sizes
-        st.subheader("📏 Node Size Legend (Citations)")
+        # FIX: Changed subheader to markdown for smaller title
+        st.markdown("**📏 Node Size Legend (Citations)**")
         st.write("• Size 5: 0-4 citations")
         st.write("• Size 8: 5-24 citations")
         st.write("• Size 12: 25-49 citations")
