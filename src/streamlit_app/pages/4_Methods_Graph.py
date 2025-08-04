@@ -126,7 +126,7 @@ def load_data(file_path):
 
 # Load data when the page is run
 df = load_data(PROCESSED_DATA_FILE)
-
+print(df)
 # --- Streamlit Page Content ---
 
 # Header for this specific page (appropriate for a multi-page app)
