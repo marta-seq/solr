@@ -130,9 +130,9 @@ def load_data(file_path):
     if 'year' in df_nodes.columns:
         df_nodes['year'] = pd.to_numeric(df_nodes['year'], errors='coerce').fillna(0).astype(int)
         # Debug print: Min/Max year after loading and conversion
-        if not df_nodes.empty:
-            st.write(
-                f"Min year in loaded data: {df_nodes['year'].min()}, Max year in loaded data: {df_nodes['year'].max()}")
+        # if not df_nodes.empty:
+        #     st.write(
+        #         f"Min year in loaded data: {df_nodes['year'].min()}, Max year in loaded data: {df_nodes['year'].max()}")
     else:
         df_nodes['year'] = 2000  # Default year if column is missing
         st.warning("Column 'year' not found in your nodes data. Defaulting to year 2000 for all papers.")
