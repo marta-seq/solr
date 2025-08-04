@@ -31,7 +31,7 @@ def safe_literal_eval(val):
             # Fallback for comma-separated strings that aren't valid literal_eval
             return [item.strip() for item in val.split(',') if item.strip()]
     elif isinstance(val, list):
-        return valA
+        return val
     return [] # Return empty list for NaN or other unexpected types
 
 def get_hashed_color(text: str) -> str:
@@ -366,8 +366,6 @@ with graph_col:
                 html_content = html_file.read()
 
             # Inject JavaScript to handle node clicks and update query parameters
-            # This JS will cause Streamlit to re-run when a node is clicked,
-            # allowing us to pick up the selected_doi from the query params.
             js_injection = f"""
             <script type="text/javascript">
                 var network = null;
@@ -377,36 +375,30 @@ with graph_col:
                         nodes: new vis.DataSet({json.dumps(net.nodes)}),
                         edges: new vis.DataSet({json.dumps(net.edges)})
                     }};
-                    var options = {json.dumps(net.options)};
+                    // FIX: Use net.options.dump() to get a JSON-serializable dictionary
+                    var options = {json.dumps(net.options.dump())}; 
                     network = new vis.Network(container, data, options);
 
                     network.on("click", function (params) {{
                         if (params.nodes.length > 0) {{
                             var nodeId = params.nodes[0];
-                            // Update URL query parameter without reloading the whole page
-                            // This will trigger Streamlit to re-run
                             var url = new URL(window.location.href);
                             url.searchParams.set('selected_doi', nodeId);
                             window.history.pushState({{path:url.href}},'',url.href);
-                            // Force Streamlit to re-run by simulating a form submission or similar
-                            // This is a common hack for this type of interaction.
                             window.parent.postMessage({{
                                 type: 'streamlit:setComponentValue',
-                                key: 'selected_node_trigger', // A dummy key to trigger re-run
+                                key: 'selected_node_trigger',
                                 value: nodeId
                             }}, '*');
                         }}
                     }});
                 }}
-                // Ensure the network is initialized after the DOM is ready
                 document.addEventListener('DOMContentLoaded', initializeNetwork);
-                // Fallback for cases where DOMContentLoaded might be missed in iframe
                 if (document.readyState === 'complete') {{
                     initializeNetwork();
                 }}
             </script>
             """
-            # Find the closing </body> tag and insert JS before it
             html_content = html_content.replace('</body>', js_injection + '</body>')
 
             components.html(html_content, height=780, scrolling=True)
@@ -442,4 +434,3 @@ with details_col:
             st.info("Select a paper from the graph to see its details here, or the selected paper is no longer in the filtered view.")
     else:
         st.info("Click on a node in the graph to display its details here.")
-
