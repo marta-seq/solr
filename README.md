@@ -21,6 +21,7 @@ This project provides an interactive platform for exploring computational neuros
 <img src="figures/img_2.png" alt="Man in boat on a sea of papers" width="700">
 
 
+
 ## About this Living Review
 
 The field of spatial omics, encompassing techniques such as Spatial Transcriptomics,
@@ -38,11 +39,6 @@ The review is based on the scrap of pubmed, with papers being weakly annotated
 by google LLMs to identify relevant papers and categorize methods/applications/tools.
 The entries are then manually curated by the author.
 
-
-<img src="figures/filegraph.svg" alt="scheme" width="500">
-
----
-
 ## Pipeline Statistics
 
 <!-- STATS_TABLE_START -->
@@ -55,6 +51,13 @@ The entries are then manually curated by the author.
 | Last Annotation Date | 2025-07-29 22:50:28 |
 | Last Manual Curation Date | N/A |
 <!-- STATS_TABLE_END -->
+
+## Visualization of the pipeline 
+<img src="figures/filegraph.svg" alt="scheme" width="500">
+
+---
+
+
 
 ---
 
