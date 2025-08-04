@@ -25,6 +25,29 @@ def load_graph_data():
         return {"nodes": [], "links": []}
 
 
+# Helper function for safe literal evaluation
+def safe_literal_eval(val):
+    """
+    Safely evaluates a string representation of a list or converts a comma-separated
+    string into a list. Handles cases where the input is already a list or non-string.
+    """
+    if isinstance(val, str):
+        try:
+            evaluated = ast.literal_eval(val)
+            if isinstance(evaluated, list):
+                return evaluated
+            else:
+                # If it's a string that's not a list representation, treat as a single item list
+                return [str(evaluated)]
+        except (ValueError, SyntaxError):
+            # Fallback for comma-separated strings that aren't valid literal_eval
+            # This handles cases like "item1, item2" as a single string
+            return [item.strip() for item in val.split(',') if item.strip()]
+    elif isinstance(val, list):
+        return val
+    return []  # Return empty list for NaN or other unexpected types
+
+
 @st.cache_data
 def preprocess_data(data):
     """Preprocess data for efficient filtering and extract unique values"""
@@ -48,9 +71,8 @@ def preprocess_data(data):
 
     for col in list_cols_to_process:
         if col in nodes_df.columns:
-            # Ensure it's a list; if not, wrap it in a list or make it empty
-            nodes_df[col] = nodes_df[col].apply(
-                lambda x: x if isinstance(x, list) else ([str(x)] if pd.notna(x) else []))
+            # FIX: Apply safe_literal_eval directly to parse string representations of lists
+            nodes_df[col] = nodes_df[col].apply(safe_literal_eval)
         else:
             nodes_df[col] = [[] for _ in range(len(nodes_df))]  # Add empty list column if missing
 
@@ -86,19 +108,28 @@ def preprocess_data(data):
     # Set 'id' as index for easier lookup
     nodes_df.set_index('id', inplace=True)
 
-    # FIX: Ensure 'doi' column exists and is a copy of the unique 'id' (index)
+    # Ensure 'doi' column exists and is a copy of the unique 'id' (index)
     nodes_df['doi'] = nodes_df.index.astype(str)
 
     # Extract unique values for filtering from the processed list columns
     unique_categories = sorted(list(set(item for sublist in nodes_df["kw_pipeline_category"] for item in sublist)))
     unique_methods = sorted(list(set(item for sublist in nodes_df["kw_detected_methods"] for item in sublist)))
 
-    # FIX: Collect only the FIRST category for coloring and legend
+    # Collect only the FIRST category for coloring and legend
     unique_pipeline_parts_for_color = set()
     for category_list in nodes_df["kw_pipeline_category"]:
         if category_list:  # If the list is not empty
             unique_pipeline_parts_for_color.add(category_list[0])
     unique_pipeline_parts_for_color = sorted(list(unique_pipeline_parts_for_color))
+
+    # --- Temporary Debug Prints for Verification ---
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Debug Info (Can be removed later)")
+    st.sidebar.write(f"Unique Categories for Filter: {unique_categories}")
+    st.sidebar.write(f"Unique Methods for Filter: {unique_methods}")
+    st.sidebar.write(f"Unique First Pipeline Categories for Color: {unique_pipeline_parts_for_color}")
+    st.sidebar.markdown("---")
+    # --- End Debug Prints ---
 
     return {
         'nodes_df': nodes_df,
@@ -154,7 +185,6 @@ def filter_nodes(nodes_df, year_range, selected_categories, selected_methods,
         filtered_df = filtered_df[mask]
 
     # Methods filter: Only apply if methods are selected
-    # FIX: Corrected column check from methods_df.columns to methods_col in filtered_df.columns
     if selected_methods and methods_col in filtered_df.columns:
         mask = filtered_df[methods_col].apply(
             lambda x: any(method in x for method in selected_methods)
@@ -234,7 +264,7 @@ def create_graph(filtered_nodes_df, links_df, show_edges, processed_data):
         name='nodes'
     ))
 
-    # FIX: Remove Plotly's built-in legend and legend items, we'll create a custom one
+    # Remove Plotly's built-in legend and legend items, we'll create a custom one
     fig.update_layout(
         showlegend=False,
         hovermode='closest',
@@ -346,7 +376,6 @@ def main():
         )
 
         # Edge toggle
-        # FIX: Changed label to "Show similarity edges"
         show_edges = st.checkbox("Show similarity edges", value=True, key="edge_toggle")
 
         st.markdown("---")
@@ -415,7 +444,6 @@ def main():
             st.info("Click on a node to see details (or use 'Simulate Click' button).")
 
         # --- Custom Color Legend ---
-        # FIX: Moved legend to right panel and refined for first category
         st.subheader("🎨 Color Legend (Pipeline Category)")
         unique_pipeline_parts = processed_data['unique_pipeline_parts_for_color']
         colors = px.colors.qualitative.Alphabet + px.colors.qualitative.Dark24
