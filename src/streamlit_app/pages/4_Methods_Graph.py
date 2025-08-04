@@ -183,7 +183,6 @@ all_categories = sorted(list(set(item for sublist in df_nodes['kw_pipeline_categ
                                  sublist))) if 'kw_pipeline_category' in df_nodes.columns else []
 all_assay_types = sorted(list(set(item for sublist in df_nodes['kw_detected_methods'] for item in
                                   sublist))) if 'kw_detected_methods' in df_nodes.columns else []
-# all_data_modalities = sorted(list(set(item for sublist in df_nodes['llm_annot_tested_data_modalities'] for item in sublist))) if 'llm_annot_tested_data_modalities' in df_nodes.columns else [] # Removed
 
 # Checkbox filters (NEW: using expanders and individual checkboxes)
 selected_categories = []
@@ -199,14 +198,6 @@ with st.sidebar.expander("Filter by Assay Types/Platforms"):
         # Default to False (unchecked)
         if st.checkbox(assay, value=False, key=f"assay_{assay}"):
             selected_assay_types.append(assay)
-
-# Removed Data Modalities filter section
-# selected_data_modalities = []
-# with st.sidebar.expander("Filter by Data Modalities"):
-#     for modality in all_data_modalities:
-#         # Default to False (unchecked)
-#         if st.checkbox(modality, value=False, key=f"modality_{modality}"):
-#             selected_data_modalities.append(modality)
 
 st.sidebar.header("Graph Options")
 # Toggle for similarity edges
@@ -252,13 +243,6 @@ if selected_assay_types:
     ]
 st.write(f"Papers after assay types filter: {len(filtered_nodes_df)}")  # Debug print
 
-# Removed Data Modalities filter application
-# if selected_data_modalities:
-#     filtered_nodes_df = filtered_nodes_df[
-#         filtered_nodes_df['llm_annot_tested_data_modalities'].apply(lambda x: any(modality in selected_data_modalities for modality in x))
-#     ]
-# st.write(f"Papers after data modalities filter: {len(filtered_nodes_df)}") # Debug print
-
 # Apply search query filter
 if search_query:
     search_query_lower = search_query.lower()
@@ -288,7 +272,8 @@ if "selected_doi" in query_params:
 with graph_col:
     if not filtered_nodes_df.empty:
         net = Network(height="750px", width="100%", notebook=True, cdn_resources='remote', directed=False)
-        net.toggle_physics(True)  # Enable physics for better layout
+        # FIX: Disable physics to make nodes static and improve performance
+        net.toggle_physics(False)
 
         # Calculate max citations for node sizing
         max_citations = filtered_nodes_df['citations'].max() if 'citations' in filtered_nodes_df.columns else 0
@@ -306,7 +291,6 @@ with graph_col:
             year = row['year']
             categories = ", ".join(row['kw_pipeline_category']) if row['kw_pipeline_category'] else "N/A"
             assay_types = ", ".join(row['kw_detected_methods']) if row['kw_detected_methods'] else "N/A"
-            # data_modalities = ", ".join(row['llm_annot_tested_data_modalities']) if row['llm_annot_tested_data_modalities'] else "N/A" # Removed
             abstract = row['abstract']
 
             # Node size based on citations (logarithmic scale)
@@ -335,7 +319,7 @@ with graph_col:
 
             net.add_node(
                 node_id,
-                label="",  # No label on the node itself
+                label="",  # FIX: No label on the node itself
                 title=tooltip_html,  # Content for the hover tooltip
                 size=size,
                 color=node_color,
@@ -443,7 +427,6 @@ with details_col:
             st.markdown(f"**Year:** {paper['year']}")
             st.markdown(f"**Pipeline Categories:** {', '.join(paper['kw_pipeline_category'])}")
             st.markdown(f"**Assay Types/Platforms:** {', '.join(paper['kw_detected_methods'])}")
-            # st.markdown(f"**Data Modalities:** {', '.join(paper['llm_annot_tested_data_modalities'])}") # Removed
             st.markdown(f"**Abstract:** {paper['abstract']}")
 
             # Button to close/clear the details panel
