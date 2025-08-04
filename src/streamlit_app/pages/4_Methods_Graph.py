@@ -75,8 +75,10 @@ def load_data(file_path):
         # Create DataFrame for nodes from the 'nodes' key
         if 'nodes' in full_json_data and isinstance(full_json_data['nodes'], list):
             df_nodes = pd.DataFrame(full_json_data['nodes'])
+            df_nodes['id'] = df_nodes['id'].astype(str) # Ensure 'doi' is a string for node IDs
             df_nodes['doi'] = df_nodes['id'].astype(str) # Ensure 'doi' is a string for node IDs
             logging.debug(f"Nodes DataFrame created with shape: {df_nodes.shape}.")
+            logging.debug(f"Columns in nodes DataFrame: {df_nodes.columns.tolist()}.")
         else:
             st.error(f"Error: JSON data from '{file_path}' does not contain a 'nodes' key or 'nodes' is not a list.")
             st.stop()
