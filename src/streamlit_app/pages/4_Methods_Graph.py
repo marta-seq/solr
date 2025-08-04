@@ -422,7 +422,7 @@ with graph_col:
                             // Update URL query parameter without reloading the whole page
                             var url = new URL(window.location.href);
                             url.searchParams.set('selected_doi', nodeId);
-                            window.history.pushState({{path:url.href}},'',url.href);
+                            window.history.pushState({{{{path:url.href}}}},'',url.href); // Escaped curly braces
 
                             // Send message to parent (Streamlit) to trigger re-run and update state
                             window.parent.postMessage({{
@@ -435,7 +435,7 @@ with graph_col:
                             var tooltip = document.querySelector('.vis-tooltip');
                             if (tooltip) {{
                                 tooltip.style.display = 'none';
-                            }
+                            }}
                             // Also hide any active tooltips from Pyvis directly
                             network.hidePopup();
                         }}
