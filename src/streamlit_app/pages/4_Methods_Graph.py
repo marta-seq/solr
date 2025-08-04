@@ -408,7 +408,8 @@ def main():
             )
 
             # Check if a node was clicked and update selected_node
-            if clicked_data and clicked_data['points']:
+            # FIX: More robust check for clicked_data to prevent TypeError
+            if isinstance(clicked_data, dict) and 'points' in clicked_data and clicked_data['points']:
                 # The customdata contains the original node 'id' (DOI)
                 clicked_node_id = clicked_data['points'][0]['customdata']
                 if st.session_state.selected_node != clicked_node_id:
@@ -434,7 +435,7 @@ def main():
             st.info("Click on a node to see details.")
 
         # --- Custom Color Legend ---
-        # FIX: Changed subheader to markdown for smaller title
+        # Changed subheader to markdown for smaller title
         st.markdown("**🎨 Color Legend (Pipeline Category)**")
         unique_pipeline_parts = processed_data['unique_pipeline_parts_for_color']
         colors = px.colors.qualitative.Alphabet + px.colors.qualitative.Dark24
@@ -447,7 +448,7 @@ def main():
                         f"</div>", unsafe_allow_html=True)
 
         # Show legend for node sizes
-        # FIX: Changed subheader to markdown for smaller title
+        # Changed subheader to markdown for smaller title
         st.markdown("**📏 Node Size Legend (Citations)**")
         st.write("• Size 5: 0-4 citations")
         st.write("• Size 8: 5-24 citations")
