@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 import numpy as np
 from typing import List, Dict, Any, Optional
 import logging
-
+import ast
 # Configure page
 st.set_page_config(page_title="Methods Graph", layout="wide")
 
