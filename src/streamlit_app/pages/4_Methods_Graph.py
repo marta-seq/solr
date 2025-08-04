@@ -375,8 +375,8 @@ with graph_col:
                         nodes: new vis.DataSet({json.dumps(net.nodes)}),
                         edges: new vis.DataSet({json.dumps(net.edges)})
                     }};
-                    // FIX: Use net.options.to_dict() to get a JSON-serializable dictionary
-                    var options = {json.dumps(net.options.to_dict())}; 
+                    // FIX: Use json.loads(net.options.to_json()) to get a JSON-serializable dictionary
+                    var options = {json.dumps(json.loads(net.options.to_json()))}; 
                     network = new vis.Network(container, data, options);
 
                     network.on("click", function (params) {{
