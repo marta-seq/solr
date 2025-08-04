@@ -108,7 +108,6 @@ def load_data(file_path):
     list_cols = [
         'kw_pipeline_category',
         'kw_detected_methods',
-        # 'llm_annot_tested_data_modalities', # Removed as per user request
         'llm_annot_compared_algorithms_packages',
         'kw_tissue'
     ]
@@ -137,6 +136,16 @@ def load_data(file_path):
     else:
         df_nodes['year'] = 2000  # Default year if column is missing
         st.warning("Column 'year' not found in your nodes data. Defaulting to year 2000 for all papers.")
+
+    # Handle 'x' and 'y' coordinates for node positioning
+    for coord_col in ['x', 'y']:
+        if coord_col in df_nodes.columns:
+            df_nodes[coord_col] = pd.to_numeric(df_nodes[coord_col], errors='coerce').fillna(0)  # Fill NaN with 0
+        else:
+            # If 'x' or 'y' are missing, create them with default values (e.g., random or 0)
+            st.warning(
+                f"Column '{coord_col}' not found in your nodes data. Nodes will be positioned at 0 for this coordinate.")
+            df_nodes[coord_col] = 0  # Default to 0 if column is missing
 
     # Ensure 'doi', 'title', 'abstract' columns exist and are strings
     for col in ['doi', 'title', 'abstract']:
@@ -293,6 +302,10 @@ with graph_col:
             assay_types = ", ".join(row['kw_detected_methods']) if row['kw_detected_methods'] else "N/A"
             abstract = row['abstract']
 
+            # Get x and y coordinates, default to 0 if not present
+            node_x = row.get('x', 0)
+            node_y = row.get('y', 0)
+
             # Node size based on citations (logarithmic scale)
             if max_citations_for_scaling > 1:
                 size = min_node_size + (np.log1p(citations) / np.log1p(max_citations_for_scaling)) * (
@@ -325,7 +338,10 @@ with graph_col:
                 color=node_color,
                 borderWidth=1,
                 borderWidthSelected=3,
-                shape='dot'
+                shape='dot',
+                x=node_x,  # FIX: Use x coordinate from data
+                y=node_y,  # FIX: Use y coordinate from data
+                fixed=True  # FIX: Make nodes static
             )
 
         # Add edges based on the df_edges DataFrame, filtered by current nodes
@@ -386,12 +402,14 @@ with graph_col:
                     network.on("click", function (params) {{
                         if (params.nodes.length > 0) {{
                             var nodeId = params.nodes[0];
+                            console.log("Node clicked:", nodeId); // Debug log
                             var url = new URL(window.location.href);
                             url.searchParams.set('selected_doi', nodeId);
                             window.history.pushState({{path:url.href}},'',url.href);
+                            // Send message to parent (Streamlit) to trigger re-run and update state
                             window.parent.postMessage({{
                                 type: 'streamlit:setComponentValue',
-                                key: 'selected_node_trigger',
+                                key: 'selected_node_trigger', // Dummy key to trigger re-run
                                 value: nodeId
                             }}, '*');
                         }}
