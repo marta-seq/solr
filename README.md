@@ -4,7 +4,10 @@ This repository serves as a living review for the field of spatial omics.
 It aims to continuously update and curate relevant scientific literature, methodologies,
 and resources within this rapidly evolving domain.
 
-This project provides an interactive platform for exploring computational neuroscience papers. It leverages semantic similarity to build a dynamic graph, allowing researchers to discover connections, filter by various attributes, and delve into the methodologies discussed in the literature.
+This project provides an interactive platform for exploring computational analysis of 
+spatial omics. It leverages semantic similarity to build a dynamic graph, 
+allowing researchers to discover connections, filter by various attributes,
+and delve into the methodologies discussed in the literature.
 
 <br>
 
