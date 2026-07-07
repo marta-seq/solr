@@ -93,26 +93,73 @@ def save_jsonl_records(records: List[Dict[str, Any]], file_path: str, append: bo
         logger.error(f"Error saving records to {file_path}: {e}")
 
 
-def load_curated_csv_data(file_path: str) -> pd.DataFrame:
+def load_curated_csv_data(file_path: str) -> Dict[str, Dict]:
     """
-    Loads curated data from a CSV file, cleans DOIs, and handles potential errors.
+    Loads curated data from a CSV file and returns a dictionary.
+    Key: cleaned DOI
+    Value: dictionary of metadata (category, pipeline_category, name, etc.)
     """
     if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
-        logger.warning(f"Curated CSV file not found or empty: {file_path}. Returning empty DataFrame.")
-        return pd.DataFrame()
+        logger.warning(f"Curated CSV file not found or empty: {file_path}. Returning empty dict.")
+        return {}
+
     try:
         df = pd.read_csv(file_path, dtype=str, keep_default_na=False)
-        if 'doi' in df.columns:
-            df['doi'] = df['doi'].apply(clean_doi)
-            df.drop_duplicates(subset=['doi'], inplace=True)
-            logger.info(f"Loaded {len(df)} unique records from curated CSV: {file_path}.")
-        else:
-            logger.warning(
-                f"Curated CSV '{file_path}' does not contain a 'doi' column. Skipping DOI cleaning and deduplication.")
-        return df
+
+        if 'doi' not in df.columns:
+            logger.error(f"Curated CSV '{file_path}' does not contain a 'doi' column!")
+            return {}
+
+        # Clean DOIs
+        df['doi'] = df['doi'].apply(clean_doi)
+
+        # Remove rows with empty DOIs
+        df = df[df['doi'] != '']
+
+        # Drop duplicates
+        df.drop_duplicates(subset=['doi'], inplace=True)
+
+        logger.info(f"Loaded {len(df)} unique records from curated CSV: {file_path}.")
+
+        # Convert to dictionary format: {doi: {metadata}}
+        result = {}
+        for _, row in df.iterrows():
+            doi = row['doi']
+            # Create metadata dict - get column names and values properly
+            metadata = {}
+            for col in df.columns:
+                if col != 'doi':  # Skip the DOI column
+                    metadata[col] = row[col]
+
+            # Add status markers
+            metadata['status'] = 'curated_method'
+            result[doi] = metadata
+
+        return result
+
     except Exception as e:
-        logger.error(f"Error loading or processing curated CSV '{file_path}': {e}")
-        return pd.DataFrame()
+        logger.error(f"Error loading curated CSV '{file_path}': {e}")
+        return {}
+# def load_curated_csv_data(file_path: str) -> pd.DataFrame:
+#     """
+#     Loads curated data from a CSV file, cleans DOIs, and handles potential errors.
+#     """
+#     if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+#         logger.warning(f"Curated CSV file not found or empty: {file_path}. Returning empty DataFrame.")
+#         return pd.DataFrame()
+#     try:
+#         df = pd.read_csv(file_path, dtype=str, keep_default_na=False)
+#         if 'doi' in df.columns:
+#             df['doi'] = df['doi'].apply(clean_doi)
+#             df.drop_duplicates(subset=['doi'], inplace=True)
+#             logger.info(f"Loaded {len(df)} unique records from curated CSV: {file_path}.")
+#         else:
+#             logger.warning(
+#                 f"Curated CSV '{file_path}' does not contain a 'doi' column. Skipping DOI cleaning and deduplication.")
+#         return df
+#     except Exception as e:
+#         logger.error(f"Error loading or processing curated CSV '{file_path}': {e}")
+#         return pd.DataFrame()
 
 
 # Keeping these functions for potential future use or if user changes mind about CSV,

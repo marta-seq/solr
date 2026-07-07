@@ -1,0 +1,248 @@
+# Snakefile
+import yaml
+import json
+from datetime import datetime
+import os
+from snakemake.io import protected
+import tempfile
+
+# Load configuration from config/pipeline_config.yaml
+with open("config/pipeline_config.yaml") as f:
+    config = yaml.safe_load(f)
+
+# Define the final output files you want the entire pipeline to produce.
+# These are now the master CSV files that will incorporate manual annotations.
+ALL_OUTPUT_FILES = [
+    config["paths"]["final_master_computational_papers"],
+    config["paths"]["final_master_non_computational_papers"]
+]
+
+# The 'all' rule is the default goal of the pipeline.
+rule all:
+    input:
+        ALL_OUTPUT_FILES
+
+# Rule for scraping PubMed articles
+rule scrape_pubmed:
+    output:
+        protected(config["paths"]["raw_scraped_articles"])
+    input:
+        config["paths"]["curated_dois_file"]
+    params:
+        email=config["scraper"]["pubmed_email"],
+        keywords_str=",".join(config["scraper"]["keywords"])
+    shell:
+        "python -m src.data_acquisition.pubmed_scraper "
+        "--curated_dois_file {input} "
+        "--output_scraped_articles_file {output} "
+        "--pubmed_email {params.email} "
+        "--keywords '{params.keywords_str}'"
+
+# Rule for cleaning and deduplicating scraped data
+rule clean_scraped_data:
+    output:
+        protected(config["paths"]["intermediate_cleaned_papers"])
+    input:
+        config["paths"]["raw_scraped_articles"]
+    shell:
+        "python -m src.data_acquisition.clean_scraped_data "
+        "--input_file {input} "
+        "--output_file {output}"
+
+# Rule: Incorporate manually curated categories (NO SCORE LOGIC HERE FOR NOW, this is handled later)
+rule incorporate_curated_categories:
+    output:
+        protected(config["paths"]["intermediate_papers_with_curated_categories"])
+    input:
+        papers=config["paths"]["intermediate_cleaned_papers"],
+        curated_categories=config["paths"]["curated_categories_file"]
+    shell:
+        "python -m src.data_acquisition.incorporate_curated_categories "
+        "--input_file {input.papers} "
+        "--curated_categories_file {input.curated_categories} "
+        "--output_file {output}"
+
+# Rule: Extract concepts using keyword matching (Weak Annotation)
+rule extract_concepts:
+    output:
+        protected(config["paths"]["intermediate_papers_with_extracted_concepts"])
+    input:
+        config["paths"]["intermediate_papers_with_curated_categories"]
+    params:
+        concepts_dir=config["concept_extractor"]["concepts_config_dir"]
+    shell:
+        "python -m src.weak_annotation.concept_extractor "
+        "--input_file {input} "
+        "--output_file {output} "
+        "--concepts_config_dir {params.concepts_dir}"
+
+# Rule: Filter papers and update annotation score based on weak annotation
+rule filter_and_score_papers:
+    output:
+        protected(config["paths"]["intermediate_filtered_and_scored_papers"])
+    input:
+        config["paths"]["intermediate_papers_with_extracted_concepts"]
+    params:
+        annotation_score_value=config["filter_score"]["annotation_score_value"]
+    shell:
+        "python -m src.weak_annotation.filter_and_score_papers "
+        "--input_file {input} "
+        "--output_file {output} "
+        "--annotation_score {params.annotation_score_value}"
+
+# Rule: Extract full-text sections from papers
+rule extract_full_text_sections:
+    output:
+        protected(config["paths"]["intermediate_extracted_sections_log"])
+    input:
+        config["paths"]["intermediate_filtered_and_scored_papers"]
+    params:
+        unpaywall_email=config["full_text_extraction"]["unpaywall_email"]
+    shell:
+        "python -m src.data_acquisition.extract_full_text_sections "
+        "--input_papers_file {input} "
+        "--output_sections_log_file {output} "
+        "--unpaywall_email {params.unpaywall_email}"
+
+# Rule: Merge extracted full-text sections into the main papers dataset
+rule merge_extracted_sections:
+    output:
+        protected(config["paths"]["intermediate_papers_with_extracted_sections"])
+    input:
+        papers=config["paths"]["intermediate_filtered_and_scored_papers"],
+        sections_log=config["paths"]["intermediate_extracted_sections_log"]
+    shell:
+        "python -m src.data_acquisition.merge_extracted_sections "
+        "--input_papers_file {input.papers} "
+        "--input_sections_log_file {input.sections_log} "
+        "--output_file {output}"
+
+# Rule: LLM Annotation - FIRST PASS (Broad Classification)
+rule llm_annotate_broad_classification:
+    output:
+        protected(config["paths"]["intermediate_llm_broad_annotated_papers"])
+    input:
+        config["paths"]["intermediate_papers_with_extracted_sections"]
+    params:
+        force_reannotate_flag="--force_reannotate" if config["llm"]["force_reannotate"] else ""
+    run:
+        with tempfile.NamedTemporaryFile(mode='w',delete=False,suffix='.json') as temp_schema_file:
+            json.dump(config["llm"]["llm_broad_schema"],temp_schema_file,indent=2)
+            temp_schema_file_path = temp_schema_file.name
+
+        shell_cmd = [
+            "python", "-m", "src.llm_annotation.llm_broad_classifier",
+            "--input_papers_file", str(input),
+            "--output_llm_annotated_jsonl", str(output),
+            "--llm_schema_path", temp_schema_file_path
+        ]
+        if params.force_reannotate_flag:
+            shell_cmd.append(params.force_reannotate_flag)
+        shell(" ".join(shell_cmd))
+        os.remove(temp_schema_file_path)
+
+# Rule: Score and Split Broad LLM Output
+rule score_and_split_broad_llm_output:
+    output:
+        computational_output=config["paths"]["intermediate_computational_papers"],
+        non_computational_output=config["paths"]["intermediate_non_computational_papers"]
+    input:
+        config["paths"]["intermediate_llm_broad_annotated_papers"]
+    params:
+        score_increment=config["llm"]["broad_llm_post_annotation_score_increment"],
+        llm_broad_schema=config["llm"]["llm_broad_schema"]  # Pass the dictionary directly
+    run:
+        # Create a temporary file for the LLM broad schema
+        with tempfile.NamedTemporaryFile(mode='w',delete=False,suffix='.json') as temp_schema_file:
+            json.dump(params.llm_broad_schema,temp_schema_file,indent=2)
+            temp_schema_file_path = temp_schema_file.name
+
+        shell_cmd = (
+            "python -m src.data_processing.score_and_split_broad_llm_output "
+            f"--input_file {input} "
+            f"--output_computational_file {output.computational_output} "
+            f"--output_non_computational_file {output.non_computational_output} "
+            f"--score_increment {params.score_increment} "
+            f"--llm_broad_schema_path {temp_schema_file_path}"
+        )
+        shell(shell_cmd)
+        os.remove(temp_schema_file_path)
+
+
+# Rule: LLM Annotation - SECOND PASS (Detailed Method Extraction for Computational Papers)
+rule llm_annotate_detailed_methods:
+    output:
+        protected(config["paths"]["intermediate_llm_detailed_annotated_papers"])
+    input:
+        config["paths"]["intermediate_computational_papers"]  # Input from the new split
+    params:
+        force_reannotate_flag="--force_reannotate" if config["llm"]["force_reannotate"] else "",
+        detailed_llm_score_increment=config["llm"]["detailed_llm_score_increment"]
+    run:
+        # Create a temporary file for the LLM detailed schema
+        with tempfile.NamedTemporaryFile(mode='w',delete=False,suffix='.json') as temp_schema_file:
+            json.dump(config["llm"]["llm_detailed_schema"],temp_schema_file,indent=2)
+            temp_schema_file_path = temp_schema_file.name
+
+        shell_cmd = [
+            "python", "-m", "src.llm_annotation.llm_detailed_extractor",
+            "--input_papers_file", str(input),
+            "--output_llm_annotated_jsonl", str(output),
+            "--llm_schema_path", temp_schema_file_path,
+            "--detailed_llm_score_increment", str(params.detailed_llm_score_increment)
+        ]
+        if params.force_reannotate_flag:
+            shell_cmd.append(params.force_reannotate_flag)
+        shell(" ".join(shell_cmd))
+        os.remove(temp_schema_file_path)
+
+# NEW RULE: Prepare papers for manual annotation (output CSVs for review)
+rule prepare_for_manual_annotation:
+    output:
+        protected(config["paths"]["manual_review_computational_csv"]),
+        protected(config["paths"]["manual_review_non_computational_csv"])
+    input:
+        computational_papers=config["paths"][
+            "intermediate_llm_detailed_annotated_papers"],# Use detailed LLM output for computational
+        non_computational_papers=config["paths"][
+            "intermediate_non_computational_papers"]  # Use broad LLM output for non-computational
+    shell:
+        "python -m src.data_processing.prepare_for_manual_annotation "
+        "--input_computational_file {input.computational_papers} "
+        "--input_non_computational_file {input.non_computational_papers} "
+        "--output_computational_csv {output[0]} "
+        "--output_non_computational_csv {output[1]}"
+
+# NEW RULE: Incorporate manual annotations back into final master CSVs (computational)
+rule incorporate_manual_computational_annotations:
+    output:
+        protected(config["paths"]["final_master_computational_papers"])  # Now outputs CSV
+    input:
+        original_jsonl=config["paths"][
+            "intermediate_llm_detailed_annotated_papers"],# Still needs full JSONL for original data
+        manual_csv=config["paths"]["manual_review_computational_csv"]
+    params:
+        manual_score=config["scoring"]["manual_annotation_score"]
+    shell:
+        "python -m src.data_processing.incorporate_manual_annotations "
+        "--input_original_jsonl {input.original_jsonl} "
+        "--input_manual_csv {input.manual_csv} "
+        "--output_csv {output} "  # Changed to output_csv
+        "--manual_annotation_score {params.manual_score}"
+
+# NEW RULE: Incorporate manual annotations back into final master CSVs (non-computational)
+rule incorporate_manual_non_computational_annotations:
+    output:
+        protected(config["paths"]["final_master_non_computational_papers"])  # Now outputs CSV
+    input:
+        original_jsonl=config["paths"][
+            "intermediate_non_computational_papers"],# Still needs full JSONL for original data
+        manual_csv=config["paths"]["manual_review_non_computational_csv"]
+    params:
+        manual_score=config["scoring"]["manual_annotation_score"]
+    shell:
+        "python -m src.data_processing.incorporate_manual_annotations "
+        "--input_original_jsonl {input.original_jsonl} "
+        "--input_manual_csv {input.manual_csv} "
+        "--output_csv {output} "  # Changed to output_csv
+        "--manual_annotation_score {params.manual_score}"

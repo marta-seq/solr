@@ -15,7 +15,7 @@ theme:
 
 nav:
   - Home: index.md
-  - Spatial Omics theoretic overview:
+  - Spatial Omics overview:
       - Introduction: book/index.md  # Your book's introduction
       - Spatially Resolved Omics Techniques: book/chapter1.md
       - Analytical Frameworks for Spatial Omics Data: book/chapter2.md
