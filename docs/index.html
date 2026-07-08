@@ -748,6 +748,8 @@ async function loadChapterSection(name, section) {
     }
   }, 100);
 }
+
+function mdToHtml(md) {
   // Remove yaml front matter if any
   md=md.replace(/^---[\s\S]*?---\n/,"");
   // Disclaimer block (lines with ⚠️)
