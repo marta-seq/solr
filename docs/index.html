@@ -395,15 +395,16 @@ function catInfo(cat) {
 // ── Load ──────────────────────────────────────────────────────────────────────
 async function loadData() {
   try {
+    const base = window.location.pathname.includes('/solr/') ? '/solr/' : './';
     const [m,d,s] = await Promise.all([
-      fetch("data/methods.json").then(r=>r.json()),
-      fetch("data/datasets.json").then(r=>r.json()),
-      fetch("data/stats.json").then(r=>r.json()),
+      fetch(base+"data/methods.json").then(r=>{if(!r.ok)throw new Error("methods.json "+r.status);return r.json();}),
+      fetch(base+"data/datasets.json").then(r=>{if(!r.ok)throw new Error("datasets.json "+r.status);return r.json();}),
+      fetch(base+"data/stats.json").then(r=>{if(!r.ok)throw new Error("stats.json "+r.status);return r.json();}),
     ]);
     METHODS=m; DATASETS=d; STATS=s;
     initStats(); initDataFilters(); initGraphFilters();
     buildLegend(); renderMethods(); renderDatasets();
-  } catch(e) { console.error("Load failed:",e); }
+  } catch(e) { console.error("Load failed:",e); alert("Data load failed: "+e.message); }
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
@@ -722,7 +723,8 @@ async function loadChapter(name, skipIfLoaded=false) {
     a.classList.toggle("active", a.getAttribute("onclick")&&a.getAttribute("onclick").includes(`'${name}'`));
   });
   try {
-    const r=await fetch(`book/${name}.md`);
+    const base = window.location.pathname.includes('/solr/') ? '/solr/' : './';
+    const r=await fetch(`${base}book/${name}.md`);
     if(!r.ok)throw new Error("not found");
     const text=await r.text();
     document.getElementById("book-content").innerHTML=mdToHtml(text);
