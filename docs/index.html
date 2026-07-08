@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SOLR — Spatial Omics Living Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --border:    #21262d;
+  --text:      #e6edf3;
+  --muted:     #7d8590;
+  --c-prep:    #388bfd;
+  --c-seg:     #3fb950;
+  --c-niche:   #d2a8ff;
+  --c-svg:     #ffa657;
+  --c-ccc:     #ff7b72;
+  --c-other:   #8b949e;
+  --c-data:    #39d353;
+  --font-disp: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── Nav ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav-logo {
+  font-family: var(--font-disp);
+  font-weight: 700; font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--c-prep); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; }
+.nav-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 0.875rem; font-family: var(--font-body);
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ── Hero ── */
+.hero {
+  padding: 5rem 2rem 3rem;
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; letter-spacing: 0.12em;
+  color: var(--c-prep); text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+.hero h1 {
+  font-family: var(--font-disp);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.25rem;
+}
+.hero h1 em { font-style: normal; color: var(--c-prep); }
+.hero p {
+  font-size: 1.05rem; color: var(--muted);
+  max-width: 600px; margin: 0 auto 2rem;
+}
+
+/* ── Stats bar ── */
+.stats-bar {
+  display: flex; flex-wrap: wrap; gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  max-width: 860px; margin: 0 auto 4rem;
+}
+.stat-cell {
+  flex: 1; min-width: 120px;
+  background: var(--surface);
+  padding: 1.25rem 1rem;
+  text-align: center;
+}
+.stat-number {
+  font-family: var(--font-mono);
+  font-size: 1.75rem; font-weight: 500;
+  color: var(--text); display: block;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.72rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-top: 0.35rem; display: block;
+}
+.stat-cell.accent-blue .stat-number  { color: var(--c-prep); }
+.stat-cell.accent-green .stat-number { color: var(--c-seg); }
+.stat-cell.accent-purple .stat-number{ color: var(--c-niche); }
+.stat-cell.accent-orange .stat-number{ color: var(--c-svg); }
+
+/* ── Section title ── */
+.section-title {
+  font-family: var(--font-disp);
+  font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Flip cards grid ── */
+.cards-section {
+  max-width: 980px; margin: 0 auto;
+  padding: 0 2rem 5rem;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.flip-card {
+  height: 280px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.flip-card-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+  transform-style: preserve-3d;
+}
+.flip-card:hover .flip-card-inner,
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 1.75rem;
+  display: flex; flex-direction: column;
+}
+.flip-front {
+  background: var(--surface);
+  justify-content: space-between;
+}
+.flip-back {
+  background: var(--surface);
+  transform: rotateY(180deg);
+  justify-content: space-between;
+}
+
+.card-accent {
+  width: 36px; height: 3px;
+  border-radius: 2px;
+  margin-bottom: 1.25rem;
+}
+.card-icon {
+  font-size: 2rem; margin-bottom: 0.75rem;
+  display: block;
+}
+.card-title {
+  font-family: var(--font-disp);
+  font-size: 1.15rem; font-weight: 600;
+  line-height: 1.2; margin-bottom: 0.5rem;
+}
+.card-desc {
+  font-size: 0.82rem; color: var(--muted);
+  line-height: 1.5; flex: 1;
+}
+.card-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem; color: var(--muted);
+  margin-top: 1rem;
+}
+.card-count span { color: var(--text); font-weight: 500; }
+
+.card-cta {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.82rem; font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: background 0.2s, border-color 0.2s;
+  margin-top: 1rem;
+  align-self: flex-start;
+}
+.card-cta:hover { background: var(--border); }
+
+/* Card colors */
+.card-book   .card-accent { background: var(--c-svg); }
+.card-book   .flip-back   { border-color: var(--c-svg); }
+.card-methods .card-accent { background: var(--c-prep); }
+.card-methods .flip-back   { border-color: var(--c-prep); }
+.card-data   .card-accent { background: var(--c-seg); }
+.card-data   .flip-back   { border-color: var(--c-seg); }
+.card-graph  .card-accent { background: var(--c-niche); }
+.card-graph  .flip-back   { border-color: var(--c-niche); }
+
+/* ── Sections ── */
+.main-section {
+  max-width: 980px; margin: 0 auto;
+  padding: 2rem 2rem 5rem;
+  display: none;
+}
+.main-section.active { display: block; }
+
+/* ── Search bar ── */
+.search-bar {
+  width: 100%; padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-bar:focus { border-color: var(--c-prep); }
+
+/* ── Filter pills ── */
+.filter-row {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.pill {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+.pill:hover, .pill.active {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* ── Methods table ── */
+.methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.method-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+.method-card:hover { border-color: var(--muted); }
+.method-card-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.method-name {
+  font-family: var(--font-disp);
+  font-size: 0.95rem; font-weight: 600;
+}
+.method-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem; padding: 0.2rem 0.5rem;
+  border-radius: 4px; white-space: nowrap;
+  background: var(--border); color: var(--muted);
+  flex-shrink: 0;
+}
+.method-category {
+  font-size: 0.75rem; color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.method-meta {
+  font-size: 0.78rem; color: var(--muted);
+  display: flex; gap: 1rem; flex-wrap: wrap;
+}
+.method-meta span { display: flex; align-items: center; gap: 0.3rem; }
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); display: inline-block;
+}
+.status-dot.manual { background: var(--c-seg); }
+
+/* ── Dataset cards ── */
+.datasets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+.dataset-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: border-color 0.2s;
+}
+.dataset-card:hover { border-color: var(--c-seg); }
+.dataset-id {
+  font-family: var(--font-mono);
+  font-size: 0.72rem; color: var(--c-seg);
+  margin-bottom: 0.5rem;
+}
+.dataset-name {
+  font-family: var(--font-disp);
+  font-size: 0.9rem; font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.dataset-tags {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+.tag {
+  font-size: 0.7rem; padding: 0.15rem 0.5rem;
+  border-radius: 4px; background: var(--border);
+  color: var(--muted);
+}
+.tag.sp  { background: rgba(56,139,253,0.15); color: var(--c-prep); }
+.tag.st  { background: rgba(63,185,80,0.15);  color: var(--c-seg); }
+.tag.cancer { background: rgba(255,123,114,0.15); color: var(--c-ccc); }
+.dataset-meta {
+  font-size: 0.75rem; color: var(--muted);
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1rem;
+}
+.dataset-link {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.78rem; color: var(--c-prep);
+  text-decoration: none; margin-top: 0.75rem;
+}
+.dataset-link:hover { text-decoration: underline; }
+
+/* ── Graph section ── */
+#graph-container {
+  width: 100%; height: 600px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  position: relative;
+}
+.graph-controls {
+  display: flex; flex-wrap: wrap; gap: 0.75rem;
+  margin-bottom: 1rem; align-items: center;
+}
+.graph-toggle {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.82rem; color: var(--muted);
+  cursor: pointer;
+}
+.graph-toggle input { accent-color: var(--c-niche); }
+.graph-legend {
+  display: flex; flex-wrap: wrap; gap: 0.75rem;
+  margin-top: 1rem;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.75rem; color: var(--muted);
+}
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+
+/* ── Node detail panel ── */
+.detail-panel {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 280px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: none;
+  z-index: 10;
+  max-height: 560px;
+  overflow-y: auto;
+}
+.detail-panel.visible { display: block; }
+.detail-close {
+  position: absolute; top: 0.75rem; right: 0.75rem;
+  background: none; border: none;
+  color: var(--muted); cursor: pointer;
+  font-size: 1rem; line-height: 1;
+}
+.detail-id {
+  font-family: var(--font-mono);
+  font-size: 0.7rem; color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.detail-name {
+  font-family: var(--font-disp);
+  font-size: 1rem; font-weight: 600;
+  margin-bottom: 0.5rem; line-height: 1.2;
+}
+.detail-journal {
+  font-size: 0.78rem; color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.detail-abstract {
+  font-size: 0.78rem; color: var(--muted);
+  line-height: 1.5; margin-bottom: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.detail-doi {
+  font-size: 0.75rem;
+}
+.detail-doi a {
+  color: var(--c-prep); text-decoration: none;
+  word-break: break-all;
+}
+.detail-doi a:hover { text-decoration: underline; }
+.detail-connections {
+  font-size: 0.75rem; color: var(--muted);
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+.detail-connections strong { color: var(--text); display: block; margin-bottom: 0.3rem; }
+
+/* ── Book section ── */
+#book-content {
+  max-width: 720px;
+}
+#book-content h1, #book-content h2, #book-content h3 {
+  font-family: var(--font-disp);
+  margin: 1.5rem 0 0.75rem;
+  line-height: 1.2;
+}
+#book-content p { margin-bottom: 1rem; color: var(--muted); font-size: 0.95rem; }
+#book-content a { color: var(--c-prep); }
+.book-nav {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+footer a { color: var(--muted); }
+
+/* ── Utility ── */
+.hidden { display: none !important; }
+.empty-state {
+  text-align: center; padding: 3rem;
+  color: var(--muted); font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#"><span>SO</span>LR</a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showSection('landing')">Home</a></li>
+    <li><a href="#" onclick="showSection('methods')">Methods</a></li>
+    <li><a href="#" onclick="showSection('data')">Data</a></li>
+    <li><a href="#" onclick="showSection('graph')">Graph</a></li>
+    <li><a href="#" onclick="showSection('book')">Book</a></li>
+  </ul>
+</nav>
+
+<!-- ── Landing ── -->
+<div id="section-landing" class="main-section active">
+  <div class="hero">
+    <div class="hero-eyebrow">Spatial Omics Living Review</div>
+    <h1>Navigate the <em>methods landscape</em> — not the hype</h1>
+    <p>A curated, graph-based living review of computational methods and datasets for spatial omics. Built by researchers, for researchers.</p>
+  </div>
+
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-cell accent-blue">
+      <span class="stat-number" id="stat-papers">—</span>
+      <span class="stat-label">Papers</span>
+    </div>
+    <div class="stat-cell accent-green">
+      <span class="stat-number" id="stat-methods">—</span>
+      <span class="stat-label">Comp. Methods</span>
+    </div>
+    <div class="stat-cell accent-purple">
+      <span class="stat-number" id="stat-curated">—</span>
+      <span class="stat-label">Curated</span>
+    </div>
+    <div class="stat-cell accent-orange">
+      <span class="stat-number" id="stat-datasets">—</span>
+      <span class="stat-label">Datasets</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-number" id="stat-sp">—</span>
+      <span class="stat-label">SP Datasets</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-number" id="stat-st">—</span>
+      <span class="stat-label">ST Datasets</span>
+    </div>
+  </div>
+
+  <div class="cards-section">
+    <div class="section-title">Explore</div>
+    <div class="cards-grid">
+
+      <!-- Book -->
+      <div class="flip-card card-book" onclick="flipCard(this, 'book')">
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div>
+              <div class="card-accent"></div>
+              <span class="card-icon">📖</span>
+              <div class="card-title">Methods Book</div>
+              <div class="card-desc">A structured review of spatial omics computational methods — written context behind the graph.</div>
+            </div>
+            <div class="card-count">Hover to explore →</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <div class="card-title">Methods Book</div>
+              <div class="card-desc">From preprocessing to cell-cell communication — a curated narrative of the methods landscape, written during a PhD in spatial omics.</div>
+            </div>
+            <a class="card-cta" href="#" onclick="showSection('book'); return false;">Open book →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Methods -->
+      <div class="flip-card card-methods" onclick="flipCard(this, 'methods')">
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div>
+              <div class="card-accent"></div>
+              <span class="card-icon">⚙️</span>
+              <div class="card-title">Methods</div>
+              <div class="card-desc">Browse and search computational methods by pipeline step, modality, or publication.</div>
+            </div>
+            <div class="card-count"><span id="card-method-count">—</span> methods indexed</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <div class="card-title">Methods Browser</div>
+              <div class="card-desc">Filter by pipeline step — preprocessing, segmentation, niche analysis, SVGs, cell-cell communication and more. See what methods were compared against each other.</div>
+            </div>
+            <a class="card-cta" href="#" onclick="showSection('methods'); return false;">Browse methods →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data -->
+      <div class="flip-card card-data" onclick="flipCard(this, 'data')">
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div>
+              <div class="card-accent"></div>
+              <span class="card-icon">🗂️</span>
+              <div class="card-title">Datasets</div>
+              <div class="card-desc">Curated spatial omics datasets with tissue, disease, organism, modality and marker metadata.</div>
+            </div>
+            <div class="card-count"><span id="card-data-count">—</span> datasets indexed</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <div class="card-title">Dataset Registry</div>
+              <div class="card-desc">Find datasets by tissue type, disease, organism, or technology. Download links included — no data hosted here.</div>
+            </div>
+            <a class="card-cta" href="#" onclick="showSection('data'); return false;">Browse datasets →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph -->
+      <div class="flip-card card-graph" onclick="flipCard(this, 'graph')">
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div>
+              <div class="card-accent"></div>
+              <span class="card-icon">🕸️</span>
+              <div class="card-title">Methods Graph</div>
+              <div class="card-desc">Interactive graph of methods and their benchmarking relationships — see who compared against whom, on what data.</div>
+            </div>
+            <div class="card-count">Click nodes to explore</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <div class="card-title">Explore the Graph</div>
+              <div class="card-desc">Methods grouped by pipeline step. Edges show benchmarking comparisons. Toggle dataset connections to see what data each comparison used.</div>
+            </div>
+            <a class="card-cta" href="#" onclick="showSection('graph'); return false;">Open graph →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Methods section ── -->
+<div id="section-methods" class="main-section">
+  <div class="section-title">Methods Browser</div>
+  <input class="search-bar" id="methods-search" placeholder="Search by name, journal, author…" oninput="renderMethods()"/>
+  <div class="filter-row" id="methods-filters"></div>
+  <div class="methods-grid" id="methods-grid"></div>
+</div>
+
+<!-- ── Data section ── -->
+<div id="section-data" class="main-section">
+  <div class="section-title">Dataset Registry</div>
+  <input class="search-bar" id="data-search" placeholder="Search by tissue, disease, organism, technology…" oninput="renderDatasets()"/>
+  <div class="filter-row" id="data-filters"></div>
+  <div class="datasets-grid" id="datasets-grid"></div>
+</div>
+
+<!-- ── Graph section ── -->
+<div id="section-graph" class="main-section">
+  <div class="section-title">Methods Graph</div>
+  <div class="graph-controls">
+    <label class="graph-toggle">
+      <input type="checkbox" id="toggle-data-edges" onchange="renderGraph()"/>
+      Show dataset connections
+    </label>
+    <label class="graph-toggle">
+      <input type="checkbox" id="toggle-placeholders" onchange="renderGraph()"/>
+      Show placeholders
+    </label>
+    <div class="filter-row" id="graph-filters" style="margin:0; flex:1;"></div>
+  </div>
+  <div style="position:relative;">
+    <div id="graph-container"></div>
+    <div class="detail-panel" id="detail-panel">
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+      <div class="detail-id" id="detail-id"></div>
+      <div class="detail-name" id="detail-name"></div>
+      <div class="detail-journal" id="detail-journal"></div>
+      <div class="detail-abstract" id="detail-abstract"></div>
+      <div class="detail-doi" id="detail-doi"></div>
+      <div class="detail-connections" id="detail-connections"></div>
+    </div>
+  </div>
+  <div class="graph-legend" id="graph-legend"></div>
+</div>
+
+<!-- ── Book section ── -->
+<div id="section-book" class="main-section">
+  <div class="section-title">Methods Book</div>
+  <div class="book-nav" id="book-nav"></div>
+  <div id="book-content">
+    <p style="color:var(--muted)">Loading book…</p>
+  </div>
+</div>
+
+<footer>
+  SOLR — Spatial Omics Living Review ·
+  <a href="https://github.com/marta-seq/solr" target="_blank">GitHub</a> ·
+  Data curated manually; auto-enriched via Crossref &amp; PubMed
+</footer>
+
+<!-- Cytoscape for graph -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let METHODS  = [];
+let DATASETS = [];
+let STATS    = {};
+let cy       = null;
+
+const CATEGORY_COLORS = {
+  "Preprocessing":                          "#388bfd",
+  "Cell segmentation - Imaging based":      "#3fb950",
+  "Cell segmentation - Transcript based":   "#56d364",
+  "Phenotyping":                            "#ffa657",
+  "Niche/Neighborhood/domain analysis":     "#d2a8ff",
+  "Spatial Variable Genes":                 "#79c0ff",
+  "Cell-Cell-Communication":                "#ff7b72",
+  "Label separation/pattern extraction - ML": "#f0883e",
+  "General Framework":                      "#8b949e",
+  "default":                                "#8b949e",
+};
+
+function categoryColor(cat) {
+  if (!cat) return CATEGORY_COLORS.default;
+  for (const [key, val] of Object.entries(CATEGORY_COLORS)) {
+    if (cat.toLowerCase().includes(key.toLowerCase())) return val;
+  }
+  return CATEGORY_COLORS.default;
+}
+
+// ── Load data ─────────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const [m, d, s] = await Promise.all([
+      fetch("data/methods.json").then(r => r.json()),
+      fetch("data/datasets.json").then(r => r.json()),
+      fetch("data/stats.json").then(r => r.json()),
+    ]);
+    METHODS  = m;
+    DATASETS = d;
+    STATS    = s;
+    initStats();
+    initFilters();
+    renderMethods();
+    renderDatasets();
+    buildGraphLegend();
+  } catch(e) {
+    console.error("Failed to load data:", e);
+  }
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function animateNumber(el, target) {
+  const n = parseInt(target) || 0;
+  let current = 0;
+  const step = Math.ceil(n / 30);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, n);
+    el.textContent = current;
+    if (current >= n) clearInterval(timer);
+  }, 30);
+}
+
+function initStats() {
+  animateNumber(document.getElementById("stat-papers"),   STATS.total_papers);
+  animateNumber(document.getElementById("stat-methods"),  STATS.comp_methods);
+  animateNumber(document.getElementById("stat-curated"),  STATS.curated);
+  animateNumber(document.getElementById("stat-datasets"), STATS.total_datasets);
+  animateNumber(document.getElementById("stat-sp"),       STATS.sp_datasets);
+  animateNumber(document.getElementById("stat-st"),       STATS.st_datasets);
+  const mc = document.getElementById("card-method-count");
+  const dc = document.getElementById("card-data-count");
+  if (mc) mc.textContent = STATS.comp_methods;
+  if (dc) dc.textContent = STATS.total_datasets;
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll(".main-section").forEach(s => s.classList.remove("active"));
+  document.getElementById("section-" + name).classList.add("active");
+  if (name === "graph" && !cy) renderGraph();
+  if (name === "book") loadBook();
+  window.scrollTo(0, 0);
+}
+
+// ── Flip cards ────────────────────────────────────────────────────────────────
+function flipCard(el, section) {
+  el.classList.toggle("flipped");
+}
+
+// ── Methods filters ───────────────────────────────────────────────────────────
+let activeMethodFilter = "All";
+
+function initFilters() {
+  const cats = ["All", ...new Set(
+    METHODS.filter(m => m.pipeline_category)
+           .map(m => m.pipeline_category.split(";")[0].trim())
+  )];
+
+  const mf = document.getElementById("methods-filters");
+  mf.innerHTML = cats.map(c =>
+    `<button class="pill ${c === 'All' ? 'active' : ''}"
+      onclick="setMethodFilter('${c}', this)">${c}</button>`
+  ).join("");
+
+  // Data filters
+  const modalities = ["All", "spatial_proteomics", "spatial_transcriptomics"];
+  const df = document.getElementById("data-filters");
+  df.innerHTML = modalities.map(m => {
+    const label = m === "All" ? "All" : m === "spatial_proteomics" ? "Spatial Proteomics" : "Spatial Transcriptomics";
+    return `<button class="pill ${m === 'All' ? 'active' : ''}"
+      onclick="setDataFilter('${m}', this)">${label}</button>`;
+  }).join("");
+}
+
+let activeDataFilter = "All";
+
+function setMethodFilter(cat, btn) {
+  activeMethodFilter = cat;
+  document.querySelectorAll("#methods-filters .pill").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  renderMethods();
+}
+
+function setDataFilter(mod, btn) {
+  activeDataFilter = mod;
+  document.querySelectorAll("#data-filters .pill").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  renderDatasets();
+}
+
+// ── Methods render ────────────────────────────────────────────────────────────
+function renderMethods() {
+  const q   = document.getElementById("methods-search").value.toLowerCase();
+  const grid = document.getElementById("methods-grid");
+
+  let items = METHODS.filter(m => !m.is_placeholder);
+
+  if (activeMethodFilter !== "All") {
+    items = items.filter(m =>
+      m.pipeline_category && m.pipeline_category.toLowerCase().includes(activeMethodFilter.toLowerCase())
+    );
+  }
+
+  if (q) {
+    items = items.filter(m =>
+      (m.name||"").toLowerCase().includes(q) ||
+      (m.title||"").toLowerCase().includes(q) ||
+      (m.first_author||"").toLowerCase().includes(q) ||
+      (m.journal||"").toLowerCase().includes(q)
+    );
+  }
+
+  if (!items.length) {
+    grid.innerHTML = `<div class="empty-state">No methods found.</div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(m => {
+    const color  = categoryColor(m.pipeline_category);
+    const status = m.review_status === "manual" ? "manual" : "";
+    const comps  = m.comparison_ids.length;
+    const data   = m.data_ids.length;
+    return `
+      <div class="method-card" onclick="openMethodDetail('${m.id}')"
+           style="border-left: 3px solid ${color};">
+        <div class="method-card-top">
+          <div class="method-name">${m.name || m.title || m.id}</div>
+          <div class="method-badge">${m.id}</div>
+        </div>
+        <div class="method-category">${m.pipeline_category || "—"}</div>
+        <div class="method-meta">
+          ${m.year ? `<span>📅 ${m.year}</span>` : ""}
+          ${m.journal ? `<span>📄 ${m.journal.slice(0,25)}${m.journal.length>25?"…":""}</span>` : ""}
+          ${comps ? `<span>🔗 ${comps} comparisons</span>` : ""}
+          ${data  ? `<span>🗂 ${data} datasets</span>` : ""}
+          <span><span class="status-dot ${status}"></span> ${status || "stub"}</span>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function openMethodDetail(id) {
+  const m = METHODS.find(x => x.id === id);
+  if (!m) return;
+  showSection("graph");
+  setTimeout(() => {
+    if (cy) {
+      const node = cy.getElementById(id);
+      if (node.length) {
+        cy.animate({ fit: { eles: node, padding: 80 }, duration: 400 });
+        showNodeDetail(m);
+      }
+    }
+  }, 300);
+}
+
+// ── Datasets render ───────────────────────────────────────────────────────────
+function renderDatasets() {
+  const q    = document.getElementById("data-search").value.toLowerCase();
+  const grid = document.getElementById("datasets-grid");
+
+  let items = DATASETS;
+
+  if (activeDataFilter !== "All") {
+    items = items.filter(d =>
+      (d.spatial_data_category||"").toLowerCase().includes(
+        activeDataFilter === "spatial_proteomics" ? "proteomics" : "transcriptomics"
+      )
+    );
+  }
+
+  if (q) {
+    items = items.filter(d =>
+      (d.tissue||"").toLowerCase().includes(q) ||
+      (d.disease||"").toLowerCase().includes(q) ||
+      (d.organism||"").toLowerCase().includes(q) ||
+      (d.spatial_data_method||"").toLowerCase().includes(q) ||
+      (d.internal_name||"").toLowerCase().includes(q) ||
+      (d.id||"").toLowerCase().includes(q)
+    );
+  }
+
+  if (!items.length) {
+    grid.innerHTML = `<div class="empty-state">No datasets found.</div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(d => {
+    const isSP = (d.spatial_data_category||"").toLowerCase().includes("proteomics");
+    const isST = (d.spatial_data_category||"").toLowerCase().includes("transcriptomics");
+    const isCancer = (d.disease||"").toLowerCase().includes("cancer") ||
+                     (d.disease||"").toLowerCase().includes("tumor") ||
+                     (d.disease||"").toLowerCase().includes("carcinoma");
+    const markers = d.n_markers || d.n_genes || "—";
+    const markerLabel = isSP ? "markers" : "genes";
+
+    return `
+      <div class="dataset-card">
+        <div class="dataset-id">${d.id}</div>
+        <div class="dataset-name">${d.internal_name || d.id}</div>
+        <div class="dataset-tags">
+          ${isSP ? '<span class="tag sp">Spatial Proteomics</span>' : ""}
+          ${isST ? '<span class="tag st">Spatial Transcriptomics</span>' : ""}
+          ${isCancer ? '<span class="tag cancer">Cancer</span>' : ""}
+          ${d.spatial_data_method ? `<span class="tag">${d.spatial_data_method}</span>` : ""}
+        </div>
+        <div class="dataset-meta">
+          ${d.organism  ? `<span>🧬 ${d.organism}</span>` : ""}
+          ${d.tissue    ? `<span>🔬 ${d.tissue}</span>` : ""}
+          ${d.disease   ? `<span>🏥 ${d.disease}</span>` : ""}
+          ${d.year      ? `<span>📅 ${d.year}</span>` : ""}
+          ${markers !== "—" ? `<span>📊 ${markers} ${markerLabel}</span>` : ""}
+          ${d.n_samples ? `<span>🧪 ${d.n_samples} samples</span>` : ""}
+        </div>
+        ${d.access_link ? `<a class="dataset-link" href="${d.access_link}" target="_blank">↗ Access data</a>` : ""}
+      </div>`;
+  }).join("");
+}
+
+// ── Graph ─────────────────────────────────────────────────────────────────────
+function buildGraphLegend() {
+  const legend = document.getElementById("graph-legend");
+  const entries = Object.entries(CATEGORY_COLORS).filter(([k]) => k !== "default");
+  legend.innerHTML = entries.map(([k, v]) =>
+    `<div class="legend-item">
+      <div class="legend-dot" style="background:${v}"></div>
+      ${k}
+    </div>`
+  ).join("") + `<div class="legend-item">
+    <div class="legend-dot" style="background:var(--c-data); border-radius:2px;"></div>
+    Dataset
+  </div>`;
+}
+
+function renderGraph() {
+  const showDataEdges   = document.getElementById("toggle-data-edges").checked;
+  const showPlaceholders = document.getElementById("toggle-placeholders").checked;
+
+  const elements = [];
+
+  // Method nodes
+  const visibleMethods = METHODS.filter(m =>
+    showPlaceholders ? true : !m.is_placeholder
+  );
+
+  visibleMethods.forEach(m => {
+    elements.push({
+      data: {
+        id:       m.id,
+        label:    m.name || m.id,
+        category: m.pipeline_category || "Other",
+        color:    categoryColor(m.pipeline_category),
+        type:     "method",
+        _method:  m,
+      }
+    });
+  });
+
+  const methodIds = new Set(visibleMethods.map(m => m.id));
+
+  // Comparison edges
+  visibleMethods.forEach(m => {
+    (m.comparison_ids || []).forEach(cid => {
+      cid = cid.trim();
+      if (cid && methodIds.has(cid)) {
+        elements.push({
+          data: {
+            id:     `comp_${m.id}_${cid}`,
+            source: m.id,
+            target: cid,
+            type:   "comparison",
+          }
+        });
+      }
+    });
+  });
+
+  // Dataset nodes + edges
+  if (showDataEdges) {
+    const usedDataIds = new Set();
+    visibleMethods.forEach(m => (m.data_ids || []).forEach(d => usedDataIds.add(d.trim())));
+
+    DATASETS.filter(d => usedDataIds.has(d.id)).forEach(d => {
+      elements.push({
+        data: {
+          id:    d.id,
+          label: d.internal_name || d.id,
+          type:  "dataset",
+          color: "#39d353",
+          _dataset: d,
+        }
+      });
+    });
+
+    visibleMethods.forEach(m => {
+      (m.data_ids || []).forEach(did => {
+        did = did.trim();
+        if (did && usedDataIds.has(did)) {
+          elements.push({
+            data: {
+              id:     `data_${m.id}_${did}`,
+              source: m.id,
+              target: did,
+              type:   "data-edge",
+            }
+          });
+        }
+      });
+    });
+  }
+
+  if (cy) cy.destroy();
+
+  cy = cytoscape({
+    container: document.getElementById("graph-container"),
+    elements,
+    style: [
+      {
+        selector: "node[type='method']",
+        style: {
+          "background-color":   "data(color)",
+          "label":              "data(label)",
+          "color":              "#e6edf3",
+          "font-size":          "9px",
+          "font-family":        "Inter, sans-serif",
+          "text-valign":        "bottom",
+          "text-margin-y":      4,
+          "text-outline-width": 1,
+          "text-outline-color": "#0d1117",
+          "width":              22,
+          "height":             22,
+          "border-width":       1.5,
+          "border-color":       "#21262d",
+        }
+      },
+      {
+        selector: "node[type='dataset']",
+        style: {
+          "background-color": "#39d353",
+          "shape":            "rectangle",
+          "label":            "data(label)",
+          "color":            "#e6edf3",
+          "font-size":        "8px",
+          "font-family":      "JetBrains Mono, monospace",
+          "text-valign":      "bottom",
+          "text-margin-y":    4,
+          "text-outline-width": 1,
+          "text-outline-color": "#0d1117",
+          "width":            16,
+          "height":           16,
+        }
+      },
+      {
+        selector: "edge[type='comparison']",
+        style: {
+          "line-color":  "#388bfd",
+          "width":       1.5,
+          "opacity":     0.6,
+          "curve-style": "bezier",
+          "target-arrow-shape": "triangle",
+          "target-arrow-color": "#388bfd",
+          "arrow-scale": 0.7,
+        }
+      },
+      {
+        selector: "edge[type='data-edge']",
+        style: {
+          "line-color":   "#39d353",
+          "line-style":   "dashed",
+          "width":        1,
+          "opacity":      0.4,
+          "curve-style":  "bezier",
+        }
+      },
+      {
+        selector: "node:selected",
+        style: {
+          "border-width": 3,
+          "border-color": "#ffffff",
+        }
+      },
+    ],
+    layout: {
+      name:        "cose",
+      nodeRepulsion: 8000,
+      idealEdgeLength: 80,
+      animate:     false,
+    }
+  });
+
+  cy.on("tap", "node", evt => {
+    const node = evt.target;
+    const data = node.data();
+    if (data.type === "method" && data._method) {
+      showNodeDetail(data._method);
+    } else if (data.type === "dataset" && data._dataset) {
+      showDatasetDetail(data._dataset);
+    }
+  });
+
+  cy.on("tap", evt => {
+    if (evt.target === cy) closeDetail();
+  });
+}
+
+function showNodeDetail(m) {
+  const panel = document.getElementById("detail-panel");
+  document.getElementById("detail-id").textContent      = m.id;
+  document.getElementById("detail-name").textContent    = m.name || m.title || m.id;
+  document.getElementById("detail-journal").textContent =
+    [m.first_author, m.journal, m.year].filter(Boolean).join(" · ");
+  document.getElementById("detail-abstract").textContent = m.abstract || "";
+  document.getElementById("detail-doi").innerHTML =
+    m.doi ? `<a href="${m.doi}" target="_blank">${m.doi}</a>` : "";
+
+  let conns = "";
+  if (m.comparison_ids && m.comparison_ids.length) {
+    conns += `<strong>Compared against (${m.comparison_ids.length})</strong>`;
+    conns += m.comparison_ids.map(id => {
+      const other = METHODS.find(x => x.id === id);
+      return `<div>· ${other ? (other.name || id) : id}</div>`;
+    }).join("");
+  }
+  if (m.data_ids && m.data_ids.length) {
+    conns += `<strong style="margin-top:0.5rem; display:block;">Datasets used (${m.data_ids.length})</strong>`;
+    conns += m.data_ids.map(id => {
+      const ds = DATASETS.find(x => x.id === id);
+      return `<div>· ${ds ? (ds.internal_name || id) : id}</div>`;
+    }).join("");
+  }
+  document.getElementById("detail-connections").innerHTML = conns;
+
+  panel.classList.add("visible");
+}
+
+function showDatasetDetail(d) {
+  const panel = document.getElementById("detail-panel");
+  document.getElementById("detail-id").textContent      = d.id;
+  document.getElementById("detail-name").textContent    = d.internal_name || d.id;
+  document.getElementById("detail-journal").textContent =
+    [d.spatial_data_method, d.tissue, d.disease, d.organism].filter(Boolean).join(" · ");
+  document.getElementById("detail-abstract").textContent = d.notes || "";
+  document.getElementById("detail-doi").innerHTML =
+    d.access_link ? `<a href="${d.access_link}" target="_blank">↗ Access data</a>` : "";
+  document.getElementById("detail-connections").innerHTML = "";
+  panel.classList.add("visible");
+}
+
+function closeDetail() {
+  document.getElementById("detail-panel").classList.remove("visible");
+}
+
+// ── Book ──────────────────────────────────────────────────────────────────────
+async function loadBook() {
+  try {
+    const idx = await fetch("book/index.md").then(r => r.text());
+    // Basic markdown to HTML (headers, paragraphs)
+    const html = idx
+      .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+      .replace(/^## (.+)$/gm,  "<h2>$1</h2>")
+      .replace(/^# (.+)$/gm,   "<h1>$1</h1>")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g,   "<em>$1</em>")
+      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/^(?!<[h|p])/gm, "<p>")
+      + "</p>";
+    document.getElementById("book-content").innerHTML = html;
+  } catch(e) {
+    document.getElementById("book-content").innerHTML =
+      `<p>Book not found. Add your MD files to <code>docs/book/</code>.</p>`;
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
