@@ -96,14 +96,15 @@ nav {
 .pill:hover, .pill.active { background: var(--border); color: var(--text); }
 
 /* Table */
-.tbl-wrap { overflow-x: auto; }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.81rem; }
-thead th { text-align: left; padding: 0.55rem 0.7rem; font-family: var(--font-m); font-size: 0.67rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+thead th { text-align: left; padding: 0.65rem 0.85rem; font-family: var(--font-m); font-size: 0.67rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; background: var(--surface); }
 thead th:hover { color: var(--text); }
 tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
-tbody tr:hover { background: var(--surface); }
-tbody td { padding: 0.5rem 0.7rem; color: var(--muted); vertical-align: middle; }
-tbody td.tid { font-family: var(--font-m); font-size: 0.7rem; color: var(--c-prep); }
+tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+tbody tr:hover { background: rgba(56,139,253,0.07); }
+tbody td { padding: 0.55rem 0.85rem; color: var(--muted); vertical-align: middle; }
+tbody td.tid { font-family: var(--font-m); font-size: 0.7rem; color: var(--c-prep); white-space: nowrap; }
 tbody td.tname { color: var(--text); font-weight: 500; }
 .cpill { display: inline-block; padding: 0.13rem 0.4rem; border-radius: 3px; font-size: 0.67rem; background: var(--border); color: var(--muted); }
 .cbadge { display: inline-block; padding: 0.1rem 0.38rem; border-radius: 3px; font-size: 0.67rem; font-family: var(--font-m); }
@@ -339,13 +340,13 @@ footer a { color: var(--muted); }
         <li><a href="#" onclick="loadChapter('chapter1');return false;">Chapter 1 — Technologies</a></li>
         <li><a href="#" onclick="loadChapter('chapter2');return false;">Chapter 2 — Analysis</a>
           <ul style="margin-top:0.3rem;">
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">Preprocessing</a></li>
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">Cell Segmentation</a></li>
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">Phenotyping</a></li>
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">Neighbourhood Analysis</a></li>
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">Spatial Domains</a></li>
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">SVGs</a></li>
-            <li><a href="#" class="sub" onclick="loadChapter('chapter2');return false;">Functional Analysis</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','Preprocessing');return false;">Preprocessing</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','Cell segmentation');return false;">Cell Segmentation</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','Phenotyping');return false;">Phenotyping</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','neighbourhood');return false;">Neighbourhood Analysis</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','Spatial domains');return false;">Spatial Domains</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','Spatially Variable');return false;">SVGs</a></li>
+            <li><a href="#" class="sub" onclick="loadChapterSection('chapter2','Functional');return false;">Functional Analysis</a></li>
           </ul>
         </li>
       </ul>
@@ -711,8 +712,9 @@ function openInGraph(id){
 
 // ── Book ──────────────────────────────────────────────────────────────────────
 let currentChapter=null;
-async function loadChapter(name) {
-  if(currentChapter===name)return;
+async function loadChapter(name, skipIfLoaded=false) {
+  if(skipIfLoaded && currentChapter===name) return;
+  if(currentChapter===name) return;
   currentChapter=name;
   document.getElementById("book-loading").style.display="block";
   document.getElementById("book-content").innerHTML="";
@@ -731,7 +733,19 @@ async function loadChapter(name) {
   }
 }
 
-function mdToHtml(md) {
+async function loadChapterSection(name, section) {
+  currentChapter = null; // force reload so loadChapter doesn't skip
+  await loadChapter(name);
+  setTimeout(() => {
+    const headings = document.getElementById("book-content").querySelectorAll("h1,h2,h3");
+    for (const h of headings) {
+      if (h.textContent.toLowerCase().includes(section.toLowerCase())) {
+        h.scrollIntoView({behavior:"smooth", block:"start"});
+        break;
+      }
+    }
+  }, 100);
+}
   // Remove yaml front matter if any
   md=md.replace(/^---[\s\S]*?---\n/,"");
   // Disclaimer block (lines with ⚠️)
