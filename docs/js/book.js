@@ -12,8 +12,10 @@ async function loadChapter(name) {
     a.classList.toggle("active", oc.includes(`'${name}'`) && !oc.includes("Section"));
   });
   try {
-    const base = window.location.pathname.includes('/solr/') ? '/solr/' : './';
-    const r = await fetch(`${base}book/${name}.md`);
+    // Works both on GitHub Pages (/solr/) and locally (./)
+    const base = window.location.href.split('/').slice(0, -1).join('/') + '/';
+    const url = new URL(`book/${name}.md`, base).href;
+    const r = await fetch(url);
     if (!r.ok) throw new Error("not found");
     const text = await r.text();
     document.getElementById("book-content").innerHTML = mdToHtml(text);
