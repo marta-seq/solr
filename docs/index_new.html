@@ -145,7 +145,9 @@ tbody td.tname { color: var(--text); font-weight: 500; }
 .book-sidebar a { display: block; font-size: 0.82rem; color: #666; text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 5px; transition: background 0.15s, color 0.15s; }
 .book-sidebar a:hover, .book-sidebar a.active { background: #e8e8e8; color: #1a1a1a; }
 .book-sidebar .sub { padding-left: 1.1rem; font-size: 0.77rem; }
-.book-body { flex: 1; padding: 3rem 3rem 5rem; max-width: 760px; }
+.book-body { flex: 1; padding: 3rem 3rem 5rem; max-width: 760px; overflow-y: auto; height: calc(100vh - 52px); }
+#book-content { max-width: 680px; }
+#book-content p { text-align: justify; }
 .book-disclaimer { background: #fff8e1; border-left: 3px solid #f9a825; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; font-size: 0.82rem; color: #555; margin-bottom: 1.5rem; line-height: 1.5; }
 #book-content h1 { font-family: var(--font-d); font-size: 1.7rem; font-weight: 700; margin: 0 0 1.25rem; color: #1a1a1a; line-height: 1.2; border-bottom: 2px solid #e5e5e5; padding-bottom: 0.75rem; }
 #book-content h2 { font-family: var(--font-d); font-size: 1.2rem; font-weight: 600; margin: 2rem 0 0.75rem; color: #1a1a1a; }
@@ -314,6 +316,7 @@ footer a { color: var(--muted); }
     <div class="filter-row" id="graph-filters" style="margin:0;flex:1;"></div>
     <label class="gtoggle"><input type="checkbox" id="tog-comp" checked onchange="renderGraph()"/> Comparison edges</label>
     <label class="gtoggle"><input type="checkbox" id="tog-data" onchange="renderGraph()"/> Dataset connections</label>
+    <label class="gtoggle"><input type="checkbox" id="tog-cat" checked onchange="renderGraph()"/> Group edges</label>
   </div>
   <div id="graph-wrap">
     <div id="graph-container"></div>
