@@ -53,7 +53,13 @@ class DoiIndex:
         for _, row in df.iterrows():
             doi = normalize_doi(row.get(doi_col, ""))
             entry_id = row.get(id_col, "")
-            if doi and entry_id:
+            # pandas NaN is a truthy float in plain Python - `if entry_id` alone
+            # would wrongly index a real DOI against the literal string "nan"
+            # when entry_id is genuinely missing (caught via testing).
+            if pd.isna(entry_id):
+                continue
+            entry_id = str(entry_id).strip()
+            if doi and entry_id and entry_id.lower() not in ("", "nan", "na"):
                 self._doi_to_id[doi] = entry_id
 
     def add(self, doi: str, entry_id: str):

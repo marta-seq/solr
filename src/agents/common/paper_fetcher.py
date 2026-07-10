@@ -243,6 +243,9 @@ def was_truncated(paper: dict, section_name: str) -> bool:
     sections = paper.get("sections") or {}
     full = sections.get(section_name) or paper.get("text") or ""
     return len(full) > len(text)
+
+
+def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
     """Main entry point. Cached on disk per normalized DOI."""
     doi = normalize_doi(doi)
     if not doi:

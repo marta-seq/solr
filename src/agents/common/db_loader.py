@@ -56,10 +56,16 @@ class Database:
         self._build()
 
     def _build(self):
-        # DOIs: methods sheet + both DOI columns in datasets sheet
+        # DOIs: methods sheet + both DOI columns in datasets sheet.
+        # IMPORTANT: a dataset row's paper_DOI is the DOI of the *paper* that
+        # produced it - it must be indexed under that paper's paper_ENTRY_ID,
+        # NOT the dataset's own entry_id, or a lookup for the paper's DOI
+        # silently returns the dataset's ID instead (caught via testing -
+        # this DOI legitimately appears in both methods.DOI for M_PR_3 and
+        # datasets.paper_DOI for D_SP_IMC_5, which is the dataset it produced).
         self.doi_index.load_from_dataframe(self.methods, "DOI", "entry_id")
         self.doi_index.load_from_dataframe(self.datasets, "data_DOI", "entry_id")
-        self.doi_index.load_from_dataframe(self.datasets, "paper_DOI", "entry_id")
+        self.doi_index.load_from_dataframe(self.datasets, "paper_DOI", "paper_ENTRY_ID")
 
         # ID allocator needs every entry_id seen anywhere, real or placeholder
         all_ids = list(self.methods["entry_id"].dropna()) + list(self.datasets["entry_id"].dropna())
