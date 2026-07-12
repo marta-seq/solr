@@ -11,6 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 from . import config
+from . import staging
 from .doi_utils import DoiIndex
 from .id_allocator import IdAllocator
 
@@ -70,6 +71,48 @@ class Database:
         # ID allocator needs every entry_id seen anywhere, real or placeholder
         all_ids = list(self.methods["entry_id"].dropna()) + list(self.datasets["entry_id"].dropna())
         self.id_allocator.register_existing(all_ids)
+
+        self._ingest_staged_candidates()
+
+    def _ingest_staged_candidates(self):
+        """If you're re-running the pipeline after a previous run stopped
+        partway through (e.g. MAX_PAPERS_PER_RUN cut it short, or you're
+        resuming days later after a rate-limit pause), earlier runs may have
+        already staged new entries that aren't in methods_metadata.csv/
+        datasets.csv yet (nothing gets merged into the master files
+        automatically). Without this, a later run wouldn't know about them
+        and could create a SECOND, differently-numbered entry for the same
+        DOI. Caught before it caused real duplicates - ingest everything
+        already sitting in staging.xlsx into the live DoiIndex/IdAllocator
+        before processing anything. Once you run merge_candidates.py and it
+        archives staging.xlsx, this naturally has nothing left to ingest."""
+        staged = staging.load_all_candidates_for_run()
+        ingested = 0
+        for rec in staged:
+            if rec.get("action") != "create_entry":
+                continue
+            entry_id = rec.get("entry_id")
+            if not entry_id:
+                continue
+            self.id_allocator.register_existing([entry_id])
+
+            if rec.get("target_sheet") == "papers":
+                doi = rec.get("DOI", "")
+                if doi:
+                    self.doi_index.add(doi, entry_id)
+            else:
+                data_doi = rec.get("data_DOI", "")
+                if data_doi:
+                    self.doi_index.add(data_doi, entry_id)
+                paper_doi = rec.get("paper_DOI", "")
+                paper_entry_id = rec.get("paper_ENTRY_ID", "")
+                if paper_doi and paper_entry_id:
+                    self.doi_index.add(paper_doi, paper_entry_id)
+            ingested += 1
+
+        if ingested:
+            print(f"[db_loader] Ingested {ingested} already-staged candidates "
+                  f"from previous unmerged run(s) (avoids duplicate creation on re-run).")
 
     def real_methods(self) -> pd.DataFrame:
         """Methods rows excluding placeholders (is_placeholder == True)."""

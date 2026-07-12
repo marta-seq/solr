@@ -5,16 +5,28 @@ change (new entry, or a new value for an existing entry's field) is saved
 into a SEPARATE staging workbook under data/agent_review/, and that workbook
 is re-saved to disk after every single candidate - not batched at the end.
 
+ONE ongoing file (data/agent_review/staging.xlsx), not date-stamped. It
+keeps accumulating across every run until you actually merge it into the
+master Excel - at which point merge_candidates.py should archive/clear it.
+Each row's own `curation_date` column already records exactly when that
+candidate was found, so the file itself doesn't need to be split by day for
+that - and NOT splitting by day is what makes dedup actually work: if it
+resumes across a day boundary (very likely given free-tier rate limits),
+a fresh run needs to see EVERYTHING not yet merged, not just "today's"
+candidates, or it risks creating duplicate entries for the same DOI.
+
 Why an Excel file saved continuously, rather than a JSONL log: free-tier LLM
 rate limits (20 req/min, 50-1000/day) mean a run can legitimately die
 mid-way through - either killed, or a 429 that exhausts retries. When that
-happens you should be able to just open staging_<date>.xlsx and see exactly
-what was proposed so far, not lose the run or need to parse a log file.
+happens you should be able to just open staging.xlsx and see exactly what
+was proposed so far, not lose the run or need to parse a log file.
 
 It's still a completely separate file from your master Excel - nothing here
 ever touches datasets_curated_*.xlsx directly. A separate merge_candidates.py
 script (to be built once this format feels right) will help apply approved
-rows into the master file.
+rows into the master file, and should archive staging.xlsx (e.g. rename to
+staging_merged_<date>.xlsx) once its contents have been merged, so the next
+run starts clean.
 
 Two sheets: "papers" and "datasets" (Data_SP/Data_ST/Data_multi all land in
 "datasets" with a target_sheet column saying which one - the merge step
@@ -36,8 +48,7 @@ BASE_COLUMNS = [
 
 
 def _workbook_path() -> Path:
-    from datetime import date
-    return config.STAGING_DIR / f"staging_{date.today().isoformat()}.xlsx"
+    return config.STAGING_DIR / "staging.xlsx"
 
 
 def _load_or_create_workbook(path: Path) -> Workbook:
@@ -108,9 +119,10 @@ def append_candidate(
 
 
 def load_all_candidates_for_run() -> list:
-    """Reads back everything staged today - used within a run so later stages
-    (e.g. a depth-1 paper) know what's already been proposed and don't create
-    duplicate entries before a human has merged them into the master DB."""
+    """Reads back everything staged so far, across every run since the last
+    merge - used at startup so a resumed/later run knows what's already been
+    proposed and doesn't create duplicate entries before a human has merged
+    them into the master DB."""
     path = _workbook_path()
     if not path.exists():
         return []

@@ -63,24 +63,48 @@ def run_paper_queue(db, budget: int) -> tuple:
 
         # Fetch once, share between both desks - they both need this paper's text
         fetched = fetch_paper(paper_entry["doi"])
+        if fetched["source"] == "none":
+            _log(f"  FAILED: no text could be fetched from any source for {entry_id} - "
+                 f"both desks will skip, staged as needs_review")
         references_text, _ = get_agent_text(fetched, "references")
         reference_map = parse_reference_list(references_text) if references_text else {}
 
+        if fetched["source"] != "none":
+            _, methods_text_source = get_agent_text(fetched, "methods")
+            _log(f"  methods input: {methods_text_source or 'NONE'} "
+                 f"(section:methods = isolated correctly; full_text_fallback = heading "
+                 f"not found, sent from start of paper - may miss late-paper comparisons; "
+                 f"abstract_only = weakest signal)")
+
+        methods_ok = True
         try:
             new_items = compared_methods_agent.process_paper(
                 db, paper_entry, fetched=fetched, reference_map=reference_map
             )
         except Exception as e:
-            _log(f"  methods desk failed on {entry_id}: {e}")
+            _log(f"  methods desk CRASHED on {entry_id}: {e}")
             new_items = []
+            methods_ok = False
 
+        data_ok = True
         try:
             linked = data_fetch_agent.process_paper(
                 db, paper_entry, fetched=fetched, reference_map=reference_map
             )
         except Exception as e:
-            _log(f"  data desk failed on {entry_id}: {e}")
+            _log(f"  data desk CRASHED on {entry_id}: {e}")
             linked = []
+            data_ok = False
+
+        if fetched["source"] != "none":
+            status = "OK" if (methods_ok and data_ok) else "PARTIAL FAILURE"
+            _log(f"  {status}: fetched via {fetched['source']} | "
+                 f"methods desk created {len(new_items)} NEW method entr{'y' if len(new_items)==1 else 'ies'} "
+                 f"(matches to EXISTING papers are linked directly and not counted here) | "
+                 f"data desk created/linked {len(linked)} dataset entr{'y' if len(linked)==1 else 'ies'} "
+                 f"(check Method_comparison_P_ENTRY_ID / DataID on {entry_id} in staging.xlsx for the full "
+                 f"picture including existing-entry links; 0 everywhere can also mean an LLM error already "
+                 f"staged as needs_review)")
 
         summary["processed"].append(entry_id)
         summary["new_method_entries"].extend(new_items)
@@ -121,15 +145,20 @@ def run_data_pool(db, budget: int) -> tuple:
                  f"{len(pool) - used} entries remain.")
             break
 
+        _log(f"[{used + 1}/{budget}] {item['entry_id']} "
+             f"(missing: {', '.join(item['missing_fields'])})")
+
         try:
             result = intern_agent.process_entry(db, item)
         except Exception as e:
-            _log(f"  intern agent failed on {item['entry_id']}: {e}")
+            _log(f"  CRASHED on {item['entry_id']}: {e}")
             result = {"filled": [], "skipped_reason": str(e)}
 
         if result["filled"]:
+            _log(f"  OK: filled {result['filled']}")
             summary["filled"].append((item["entry_id"], result["filled"]))
         else:
+            _log(f"  SKIPPED: {result['skipped_reason']}")
             summary["skipped"].append((item["entry_id"], result["skipped_reason"]))
 
         used += 1

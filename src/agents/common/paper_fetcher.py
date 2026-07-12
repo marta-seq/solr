@@ -46,6 +46,14 @@ SECTION_PATTERNS = {
     "references": r"\b(references|bibliography)\b",
 }
 
+# Allows a heading to be preceded by section numbering/whitespace (e.g. "\n2. ",
+# "\n\nIII. ", "\n3.1 ") rather than requiring the heading word be immediately
+# preceded by a bare newline - real papers almost always number their
+# sections, and the old strict check missed nearly all of them (caught via
+# testing against realistic paper text: "2. Methods" was NOT detected,
+# collapsing the entire rest of the paper into the "abstract" section).
+_HEADING_PRECEDING_RE = re.compile(r"^[\s\d.()ivxlc:-]{0,20}$", re.IGNORECASE)
+
 
 def _cache_path(doi: str) -> Path:
     h = hashlib.sha256(normalize_doi(doi).encode()).hexdigest()[:20]
@@ -78,11 +86,18 @@ def _split_into_sections(text: str) -> dict:
     matches = []
     for name, pattern in SECTION_PATTERNS.items():
         for m in re.finditer(pattern, text, re.IGNORECASE):
-            # only consider it a real heading if it's short standalone-ish text
-            # (crude heuristic: preceded by newline or start of doc)
+            # a real heading is preceded only by whitespace/numbering (e.g.
+            # "\n2. ", "\n\nIII. ") on ITS OWN LINE - not preceded by real
+            # words (mentioned mid-sentence, like "the methods used here").
+            # Must find the actual start of the line, not just look back a
+            # fixed number of characters, or text from the PREVIOUS
+            # paragraph bleeds into the check (caught via testing:
+            # "a new method...\n\n2. Methods" failed because a fixed 20-char
+            # lookback captured "a new method" from the prior sentence).
             start = m.start()
-            preceding = text[max(0, start - 2):start]
-            if preceding in ("", "\n", "\n\n") or start < 5:
+            line_start = text.rfind("\n", 0, start)
+            line_prefix = text[line_start + 1:start] if line_start != -1 else text[:start]
+            if start < 5 or _HEADING_PRECEDING_RE.match(line_prefix):
                 matches.append((start, name))
 
     if not matches:
@@ -257,24 +272,37 @@ def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
 
     result = None
 
+    print(f"[paper_fetcher] {doi}: trying Unpaywall...", flush=True)
     text = _try_unpaywall(doi)
     if text:
+        print(f"[paper_fetcher] {doi}: got full text via Unpaywall", flush=True)
         result = {"source": "unpaywall_pdf", "is_full_text": True, "text": text}
+    else:
+        print(f"[paper_fetcher] {doi}: Unpaywall had nothing usable, trying Europe PMC...", flush=True)
 
     if result is None:
         text = _try_europepmc(doi)
         if text:
+            print(f"[paper_fetcher] {doi}: got full text via Europe PMC", flush=True)
             result = {"source": "europepmc", "is_full_text": True, "text": text}
+        else:
+            print(f"[paper_fetcher] {doi}: Europe PMC had nothing usable, trying bioRxiv...", flush=True)
 
     if result is None:
         text = _try_biorxiv(doi)
         if text:
+            print(f"[paper_fetcher] {doi}: got abstract via bioRxiv", flush=True)
             result = {"source": "biorxiv_abstract", "is_full_text": False, "text": text}
+        else:
+            print(f"[paper_fetcher] {doi}: bioRxiv had nothing usable, trying Crossref abstract...", flush=True)
 
     if result is None:
         text = _try_crossref_abstract(doi)
         if text:
+            print(f"[paper_fetcher] {doi}: got abstract via Crossref", flush=True)
             result = {"source": "crossref_abstract_only", "is_full_text": False, "text": text}
+        else:
+            print(f"[paper_fetcher] {doi}: no text retrievable from any source", flush=True)
 
     if result is None:
         result = {"source": "none", "is_full_text": False, "text": ""}

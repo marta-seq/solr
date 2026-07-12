@@ -14,6 +14,24 @@ PROCESSED_DIR  = ROOT / "data" / "processed"
 CACHE_DIR      = ROOT / "data" / "paper_cache"        # cached full text / abstracts
 STAGING_DIR    = ROOT / "data" / "agent_review"        # candidate rows for human review
 
+# Load ROOT/.env explicitly (not relying on cwd-based auto-discovery) so
+# SOLR_EMAIL/OPENROUTER_API_KEY get picked up regardless of which directory
+# you run the script from, or whether you're in a plain shell or an IDE run
+# config. Degrades gracefully (prints a warning, doesn't crash) if
+# python-dotenv isn't installed - `pip install python-dotenv --break-system-packages`.
+_env_file = ROOT / ".env"
+try:
+    from dotenv import load_dotenv
+    if _env_file.exists():
+        load_dotenv(_env_file)
+    else:
+        print(f"[config] No .env file found at {_env_file} - "
+              f"relying on real shell environment variables only.")
+except ImportError:
+    print("[config] python-dotenv not installed - .env file will NOT be loaded, "
+          "only real shell environment variables will be seen. "
+          "Run: pip install python-dotenv --break-system-packages")
+
 for d in (CACHE_DIR, STAGING_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
@@ -32,12 +50,15 @@ METHOD_CATEGORY_KEYWORDS = ["computational analysis - method", "technical method
 # ── LLM (free-tier via OpenRouter) ───────────────────────────────────────────
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 # Tried in order; first one that returns a valid response wins.
-# (OpenRouter's free-tier slugs change occasionally - verify at
-# https://openrouter.ai/models?max_price=0 before a big run)
+# Verified against openrouter.ai/models (Price: Free) on 2026-07-13 - the
+# free roster rotates OFTEN, re-verify before a big run if this has aged.
+# NOTE: DeepSeek currently has ZERO free models on OpenRouter (confirmed
+# 2026-07-13) despite many guides/tutorials still referencing deepseek:free
+# slugs - don't add those back without checking openrouter.ai/models first.
 LLM_MODEL_FALLBACK_CHAIN = [
-    "deepseek/deepseek-r1:free",
-    "deepseek/deepseek-chat:free",
-    "meta-llama/llama-3.3-70b-instruct:free",
+    "openrouter/free",                      # auto-router: picks a live free model for you
+    "meta-llama/llama-3.3-70b-instruct:free",  # long-running, stable, good general fallback
+    "openai/gpt-oss-120b:free",             # second independent fallback if both above are down
 ]
 LLM_TIMEOUT_S = 120
 LLM_MAX_RETRIES_PER_MODEL = 2

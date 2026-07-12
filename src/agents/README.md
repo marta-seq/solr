@@ -31,9 +31,13 @@ Status as of this drop. Everything is built. Update this file as things change.
   already prints a DOI), then Crossref search on that exact text, and only
   falls back to resolving the LLM's recalled citation_text if no reference
   list was available at all.
-- `common/staging.py` — candidates get written to a continuously-saved
-  Excel workbook (`data/agent_review/staging_<date>.xlsx`), not the master
-  file. Saved to disk after every single candidate.
+- `common/staging.py` — candidates get written to a SINGLE ongoing Excel
+  workbook (`data/agent_review/staging.xlsx` - NOT date-stamped anymore),
+  saved to disk after every single candidate. Keeps accumulating across
+  every run until you actually merge it - `merge_candidates.py` should
+  archive/clear it once merged, so the next run starts clean. Each row's
+  own `curation_date` column preserves per-candidate timing, which is why
+  the file itself doesn't need to be split by day.
 - `common/db_loader.py` — loads latest `methods_metadata_*.csv` /
   `datasets_*.csv`, builds the shared `DoiIndex` + `IdAllocator`.
 - `mailroom/triage.py` — `build_seed_queue()` (paper pool -> excludes
@@ -91,6 +95,22 @@ dev sandbox has no network access. First real run should use a small
 - `run_pipeline.py`: `MAX_PAPERS_PER_RUN` was applied as a separate budget
   per phase instead of one shared budget across the whole run, silently
   doubling real LLM/API usage vs. what the config implies.
+- `db_loader.py`: a fresh `Database()` never re-read already-staged
+  candidates, so re-running the pipeline - even the SAME day - could create
+  a SECOND, differently-numbered entry for a DOI an earlier run already
+  staged. First fix only scoped this to "today's" file, which was still
+  wrong: resuming across a day boundary (very likely given free-tier daily
+  rate limits) would miss yesterday's staged candidates entirely. Real fix:
+  switched `staging.py` to a single ongoing `staging.xlsx` (not date-
+  stamped) and ingest everything in it on startup, regardless of when it
+  was written. Verified a later run correctly sees an earlier run's staged
+  entry and allocates the next free ID instead of colliding or duplicating.
+
+**Migration note if you already have a run in progress:** a running Python
+process has the old code loaded in memory and will keep writing to
+`staging_<date>.xlsx` regardless of this fix. Once that run finishes,
+rename its output file to `staging.xlsx` (dropping the date) before running
+again, so the next run picks up everything already staged.
 
 ## Data-quality things noticed while testing (not fixed here - your call)
 
@@ -121,5 +141,5 @@ export OPENROUTER_API_KEY="..."          # openrouter.ai/keys
 first import (see `config.py`) - empty on a fresh checkout.
 
 Recommend starting with a small `MAX_PAPERS_PER_RUN` (5-10) for the first
-real run. Check `data/agent_review/staging_<date>.xlsx` afterward before
+real run. Check `data/agent_review/staging.xlsx` afterward before
 scaling up - nothing gets merged into your master Excel automatically.

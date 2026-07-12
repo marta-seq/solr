@@ -115,7 +115,7 @@ def resolve_reference(citation_text: str, timeout: int = None) -> dict:
     try:
         r = requests.get(
             CROSSREF_SEARCH_URL,
-            params={"query.bibliographic": cleaned, "rows": 3},
+            params={"query.bibliographic": cleaned, "rows": 5},
             headers=HEADERS, timeout=timeout,
         )
         if r.status_code != 200:
@@ -123,6 +123,19 @@ def resolve_reference(citation_text: str, timeout: int = None) -> dict:
         items = r.json().get("message", {}).get("items", [])
     except (requests.RequestException, ValueError):
         return result
+
+    # Crossref registers DOIs for more than just full papers - individual
+    # figures, tables, and supplementary files within an article get their
+    # own "component" DOIs, and can score a good title match without being
+    # the paper we actually want (caught via testing: a figure's DOI got
+    # matched instead of the article's own DOI). Only accept types that are
+    # genuinely a paper/preprint - everything else is discarded even if its
+    # title similarity score would have won.
+    ACCEPTED_TYPES = {
+        "journal-article", "posted-content", "proceedings-article",
+        "book-chapter", "monograph", "reference-entry", "report",
+    }
+    items = [item for item in items if item.get("type") in ACCEPTED_TYPES]
 
     if not items:
         return result
