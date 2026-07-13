@@ -18,7 +18,7 @@ from difflib import SequenceMatcher
 import requests
 
 from . import config
-from .doi_utils import normalize_doi
+from .doi_utils import normalize_doi, bare_doi
 from .reference_list_parser import lookup_reference, extract_embedded_doi
 
 CROSSREF_SEARCH_URL = "https://api.crossref.org/works"
@@ -52,39 +52,98 @@ def _title_similarity(candidate_title: str, citation_text: str) -> float:
     return SequenceMatcher(None, candidate_title, citation_lower).ratio()
 
 
-def resolve_citation(citation_marker: str, citation_text: str, reference_map: dict) -> dict:
+def _fetch_doi_title(doi: str, timeout: int = None) -> str:
+    """Fetches the REAL title Crossref has on file for a DOI - used to sanity-
+    check an embedded DOI actually belongs to the reference text it was
+    extracted from, rather than blindly trusting it. Returns '' on any
+    failure (caller should treat that as 'could not verify', not 'confirmed
+    wrong' - Crossref doesn't have every DOI, especially non-journal ones)."""
+    timeout = timeout or config.FETCH_TIMEOUT_S
+    try:
+        r = requests.get(
+            f"{CROSSREF_SEARCH_URL}/{bare_doi(doi)}",
+            headers=HEADERS, timeout=timeout,
+        )
+        if r.status_code != 200:
+            return ""
+        titles = r.json().get("message", {}).get("title", [])
+        return titles[0] if titles else ""
+    except (requests.RequestException, ValueError, KeyError, IndexError):
+        return ""
+
+
+def resolve_citation(citation_marker: str, citation_text: str, reference_map: dict,
+                      expected_name_hint: str = None) -> dict:
     """
     Main entry point for both desk agents. Tries, in order:
         1. Look up citation_marker (e.g. "12") in the paper's own parsed
-           reference list -> if that entry already prints a DOI, use it
-           directly at full confidence - no LLM recall, no fuzzy matching.
+           reference list -> if that entry already prints a DOI, verify it
+           by fetching the DOI's real title from Crossref and checking it
+           actually appears in the reference text before trusting it fully.
         2. If the reference list entry exists but has no embedded DOI,
            resolve THAT exact text via Crossref search (still better than
            the LLM's recollection, since it's the paper's real wording).
         3. If there's no reference list (author-year style papers, or no
            references section could be isolated) or the marker wasn't
            found, fall back to resolving the LLM's citation_text guess.
+
+    expected_name_hint: pass the method/tool name the LLM identified (e.g.
+    "StarDist") when you have one, to catch a DIFFERENT failure mode than
+    the internal DOI-vs-its-own-reference-text check above: the reference-
+    list marker-to-entry MAPPING itself grabbing the wrong numbered entry
+    entirely (caught via testing on real output - a "StarDist" mention
+    resolved to a confidently-wrong 3D-printer paper whose own DOI/title
+    were perfectly self-consistent, just for the WRONG reference). If the
+    hint is given and doesn't appear anywhere in what we resolved to,
+    confidence is capped regardless of how the internal checks went.
     """
     ref_text = lookup_reference(citation_marker, reference_map) if reference_map else ""
 
     if ref_text:
         embedded_doi = extract_embedded_doi(ref_text)
         if embedded_doi:
+            real_title = _fetch_doi_title(embedded_doi)
+            if real_title and _title_similarity(real_title, ref_text) >= 0.3:
+                confidence = 1.0
+            elif real_title:
+                confidence = 0.3
+            else:
+                confidence = 0.7
+            confidence = _apply_name_hint_check(expected_name_hint, ref_text, real_title, confidence)
             return {
                 "input_text": ref_text,
                 "resolved_doi": embedded_doi,
-                "matched_title": "",
-                "confidence": 1.0,
+                "matched_title": real_title,
+                "confidence": confidence,
                 "source": "reference_list_embedded_doi",
             }
         result = resolve_reference(ref_text)
+        result["confidence"] = _apply_name_hint_check(
+            expected_name_hint, ref_text, result["matched_title"], result["confidence"])
         result["source"] = "reference_list_text_via_" + result["source"]
         return result
 
     # no usable reference-list entry - fall back to the LLM's recalled text
     result = resolve_reference(citation_text)
+    result["confidence"] = _apply_name_hint_check(
+        expected_name_hint, citation_text, result["matched_title"], result["confidence"])
     result["source"] = "llm_recalled_text_via_" + result["source"]
     return result
+
+
+def _apply_name_hint_check(expected_name_hint: str, ref_text: str, matched_title: str,
+                            current_confidence: float) -> float:
+    """If a method-name hint was given and it doesn't appear anywhere in
+    either the reference text or the matched title, cap confidence - this is
+    an independent sanity check on top of whatever internal consistency
+    checks already ran, since it catches the resolved reference being
+    entirely the wrong one, not just internally self-inconsistent."""
+    if not expected_name_hint:
+        return current_confidence
+    haystack = f"{ref_text} {matched_title}".lower()
+    if expected_name_hint.strip().lower() not in haystack:
+        return min(current_confidence, 0.35)
+    return current_confidence
 
 
 def resolve_reference(citation_text: str, timeout: int = None) -> dict:

@@ -13,15 +13,23 @@ The department manager. Ties everything together:
        track is independent and doesn't touch the paper queue at all.
 
 Everything is staged via common.staging - nothing here ever touches the
-master Excel directly. Run this, then open data/agent_review/staging_<date>.xlsx
+master Excel directly. Run this, then open data/agent_review/staging.xlsx
 to review before merging anything back in.
 
 Usage:
     python -m src.agents.run_pipeline
 """
 
+import argparse
 import sys
 import time
+
+# Bump this string every time this file changes. Printed as the very first
+# line of every run, specifically so stale-file/bytecode-cache issues (which
+# have happened more than once) are immediately visible in the log itself,
+# rather than needing a separate manual grep check to confirm which version
+# is actually running.
+CODE_VERSION = "2026-07-13-r16-zhipu-glm-added"
 
 from .common import config, db_loader
 from .mailroom import triage
@@ -71,40 +79,73 @@ def run_paper_queue(db, budget: int) -> tuple:
 
         if fetched["source"] != "none":
             _, methods_text_source = get_agent_text(fetched, "methods")
-            _log(f"  methods input: {methods_text_source or 'NONE'} "
-                 f"(section:methods = isolated correctly; full_text_fallback = heading "
-                 f"not found, sent from start of paper - may miss late-paper comparisons; "
-                 f"abstract_only = weakest signal)")
+            if methods_text_source == "section:methods":
+                _log(f"  methods section: ISOLATED correctly - proceeding to check with the LLM")
+            elif methods_text_source == "full_text_fallback":
+                _log(f"  methods section: NOT found - would need to send unfocused full-paper "
+                     f"text instead, which REQUIRE_ISOLATED_SECTION blocks by default")
+            elif methods_text_source == "abstract_only":
+                _log(f"  methods section: NOT found, and no full text either - only an abstract "
+                     f"is available, which REQUIRE_ISOLATED_SECTION blocks by default")
+            else:
+                _log(f"  methods section: no usable text at all")
+
+            _, data_avail_text_source = get_agent_text(fetched, "data_availability")
+            if data_avail_text_source == "section:data_availability":
+                _log(f"  data-availability section: ISOLATED correctly - proceeding to check with the LLM")
+            elif data_avail_text_source == "full_text_fallback":
+                _log(f"  data-availability section: NOT found - would need to send unfocused "
+                     f"full-paper text instead, which REQUIRE_ISOLATED_SECTION blocks by default")
+            elif data_avail_text_source == "abstract_only":
+                _log(f"  data-availability section: NOT found, and no full text either - only "
+                     f"an abstract is available, which REQUIRE_ISOLATED_SECTION blocks by default")
+            else:
+                _log(f"  data-availability section: no usable text at all")
 
         methods_ok = True
         try:
-            new_items = compared_methods_agent.process_paper(
+            methods_result = compared_methods_agent.process_paper(
                 db, paper_entry, fetched=fetched, reference_map=reference_map
             )
         except Exception as e:
             _log(f"  methods desk CRASHED on {entry_id}: {e}")
-            new_items = []
+            methods_result = {"new_queue_items": [], "total_encountered": 0, "total_resolved": 0,
+                               "skip_reason": f"crashed: {e}"}
             methods_ok = False
 
         data_ok = True
         try:
-            linked = data_fetch_agent.process_paper(
+            data_result = data_fetch_agent.process_paper(
                 db, paper_entry, fetched=fetched, reference_map=reference_map
             )
         except Exception as e:
             _log(f"  data desk CRASHED on {entry_id}: {e}")
-            linked = []
+            data_result = {"linked_ids": [], "total_encountered": 0, "total_resolved": 0,
+                            "skip_reason": f"crashed: {e}"}
             data_ok = False
+
+        new_items = methods_result["new_queue_items"]
+        linked = data_result["linked_ids"]
 
         if fetched["source"] != "none":
             status = "OK" if (methods_ok and data_ok) else "PARTIAL FAILURE"
-            _log(f"  {status}: fetched via {fetched['source']} | "
-                 f"methods desk created {len(new_items)} NEW method entr{'y' if len(new_items)==1 else 'ies'} "
-                 f"(matches to EXISTING papers are linked directly and not counted here) | "
-                 f"data desk created/linked {len(linked)} dataset entr{'y' if len(linked)==1 else 'ies'} "
-                 f"(check Method_comparison_P_ENTRY_ID / DataID on {entry_id} in staging.xlsx for the full "
-                 f"picture including existing-entry links; 0 everywhere can also mean an LLM error already "
-                 f"staged as needs_review)")
+            _log(f"  {status}: fetched via {fetched['source']}")
+
+            if methods_result["skip_reason"] is not None:
+                _log(f"    methods desk: SKIPPED - LLM was NOT called ({methods_result['skip_reason']})")
+            else:
+                _log(f"    methods desk: LLM WAS called - encountered "
+                     f"{methods_result['total_encountered']} compared method(s) -> "
+                     f"{methods_result['total_resolved']} resolved (matched or created), "
+                     f"{len(new_items)} genuinely NEW entries")
+
+            if data_result["skip_reason"] is not None:
+                _log(f"    data desk: SKIPPED - LLM was NOT called ({data_result['skip_reason']})")
+            else:
+                _log(f"    data desk: LLM WAS called - encountered "
+                     f"{data_result['total_encountered']} dataset mention(s) -> "
+                     f"{data_result['total_resolved']} resolved (matched or created)")
+
 
         summary["processed"].append(entry_id)
         summary["new_method_entries"].extend(new_items)
@@ -167,15 +208,26 @@ def run_data_pool(db, budget: int) -> tuple:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Run the SOLR Phase 2 agent pipeline.")
+    parser.add_argument(
+        "--max-papers", type=int, default=None,
+        help="Override config.MAX_PAPERS_PER_RUN for this run only, without editing config.py "
+             "(e.g. --max-papers 15 for a quick test)."
+    )
+    args = parser.parse_args()
+
+    _log(f"=== CODE_VERSION: {CODE_VERSION} === (if this doesn't match what you expect, "
+         f"you're running stale files - re-sync src/agents/ before trusting anything below)")
     _log("Loading database...")
     db = db_loader.Database()
     _log(f"Loaded {len(db.methods)} papers, {len(db.datasets)} dataset entries, "
          f"{len(db.doi_index)} known DOIs.")
 
     start = time.time()
-    total_budget = config.MAX_PAPERS_PER_RUN
+    total_budget = args.max_papers if args.max_papers is not None else config.MAX_PAPERS_PER_RUN
     _log(f"Total shared budget for this run: {total_budget} "
-         f"(paper queue and data pool draw from the same pool, in that order).")
+         f"(paper queue and data pool draw from the same pool, in that order)"
+         f"{' [overridden via --max-papers]' if args.max_papers is not None else ''}.")
 
     paper_summary, papers_used = run_paper_queue(db, budget=total_budget)
     _log(f"Paper queue done: {len(paper_summary['processed'])} papers processed, "
@@ -190,7 +242,7 @@ def main():
     elapsed = time.time() - start
     _log(f"Total time: {elapsed:.1f}s "
          f"({papers_used + entries_used}/{total_budget} of shared budget used).")
-    _log(f"Review staged candidates in data/agent_review/staging_<date>.xlsx before merging.")
+    _log(f"Review staged candidates in data/agent_review/staging.xlsx before merging.")
 
 
 if __name__ == "__main__":

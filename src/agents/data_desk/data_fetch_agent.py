@@ -18,7 +18,7 @@ import re
 from ..common import config, staging
 from ..common.doi_utils import normalize_doi
 from ..common.llm_client import call_llm_json, LLMError
-from ..common.paper_fetcher import fetch_paper, get_agent_text
+from ..common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
 from ..common.reference_list_parser import parse_reference_list
 from ..common.reference_resolver import resolve_citation, is_confident
 
@@ -104,14 +104,25 @@ def _lookup_field(df, entry_id: str, column: str):
     return row.iloc[0] if not row.empty else ""
 
 
-def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: dict = None) -> list:
+def _empty_stats(skip_reason: str) -> dict:
+    """Consistent return shape at every early-exit point. skip_reason is
+    ALWAYS a non-empty string here (the LLM was never called) - callers
+    should show it directly rather than leaving people to infer whether
+    0 results means 'skipped' or 'called and found nothing'."""
+    return {"linked_ids": [], "total_encountered": 0, "total_resolved": 0, "skip_reason": skip_reason}
+
+
+def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: dict = None) -> dict:
     """
     paper_entry: {"entry_id": ..., "doi": ...} (depth is irrelevant here - not recursive)
     fetched/reference_map: pass these in if the orchestrator already fetched
     this paper for the methods desk pass, to avoid re-fetching/re-parsing.
 
-    Returns the list of D_* entry_ids linked or created (for logging/testing) -
-    nothing here feeds back into any queue.
+    Returns {"linked_ids": [...], "total_encountered": N, "total_resolved": M,
+    "skip_reason": str or None}. skip_reason is None ONLY when the LLM was
+    genuinely called - always check this field rather than inferring from a
+    0 count. linked_ids is every D_* entry_id linked or created - nothing
+    here feeds back into any queue (this track is never recursive).
     """
     entry_id = paper_entry["entry_id"]
     doi = paper_entry["doi"]
@@ -130,7 +141,32 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             curation_model="none", confidence=0.0,
             notes=f"No text available to extract data availability from (fetch source: {fetched['source']}).",
         )
-        return data_ids_linked
+        return _empty_stats(f"no text could be fetched (fetch source: {fetched['source']})")
+
+    if not is_probably_real_content(text):
+        staging.append_candidate(
+            action="update_field", sheet="papers", entry_id=entry_id, fields={},
+            source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
+            curation_model="none", confidence=0.0,
+            notes=f"Extracted text (source: {_source}) failed the content quality check - "
+                  f"looks like website navigation/boilerplate rather than real article text. "
+                  f"Skipped the LLM call to avoid wasting budget on unreliable input.",
+        )
+        return _empty_stats(f"text (source: {_source}) failed the content-quality check "
+                             f"(looked like navigation/boilerplate, not real article text)")
+
+    if config.REQUIRE_ISOLATED_SECTION and _source != "section:data_availability":
+        staging.append_candidate(
+            action="update_field", sheet="papers", entry_id=entry_id, fields={},
+            source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
+            curation_model="none", confidence=0.0,
+            notes=f"Could not cleanly isolate the data-availability section (got '{_source}' "
+                  f"instead) - skipped the LLM call rather than spend a query on unfocused/"
+                  f"low-confidence text.",
+        )
+        return _empty_stats(f"could not cleanly isolate the data-availability section "
+                             f"(got '{_source}' instead of 'section:data_availability') - "
+                             f"REQUIRE_ISOLATED_SECTION blocked the LLM call")
 
     if reference_map is None:
         references_text, _ = get_agent_text(fetched, "references")
@@ -144,7 +180,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model="none", confidence=0.0, notes=f"LLM extraction failed: {e}",
         )
-        return data_ids_linked
+        return _empty_stats(f"LLM WAS called but every provider/model failed: {e}")
 
     if not isinstance(extracted, list):
         extracted = []
@@ -255,4 +291,9 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             notes="Appended newly-found/linked dataset IDs.",
         )
 
-    return data_ids_linked
+    return {
+        "linked_ids": data_ids_linked,
+        "total_encountered": len(extracted),
+        "total_resolved": len(data_ids_linked),
+        "skip_reason": None,
+    }

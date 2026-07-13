@@ -8,7 +8,7 @@ This is deliberately separate from run_pipeline.py so "what counts as
 in-scope" is one readable function, not buried inside the orchestration loop.
 """
 
-from ..common import config
+from ..common import config, staging
 
 
 def _is_true(val) -> bool:
@@ -33,6 +33,23 @@ def _has_doi(doi: str) -> bool:
     return bool(doi) and str(doi).strip().lower() not in ("", "nan", "na")
 
 
+def _get_already_attempted_paper_ids() -> set:
+    """Papers already attempted this session (staged something, whether it
+    succeeded, was skipped, or failed) - re-attempting them right now would
+    just waste LLM budget re-discovering the same outcome, since nothing
+    changes about a paper between runs until you actually merge staging.xlsx
+    into the master CSV (REVIEW_STATUS only updates at that point). Without
+    this, re-running the pipeline before merging restarts from the SAME
+    seed papers instead of continuing to the next unprocessed ones."""
+    attempted = set()
+    for rec in staging.load_all_candidates_for_run():
+        if rec.get("curation_agent") in ("compared_methods_agent", "data_fetch_agent"):
+            source_id = rec.get("source_paper_entry_id")
+            if source_id:
+                attempted.add(source_id)
+    return attempted
+
+
 def build_seed_queue(methods_df) -> list:
     """
     Returns a list of {"entry_id": ..., "doi": ..., "depth": 0} dicts -
@@ -45,7 +62,12 @@ def build_seed_queue(methods_df) -> list:
       - already manually reviewed (REVIEW_STATUS == "manual") - don't
         re-touch curated work
       - no DOI to fetch text with in the first place
+      - already attempted this session (staged something in staging.xlsx,
+        even if the outcome was "skipped" or "failed") - re-run of the
+        pipeline continues to NEW papers instead of repeating the same
+        ones, until you actually merge staging.xlsx into the master CSV
     """
+    already_attempted = _get_already_attempted_paper_ids()
     queue = []
     for _, row in methods_df.iterrows():
         if _is_true(row.get("is_placeholder")):
@@ -55,6 +77,8 @@ def build_seed_queue(methods_df) -> list:
         if _is_already_reviewed(row.get("REVIEW_STATUS")):
             continue
         if not _has_doi(row.get("DOI")):
+            continue
+        if row["entry_id"] in already_attempted:
             continue
         queue.append({"entry_id": row["entry_id"], "doi": row["DOI"], "depth": 0})
     return queue
