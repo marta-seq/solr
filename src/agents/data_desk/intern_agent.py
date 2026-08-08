@@ -11,7 +11,7 @@ common.staging.append_candidate().
 """
 
 from ..common import config, staging
-from ..common.llm_client import call_llm_json, LLMError
+from ..common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ..common.paper_fetcher import fetch_paper, get_agent_text
 
 FIELD_DESCRIPTIONS = {
@@ -80,14 +80,11 @@ def _get_abstract(db, paper_entry_id: str, paper_doi: str) -> tuple:
 
 
 def _sheet_for_entry(entry_id: str) -> str:
-    """Infers which real sheet this dataset entry lives in from its ID prefix -
-    needed since staging.append_candidate requires a target sheet name and
-    build_data_pool()'s worklist doesn't carry that through."""
-    if entry_id.startswith("D_SP"):
-        return "Data_SP"
-    if entry_id.startswith("D_ST"):
-        return "Data_ST"
-    return "Data_multi"
+    """As of the method_pub/AP_pub/data schema there's only one dataset
+    sheet - kept as a function (rather than inlining the literal at both
+    call sites) since staging.append_candidate still requires a target
+    sheet name and build_data_pool()'s worklist doesn't carry that through."""
+    return "data"
 
 
 def _clean(val) -> str:
@@ -144,7 +141,8 @@ def process_entry(db, data_item: dict) -> dict:
             source_paper_entry_id=paper_entry_id, curation_agent="intern_agent",
             curation_model="none", confidence=0.0, notes=f"LLM extraction failed: {e}",
         )
-        return {"filled": [], "skipped_reason": "llm error"}
+        return {"filled": [], "skipped_reason": "llm error",
+                "llm_exhausted": isinstance(e, LLMExhaustedError)}
 
     if not isinstance(result, dict):
         result = {}

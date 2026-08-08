@@ -27,10 +27,18 @@ load_dotenv()
 ROOT          = Path(__file__).resolve().parents[2]
 PROCESSED_DIR = ROOT / "data" / "processed"
 
-# Find the most recent methods CSV
-methods_files = sorted(PROCESSED_DIR.glob("methods_*.csv"))
+# Find the most recent methods CSV. Excludes "methods_metadata_*.csv" - that's
+# THIS script's own output, and without the exclusion it matches the same
+# "methods_*.csv" glob as its input. Alphabetically "methods_metadata..."
+# sorts after "methods_2026...", so an old metadata output could get picked
+# up as if it were fresh input and re-processed (caught live: produced
+# "methods_metadata_metadata_2026_07_07.csv" from a stale prior run, 0
+# fetched because everything in it was already enriched).
+methods_files = sorted(
+    p for p in PROCESSED_DIR.glob("methods_*.csv") if "metadata" not in p.stem
+)
 if not methods_files:
-    raise FileNotFoundError(f"No methods_*.csv found in {PROCESSED_DIR}")
+    raise FileNotFoundError(f"No methods_*.csv (excluding methods_metadata_*.csv) found in {PROCESSED_DIR}")
 METHODS_FILE = methods_files[-1]
 
 # Derive date suffix from filename e.g. methods_2026_07_07.csv -> 2026_07_07

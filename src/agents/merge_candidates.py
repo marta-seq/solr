@@ -17,11 +17,16 @@ Rules:
     - needs_review (low-confidence) entries are merged in alongside auto
       entries, same file - REVIEW_STATUS already lets you filter/sort in
       Excel, so a separate file wasn't worth the extra thing to track.
-    - Data_multi's real columns don't match data_fetch_agent.py's field
-      names at all (its DOI columns are 'DOI '/'DOI', not 'data_DOI'/
-      'paper_DOI') - rather than guess and risk writing into the wrong
-      column of a confusingly-structured sheet, anything targeting
-      Data_multi goes into a separate NEEDS_MANUAL_PLACEMENT sheet instead.
+    - As of the method_pub/AP_pub/data schema, every real column
+      data_fetch_agent.py/compared_methods_agent.py write (data_DOI,
+      paper_DOI, spatial_data_category, spatial_data_method, DOI, category,
+      REVIEW_STATUS, ...) has a matching column in "data"/"method_pub"/
+      "AP_pub", so nothing needs routing to NEEDS_MANUAL_PLACEMENT anymore -
+      that escape hatch existed only because the old Data_multi sheet's
+      columns ('DOI '/'DOI' instead of 'data_DOI'/'paper_DOI') didn't line
+      up with what the agents actually wrote. Kept as an empty set (rather
+      than removed outright) in case a future schema change reintroduces a
+      genuinely-mismatched sheet.
 
 Usage:
     python -m src.agents.merge_candidates
@@ -35,18 +40,39 @@ import openpyxl
 
 from .common import config
 
-HEADER_ROW = 2  # row 1 has merged-cell section titles, real headers are row 2
+# Header row is NOT the same for every sheet in the current schema:
+# method_pub's real header is row 1, but AP_pub and data have a row 1 of
+# merged-cell section titles/stray notes with the real header on row 2.
+# Rather than hardcode either, scan for the row containing the ID marker -
+# same approach 01_parse_excel.py uses, and for the same reason: this is
+# exactly the kind of thing that silently breaks when sheets get renamed
+# or reshuffled again.
+HEADER_SCAN_MAX_ROW = 5
+ID_MARKER = "P_ENTRY_ID"
 
+
+def _find_header_row(ws) -> int:
+    for row in range(1, HEADER_SCAN_MAX_ROW + 1):
+        for cell in ws[row]:
+            if _normalize_header(cell.value) == ID_MARKER:
+                return row
+    raise ValueError(
+        f"Could not find a header row containing '{ID_MARKER}' in the first "
+        f"{HEADER_SCAN_MAX_ROW} rows of sheet '{ws.title}'."
+    )
+
+
+# All three sheets use the same ID column now (method_pub used to be the odd
+# one out with "PLACEHOLDER_ENTRY_ID" - that's gone since the rename).
 ID_COLUMN_BY_SHEET = {
-    "papers": "PLACEHOLDER_ENTRY_ID",
-    "Data_SP": "P_ENTRY_ID",
-    "Data_ST": "P_ENTRY_ID",
-    "Data_multi": "P_ENTRY_ID",
+    "method_pub": "P_ENTRY_ID",
+    "AP_pub": "P_ENTRY_ID",
+    "data": "P_ENTRY_ID",
 }
 
-# see module docstring - Data_multi's real column names don't match what
-# data_fetch_agent.py writes at all, so it's not safe to auto-merge into it
-SHEETS_TOO_AMBIGUOUS_TO_AUTO_MERGE = {"Data_multi"}
+# See module docstring - empty now that "data" unifies the old Data_SP/
+# Data_ST/Data_multi columns into one consistent shape.
+SHEETS_TOO_AMBIGUOUS_TO_AUTO_MERGE = set()
 
 # staging.xlsx's own bookkeeping columns - never written as a cell value,
 # handled separately (as AUTO_* audit columns) instead
@@ -57,41 +83,55 @@ _BOOKKEEPING_COLUMNS = (
 
 
 def _latest_master_file() -> Path:
-    matches = sorted(config.CURATED_DIR.glob("datasets_curated_*.xlsx"))
-    matches = [m for m in matches if "autoreview" not in m.name]
+    # Excludes "autoreview" outputs (pending review, not current) and Excel's
+    # own "~$filename.xlsx" lock/temp files. Deliberately does NOT fall back
+    # to "most recently modified" when more than one candidate remains -
+    # mtime resets on every `git pull`/clone, so it stops reliably reflecting
+    # recency right when you need it most (caught live on gaia: a stale
+    # "~$..." lock file looked "newest" and got picked). Fail loudly with a
+    # clear fix instead of silently guessing wrong.
+    matches = [m for m in config.CURATED_DIR.glob("datasets_curated_*.xlsx")
+               if "autoreview" not in m.name.lower() and not m.name.startswith("~$")]
     if not matches:
         raise FileNotFoundError(f"No datasets_curated_*.xlsx found in {config.CURATED_DIR}")
-    return matches[-1]
+    if len(matches) > 1:
+        names = ", ".join(m.name for m in matches)
+        raise FileNotFoundError(
+            f"Found {len(matches)} candidate master files in {config.CURATED_DIR}, can't tell "
+            f"which is current: {names}. Move the stale one(s) into {config.CURATED_DIR.parent / 'data_curated_backup'} "
+            f"and leave exactly one in place before re-running."
+        )
+    return matches[0]
 
 
 def _normalize_header(h) -> str:
     return str(h).strip() if h is not None else ""
 
 
-def _header_map(ws) -> dict:
+def _header_map(ws, header_row: int) -> dict:
     """{normalized_header_name: column_index} for the real header row."""
     result = {}
-    for cell in ws[HEADER_ROW]:
+    for cell in ws[header_row]:
         name = _normalize_header(cell.value)
         if name:
             result[name] = cell.column
     return result
 
 
-def _find_row_by_id(ws, id_col_idx: int, entry_id: str):
-    for row in range(HEADER_ROW + 1, ws.max_row + 1):
+def _find_row_by_id(ws, id_col_idx: int, entry_id: str, header_row: int):
+    for row in range(header_row + 1, ws.max_row + 1):
         val = ws.cell(row=row, column=id_col_idx).value
         if val is not None and str(val).strip() == str(entry_id).strip():
             return row
     return None
 
 
-def _get_or_add_column(ws, header_map: dict, field_name: str) -> int:
+def _get_or_add_column(ws, header_map: dict, field_name: str, header_row: int) -> int:
     normalized = _normalize_header(field_name)
     if normalized in header_map:
         return header_map[normalized]
     new_col = ws.max_column + 1
-    ws.cell(row=HEADER_ROW, column=new_col, value=field_name)
+    ws.cell(row=header_row, column=new_col, value=field_name)
     header_map[normalized] = new_col
     return new_col
 
@@ -145,14 +185,15 @@ def merge():
             continue
 
         ws = master_wb[target_sheet]
-        id_col_name = ID_COLUMN_BY_SHEET.get(target_sheet, "entry_id")
-        header_map = _header_map(ws)
+        id_col_name = ID_COLUMN_BY_SHEET.get(target_sheet, "P_ENTRY_ID")
+        header_row = _find_header_row(ws)
+        header_map = _header_map(ws, header_row)
         id_col_idx = header_map.get(id_col_name)
         if id_col_idx is None:
             print(f"[merge] WARNING: ID column '{id_col_name}' not found in '{target_sheet}', skipping {entry_id}")
             continue
 
-        existing_row = _find_row_by_id(ws, id_col_idx, entry_id)
+        existing_row = _find_row_by_id(ws, id_col_idx, entry_id, header_row)
 
         # never touch a manually-reviewed row - belt and suspenders on top
         # of triage already excluding these from being processed at all
@@ -173,14 +214,14 @@ def merge():
             # create_entry (or an update_field that arrived before any
             # create_entry for the same id, which shouldn't normally happen)
             new_row_num = ws.max_row + 1
-            id_col_idx = _get_or_add_column(ws, header_map, id_col_name)
+            id_col_idx = _get_or_add_column(ws, header_map, id_col_name, header_row)
             ws.cell(row=new_row_num, column=id_col_idx, value=entry_id)
             for field_name, value in candidate_fields.items():
-                col_idx = _get_or_add_column(ws, header_map, field_name)
+                col_idx = _get_or_add_column(ws, header_map, field_name, header_row)
                 ws.cell(row=new_row_num, column=col_idx, value=value)
             for audit_field in ("curation_agent", "curation_model", "curation_date", "confidence", "notes"):
                 if rec.get(audit_field) not in (None, ""):
-                    col_idx = _get_or_add_column(ws, header_map, f"AUTO_{audit_field.upper()}")
+                    col_idx = _get_or_add_column(ws, header_map, f"AUTO_{audit_field.upper()}", header_row)
                     ws.cell(row=new_row_num, column=col_idx, value=rec.get(audit_field))
             applied += 1
         else:
@@ -188,11 +229,11 @@ def merge():
             # that's somehow already there - treat as an update, don't
             # duplicate the row)
             for field_name, value in candidate_fields.items():
-                col_idx = _get_or_add_column(ws, header_map, field_name)
+                col_idx = _get_or_add_column(ws, header_map, field_name, header_row)
                 ws.cell(row=existing_row, column=col_idx, value=value)
             for audit_field in ("curation_agent", "curation_model", "curation_date", "confidence", "notes"):
                 if rec.get(audit_field) not in (None, ""):
-                    col_idx = _get_or_add_column(ws, header_map, f"AUTO_{audit_field.upper()}")
+                    col_idx = _get_or_add_column(ws, header_map, f"AUTO_{audit_field.upper()}", header_row)
                     ws.cell(row=existing_row, column=col_idx, value=rec.get(audit_field))
             applied += 1
 

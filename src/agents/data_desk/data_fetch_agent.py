@@ -17,7 +17,7 @@ import re
 
 from ..common import config, staging
 from ..common.doi_utils import normalize_doi
-from ..common.llm_client import call_llm_json, LLMError
+from ..common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ..common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
 from ..common.reference_list_parser import parse_reference_list
 from ..common.reference_resolver import resolve_citation, is_confident
@@ -55,17 +55,39 @@ def _build_user_prompt(paper_entry_id: str, text: str) -> str:
 
 
 def _sheet_for_modality(modality: str) -> str:
+    """As of the method_pub/AP_pub/data schema there's only one dataset
+    sheet - kept as a function (rather than inlining the literal) since
+    _id_prefix_for_modality still needs a per-modality answer for ID naming,
+    and it's clearer to keep "which sheet" and "which ID prefix" as two
+    separate questions even though the sheet answer is now constant."""
+    return "data"
+
+
+def _id_prefix_for_modality(modality: str) -> str:
     m = (modality or "").lower()
     if "multi" in m:
-        return "Data_multi"
+        return "D_MULTI"
     if "proteomic" in m:
-        return "Data_SP"
+        return "D_SP"
     if "transcriptomic" in m:
-        return "Data_ST"
-    return "Data_multi"  # safest catch-all when genuinely unclear
+        return "D_ST"
+    return "D_MULTI"  # safest catch-all when genuinely unclear
 
 
-_SHEET_PREFIX = {"Data_SP": "D_SP", "Data_ST": "D_ST", "Data_multi": "D_MULTI"}
+def _sheet_for_paper_entry(entry_id: str) -> str:
+    """Infers which pub sheet a paper entry_id lives in. Application papers
+    (including stubs this same agent creates) use the "AP_..." ID prefix;
+    everything else is a method_pub entry. Needed because process_paper()
+    is shared by both method and application papers (per its own docstring),
+    but method_pub/AP_pub are now separate sheets with different columns."""
+    return "AP_pub" if str(entry_id).upper().startswith("AP") else "method_pub"
+
+
+def _data_used_field_for_sheet(sheet: str) -> str:
+    """method_pub tracks datasets used via 'DataID (data_used_in_the_paper)';
+    AP_pub's equivalent native column is 'Associated data' - reuse that
+    instead of creating a stray DataID column on AP_pub rows."""
+    return "Associated data" if sheet == "AP_pub" else "DataID (data_used_in_the_paper)"
 
 
 def _technique_slug(technique: str) -> str:
@@ -104,12 +126,16 @@ def _lookup_field(df, entry_id: str, column: str):
     return row.iloc[0] if not row.empty else ""
 
 
-def _empty_stats(skip_reason: str) -> dict:
+def _empty_stats(skip_reason: str, llm_exhausted: bool = False) -> dict:
     """Consistent return shape at every early-exit point. skip_reason is
     ALWAYS a non-empty string here (the LLM was never called) - callers
     should show it directly rather than leaving people to infer whether
-    0 results means 'skipped' or 'called and found nothing'."""
-    return {"linked_ids": [], "total_encountered": 0, "total_resolved": 0, "skip_reason": skip_reason}
+    0 results means 'skipped' or 'called and found nothing'.
+    llm_exhausted is True ONLY when the whole provider/model chain failed
+    (LLMExhaustedError) - run_pipeline.py checks this to stop a run early
+    instead of repeating the same doomed wait on every remaining paper."""
+    return {"linked_ids": [], "total_encountered": 0, "total_resolved": 0,
+            "skip_reason": skip_reason, "llm_exhausted": llm_exhausted}
 
 
 def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: dict = None) -> dict:
@@ -136,7 +162,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         text = fetched.get("text", "")  # many papers don't have a clean heading for this
     if not text:
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id, fields={},
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id, fields={},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model="none", confidence=0.0,
             notes=f"No text available to extract data availability from (fetch source: {fetched['source']}).",
@@ -145,7 +171,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if not is_probably_real_content(text):
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id, fields={},
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id, fields={},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model="none", confidence=0.0,
             notes=f"Extracted text (source: {_source}) failed the content quality check - "
@@ -157,7 +183,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if config.REQUIRE_ISOLATED_SECTION and _source != "section:data_availability":
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id, fields={},
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id, fields={},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model="none", confidence=0.0,
             notes=f"Could not cleanly isolate the data-availability section (got '{_source}' "
@@ -176,11 +202,12 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         extracted, model_used = call_llm_json(SYSTEM_PROMPT, _build_user_prompt(entry_id, text))
     except LLMError as e:
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id, fields={},
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id, fields={},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model="none", confidence=0.0, notes=f"LLM extraction failed: {e}",
         )
-        return _empty_stats(f"LLM WAS called but every provider/model failed: {e}")
+        return _empty_stats(f"LLM WAS called but every provider/model failed: {e}",
+                             llm_exhausted=isinstance(e, LLMExhaustedError))
 
     if not isinstance(extracted, list):
         extracted = []
@@ -228,7 +255,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 else:
                     stub_id = db.id_allocator.next_id("AP")
                     staging.append_candidate(
-                        action="create_entry", sheet="papers", entry_id=stub_id,
+                        action="create_entry", sheet="AP_pub", entry_id=stub_id,
                         fields={
                             "DOI": origin_doi,
                             "category": "Application",
@@ -247,7 +274,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             origin_note = " Relationship to source paper unclear - paper_DOI left blank for manual linking."
 
         sheet = _sheet_for_modality(modality)
-        prefix = f"{_SHEET_PREFIX[sheet]}_{_technique_slug(technique)}"
+        prefix = f"{_id_prefix_for_modality(modality)}_{_technique_slug(technique)}"
         new_id = db.id_allocator.next_id(prefix)
 
         confident_enough = (relationship == "self_generated") or (
@@ -278,14 +305,16 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         data_ids_linked.append(new_id)
 
     if data_ids_linked:
-        existing_value = _lookup_field(db.methods, entry_id, "DataID (data_used_in_the_paper)")
+        paper_sheet = _sheet_for_paper_entry(entry_id)
+        data_used_field = _data_used_field_for_sheet(paper_sheet)
+        existing_value = _lookup_field(db.methods, entry_id, data_used_field)
         updated_value = existing_value
         for did in data_ids_linked:
             updated_value = _append_id_list(updated_value, did)
 
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id,
-            fields={"DataID (data_used_in_the_paper)": updated_value},
+            action="update_field", sheet=paper_sheet, entry_id=entry_id,
+            fields={data_used_field: updated_value},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model=model_used, confidence=None,
             notes="Appended newly-found/linked dataset IDs.",

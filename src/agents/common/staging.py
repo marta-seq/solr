@@ -28,10 +28,11 @@ rows into the master file, and should archive staging.xlsx (e.g. rename to
 staging_merged_<date>.xlsx) once its contents have been merged, so the next
 run starts clean.
 
-Two sheets: "papers" and "datasets" (Data_SP/Data_ST/Data_multi all land in
-"datasets" with a target_sheet column saying which one - the merge step
-routes them). Columns grow dynamically: whatever keys an agent passes in
-`fields` become columns, added on the right the first time they're seen.
+Two sheets: "papers" and "datasets" (method_pub/AP_pub both land in "papers",
+"data" is the only dataset sheet now - each with a target_sheet column
+saying which real sheet it came from, so the merge step routes them).
+Columns grow dynamically: whatever keys an agent passes in `fields` become
+columns, added on the right the first time they're seen.
 """
 
 from datetime import datetime, timezone
@@ -90,11 +91,11 @@ def append_candidate(
     notes: str = "",
 ) -> None:
     assert action in ("create_entry", "update_field")
-    assert sheet in ("papers", "Data_SP", "Data_ST", "Data_multi")
+    assert sheet in ("method_pub", "AP_pub", "data")
 
     path = _workbook_path()
     wb = _load_or_create_workbook(path)
-    target = "papers" if sheet == "papers" else "datasets"
+    target = "papers" if sheet in ("method_pub", "AP_pub") else "datasets"
     ws = _get_or_create_sheet(wb, target)
 
     row_values = {

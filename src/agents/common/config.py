@@ -73,11 +73,21 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 # each with its own account and key.
 LLM_MODEL_FALLBACK_CHAIN = [
     "openrouter/free",                          # auto-router: picks a live free model for you
-    "meta-llama/llama-3.3-70b-instruct:free",   # long-running, stable, good general fallback
+    # "meta-llama/llama-3.3-70b-instruct:free" REMOVED 2026-08-07 - confirmed
+    # dead (HTTP 404 "unavailable for free, use meta-llama/llama-3.3-70b-instruct
+    # instead") across multiple live runs on gaia, every single time, with zero
+    # exceptions. Keeping a permanently-dead entry in this list wasn't adding
+    # resilience, just guaranteeing 2 wasted attempts (plus the 1.5s/3s
+    # retry sleeps) on every single paper before falling through. Re-add only
+    # if you check openrouter.ai/models and see the :free slug actually listed
+    # again.
     "nvidia/nemotron-3-super-120b-a12b:free",   # verified free 2026-07-12, 1M context
     "qwen/qwen3-coder:free",                    # verified free 2026-07-13 (replaced gpt-oss-120b:free,
                                                  # which went paid-only - confirmed via your own error log)
-    "google/gemma-4-31b-it:free",               # verified free 2026-07-12
+    "google/gemma-4-31b-it:free",               # verified free 2026-07-12 - can hit upstream 429
+                                                 # rate-limits during busy periods (seen live 2026-08-07);
+                                                 # that's expected free-tier behaviour, not a bug - the
+                                                 # chain just moves on to the next model/provider.
 ]
 # ── Fallback providers (tried only after ALL OpenRouter models above are
 # exhausted) - genuinely separate services with their own independent quotas,

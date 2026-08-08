@@ -16,6 +16,7 @@ Usage:
     result, model_used = call_llm_json(system_prompt, user_prompt)
 """
 
+import concurrent.futures
 import json
 import os
 import re
@@ -28,6 +29,46 @@ from . import config
 
 class LLMError(Exception):
     pass
+
+
+class LLMExhaustedError(LLMError):
+    """Raised ONLY when every provider/model in the whole chain has been
+    tried and failed - never for a single model's failure (those are caught
+    and retried internally, see the loop in call_llm_json). Callers can
+    catch this specifically (it's a subclass of LLMError, so existing
+    `except LLMError` sites still work unchanged) to tell "this one paper
+    had a problem" apart from "the entire LLM chain is currently dead" -
+    the latter is a signal worth stopping a whole run over, since every
+    remaining paper would predictably fail the exact same way after the
+    exact same ~multi-minute wait, rather than something worth retrying
+    paper-by-paper."""
+    pass
+
+
+# requests' own `timeout=` does NOT enforce a real overall deadline - it
+# resets on every chunk of data received, so a server that trickles bytes
+# slowly (common on flaky free-tier gateways) can make a call run for
+# minutes past config.LLM_TIMEOUT_S without ever tripping it (caught live:
+# an attempt logged as taking 165s against a 120s configured timeout, and a
+# later attempt just hung with no output at all). This executor lets
+# call_llm_json abandon a call after a genuine wall-clock deadline
+# regardless of what the underlying socket is doing - the abandoned
+# request's background thread keeps running until it eventually finishes on
+# its own (or requests' own timeout eventually fires), but the pipeline
+# stops waiting on it and moves to the next attempt/model immediately.
+_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+
+
+def _call_model_with_deadline(url, api_key, model, system_prompt, user_prompt, deadline_s):
+    future = _EXECUTOR.submit(_call_model, url, api_key, model, system_prompt, user_prompt)
+    try:
+        return future.result(timeout=deadline_s)
+    except concurrent.futures.TimeoutError:
+        raise LLMError(
+            f"{model} did not respond within the {deadline_s}s hard deadline - abandoned "
+            f"(the request may still be running in the background, but the pipeline isn't "
+            f"waiting on it anymore)"
+        )
 
 
 def _extract_json(raw: str):
@@ -114,8 +155,19 @@ def call_llm_json(system_prompt: str, user_prompt: str):
         for model in provider["models"]:
             for attempt in range(config.LLM_MAX_RETRIES_PER_MODEL):
                 call_start = time.time()
+                # Printed the moment the wait STARTS, not just when it resolves -
+                # without this, a genuine (bounded) wait and a real hang look
+                # identical from the console: both are just silence. Now there's
+                # always a most-recent line telling you what's in flight and when
+                # it will give up on its own if nothing comes back.
+                print(f"[llm_client] {provider['name']}/{model} attempt "
+                      f"{attempt + 1}/{config.LLM_MAX_RETRIES_PER_MODEL}: waiting "
+                      f"up to {config.LLM_TIMEOUT_S}s...", flush=True)
                 try:
-                    raw, actual_model = _call_model(provider["url"], api_key, model, system_prompt, user_prompt)
+                    raw, actual_model = _call_model_with_deadline(
+                        provider["url"], api_key, model, system_prompt, user_prompt,
+                        deadline_s=config.LLM_TIMEOUT_S,
+                    )
                     elapsed = time.time() - call_start
                     parsed = _extract_json(raw)
                     routed_note = f" (routed to {actual_model})" if actual_model != model else ""
@@ -133,4 +185,4 @@ def call_llm_json(system_prompt: str, user_prompt: str):
             print(f"[llm_client] {provider['name']}/{model} exhausted all retries, "
                   f"trying next model/provider...", flush=True)
 
-    raise LLMError(f"All providers/models failed. Last error: {last_error}")
+    raise LLMExhaustedError(f"All providers/models failed. Last error: {last_error}")

@@ -29,7 +29,7 @@ import time
 # have happened more than once) are immediately visible in the log itself,
 # rather than needing a separate manual grep check to confirm which version
 # is actually running.
-CODE_VERSION = "2026-07-13-r16-zhipu-glm-added"
+CODE_VERSION = "2026-08-08-r18-stop-early-on-llm-exhaustion"
 
 from .common import config, db_loader
 from .mailroom import triage
@@ -57,7 +57,7 @@ def run_paper_queue(db, budget: int) -> tuple:
 
     processed = 0
     skipped_depth = 0
-    summary = {"processed": [], "new_method_entries": [], "data_entries_linked": []}
+    summary = {"processed": [], "new_method_entries": [], "data_entries_linked": [], "llm_exhausted": False}
 
     while queue and processed < budget:
         paper_entry = queue.pop(0)
@@ -157,6 +157,23 @@ def run_paper_queue(db, budget: int) -> tuple:
 
         processed += 1
 
+        # methods_result/data_result set llm_exhausted=True ONLY when
+        # LLMExhaustedError was raised - i.e. every single provider/model in
+        # the whole fallback chain failed for this call, not just one model
+        # having a bad moment. Every remaining paper would hit the exact
+        # same dead chain and burn the exact same multi-minute wait for a
+        # predictably identical result, so stop the run here rather than
+        # grinding through the rest of the queue for nothing. Re-run once
+        # you expect the outage/quota to have cleared (e.g. OpenRouter's
+        # free-tier daily cap resets the next day).
+        if methods_result.get("llm_exhausted") or data_result.get("llm_exhausted"):
+            _log(f"  LLM fallback chain is FULLY EXHAUSTED (every provider/model failed) - "
+                 f"stopping this run early instead of repeating the same doomed wait on each "
+                 f"of the {len(queue)} remaining paper(s). Re-run later once the outage/quota "
+                 f"has cleared.")
+            summary["llm_exhausted"] = True
+            break
+
     if queue:
         _log(f"Stopped paper queue at its budget ({budget}) with {len(queue)} "
              f"papers still queued - re-run to continue.")
@@ -177,7 +194,7 @@ def run_data_pool(db, budget: int) -> tuple:
     pool = triage.build_data_pool(db.datasets)
     _log(f"Data pool: {len(pool)} entries with metadata gaps")
 
-    summary = {"filled": [], "skipped": []}
+    summary = {"filled": [], "skipped": [], "llm_exhausted": False}
     used = 0
 
     for item in pool:
@@ -203,6 +220,18 @@ def run_data_pool(db, budget: int) -> tuple:
             summary["skipped"].append((item["entry_id"], result["skipped_reason"]))
 
         used += 1
+
+        # Same reasoning as run_paper_queue's identical check - a fully
+        # exhausted LLM chain would fail the exact same way on every
+        # remaining data-pool entry too, so stop here instead of grinding
+        # through the rest for a predictably identical result.
+        if result.get("llm_exhausted"):
+            _log(f"  LLM fallback chain is FULLY EXHAUSTED (every provider/model failed) - "
+                 f"stopping the data pool early instead of repeating the same doomed wait on "
+                 f"each of the {len(pool) - used} remaining entries. Re-run later once the "
+                 f"outage/quota has cleared.")
+            summary["llm_exhausted"] = True
+            break
 
     return summary, used
 
@@ -234,10 +263,19 @@ def main():
          f"{len(paper_summary['new_method_entries'])} new method entries, "
          f"{len(paper_summary['data_entries_linked'])} dataset entries linked/created.")
 
-    remaining_budget = total_budget - papers_used
-    data_summary, entries_used = run_data_pool(db, budget=remaining_budget)
+    if paper_summary.get("llm_exhausted"):
+        _log("Skipping the data pool this run too - it would hit the exact same exhausted "
+             "LLM chain and fail identically on every entry there as well.")
+        data_summary, entries_used = {"filled": [], "skipped": [], "llm_exhausted": True}, 0
+    else:
+        remaining_budget = total_budget - papers_used
+        data_summary, entries_used = run_data_pool(db, budget=remaining_budget)
     _log(f"Data pool done: {len(data_summary['filled'])} entries filled, "
          f"{len(data_summary['skipped'])} skipped.")
+    if paper_summary.get("llm_exhausted") or data_summary.get("llm_exhausted"):
+        _log("NOTE: this run ended early because the LLM fallback chain was fully exhausted, "
+             "not because it ran out of papers/budget - there's likely still queued work left. "
+             "Re-run once you expect the outage/quota to have cleared.")
 
     elapsed = time.time() - start
     _log(f"Total time: {elapsed:.1f}s "

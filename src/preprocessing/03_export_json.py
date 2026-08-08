@@ -50,6 +50,10 @@ def export_methods(df: pd.DataFrame) -> list:
             "doi":               clean(row.get("DOI")),
             "name":              clean(row.get("name")),
             "category":          clean(row.get("category")),
+            # "method" or "application" - added by 01_parse_excel.py when it
+            # combines method_pub + AP_pub, so the frontend doesn't need to
+            # re-derive this from free-text category matching.
+            "paper_type":        clean(row.get("paper_type")),
             "pipeline_category": clean(row.get("pipeline_category")),
             "spatial_data_category": clean(row.get("spatial_data_category")),
             "review_status":     clean(row.get("REVIEW_STATUS")),
@@ -64,9 +68,17 @@ def export_methods(df: pd.DataFrame) -> list:
             "citations":         clean(row.get("citations")),
             "abstract":          clean(row.get("abstract")),
             "publication_type":  clean(row.get("publication_type")),
-            # relationships
+            # relationships (method_pub only - empty for AP_pub rows)
             "data_ids":          parse_id_list(row.get("DataID (data_used_in_the_paper)")),
             "comparison_ids":    parse_id_list(row.get("Method_comparison_P_ENTRY_ID")),
+            # AP_pub-only fields (empty for method_pub rows). Note "title"
+            # above already picks up AP_pub's own manually-curated title
+            # column via the same row.get("title") - no separate handling
+            # needed there.
+            "associated_data":       clean(row.get("Associated data")),
+            "spatial_data_type_ap":  clean(row.get("type of spatial data")),
+            "animal":                clean(row.get("animal")),
+            "tissue_disease":        clean(row.get("tissue/disease")),
         })
     return records
 

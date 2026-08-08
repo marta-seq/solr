@@ -96,7 +96,7 @@ class Database:
                 continue
             self.id_allocator.register_existing([entry_id])
 
-            if rec.get("target_sheet") == "papers":
+            if rec.get("target_sheet") in ("method_pub", "AP_pub"):
                 doi = rec.get("DOI", "")
                 if doi:
                     self.doi_index.add(doi, entry_id)

@@ -8,12 +8,19 @@ so run_pipeline.py can queue them at depth+1 (subject to MAX_HOPS).
 
 Nothing here writes to the master Excel - everything goes through
 common.staging.append_candidate().
+
+Every staging call here targets sheet="method_pub" specifically (never
+AP_pub) - this track's seed queue (mailroom.triage.build_seed_queue) is
+already filtered to method-category rows, and every entry this agent
+creates is itself a "computational analysis - method" M_AUTO_x row, so
+there's no ambiguity to resolve at write time the way data_fetch_agent.py
+has to (that one processes both method and application papers).
 """
 
 import re
 
 from ..common import config, staging
-from ..common.llm_client import call_llm_json, LLMError
+from ..common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ..common.paper_fetcher import fetch_paper, get_agent_text, was_truncated, is_probably_real_content
 from ..common.reference_list_parser import parse_reference_list
 from ..common.reference_resolver import resolve_citation, is_confident
@@ -86,16 +93,20 @@ def _append_to_comparison_list(existing: str, new_id: str) -> str:
     return ", ".join(ids)
 
 
-def _empty_stats(skip_reason: str, new_queue_items=None) -> dict:
+def _empty_stats(skip_reason: str, new_queue_items=None, llm_exhausted: bool = False) -> dict:
     """Consistent return shape at every early-exit point. skip_reason is
     ALWAYS a non-empty string here (the LLM was never called) - callers
     should show it directly rather than leaving people to infer whether
-    0 results means 'skipped' or 'called and found nothing'."""
+    0 results means 'skipped' or 'called and found nothing'.
+    llm_exhausted is True ONLY when the whole provider/model chain failed
+    (LLMExhaustedError) - run_pipeline.py checks this to stop a run early
+    instead of repeating the same doomed wait on every remaining paper."""
     return {
         "new_queue_items": new_queue_items or [],
         "total_encountered": 0,
         "total_resolved": 0,
         "skip_reason": skip_reason,
+        "llm_exhausted": llm_exhausted,
     }
 
 
@@ -126,7 +137,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if not methods_text:
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id,
+            action="update_field", sheet="method_pub", entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -136,7 +147,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if not is_probably_real_content(methods_text):
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id,
+            action="update_field", sheet="method_pub", entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -149,7 +160,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if config.REQUIRE_ISOLATED_SECTION and text_source != "section:methods":
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id,
+            action="update_field", sheet="method_pub", entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -174,13 +185,14 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         extracted, model_used = call_llm_json(SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text))
     except LLMError as e:
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id,
+            action="update_field", sheet="method_pub", entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
             notes=f"LLM extraction failed: {e}",
         )
-        return _empty_stats(f"LLM WAS called but every provider/model failed: {e}")
+        return _empty_stats(f"LLM WAS called but every provider/model failed: {e}",
+                             llm_exhausted=isinstance(e, LLMExhaustedError))
 
     if not isinstance(extracted, list):
         extracted = []
@@ -214,7 +226,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         if not resolved_doi:
             # couldn't resolve a DOI at all - stage a note, nothing to link/create
             staging.append_candidate(
-                action="update_field", sheet="papers", entry_id=entry_id,
+                action="update_field", sheet="method_pub", entry_id=entry_id,
                 fields={},
                 source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
                 curation_model=model_used, confidence=0.0,
@@ -235,7 +247,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         review_status = config.REVIEW_STATUS_AUTO if confident else config.REVIEW_STATUS_NEEDS_REVIEW
 
         staging.append_candidate(
-            action="create_entry", sheet="papers", entry_id=new_id,
+            action="create_entry", sheet="method_pub", entry_id=new_id,
             fields={
                 "DOI": resolved_doi,
                 "category": "computational analysis - method",
@@ -264,7 +276,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             updated_value = _append_to_comparison_list(updated_value, new_id)
 
         staging.append_candidate(
-            action="update_field", sheet="papers", entry_id=entry_id,
+            action="update_field", sheet="method_pub", entry_id=entry_id,
             fields={"Method_comparison_P_ENTRY_ID": updated_value},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model=model_used, confidence=None,
