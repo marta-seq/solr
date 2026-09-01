@@ -34,8 +34,17 @@ PROCESSED_DIR = ROOT / "data" / "processed"
 # up as if it were fresh input and re-processed (caught live: produced
 # "methods_metadata_metadata_2026_07_07.csv" from a stale prior run, 0
 # fetched because everything in it was already enriched).
+#
+# Sort key normalizes "-" to "_" before comparing: filenames' date suffix
+# isn't consistently hyphens or underscores (depends on how the source
+# curated .xlsx happened to be named that day - both exist in this repo's
+# history), and plain string sort puts "-" before "_" in ASCII, so e.g.
+# "methods_2026-08-29.csv" would otherwise sort BEFORE "methods_2026_07_07.csv"
+# and get picked as the "oldest", silently processing the wrong file
+# (caught 2026-09-01: both of those files existed here at once).
 methods_files = sorted(
-    p for p in PROCESSED_DIR.glob("methods_*.csv") if "metadata" not in p.stem
+    (p for p in PROCESSED_DIR.glob("methods_*.csv") if "metadata" not in p.stem),
+    key=lambda p: p.stem.replace("-", "_"),
 )
 if not methods_files:
     raise FileNotFoundError(f"No methods_*.csv (excluding methods_metadata_*.csv) found in {PROCESSED_DIR}")
@@ -159,9 +168,24 @@ def fetch_abstract(doi: str, publication_type: str) -> str:
     return fetch_pubmed_abstract(doi)
 
 # ── Main ──────────────────────────────────────────────────────────────────────
+# Resumable/checkpointed (added 2026-09-01): this run can be interrupted
+# (e.g. a wall-clock-limited execution environment, or Ctrl-C) partway
+# through 371 rows of real network calls, and previously this only wrote
+# output once at the very end - an interruption anywhere in the loop lost
+# 100% of that run's progress. Now: (1) if OUTPUT_FILE already exists from a
+# prior partial run, resume from IT instead of the bare input file, so
+# already-fetched rows are skipped via the existing "already enriched"
+# check; (2) save a checkpoint every CHECKPOINT_EVERY rows, not just at the
+# end, so an interruption only loses work since the last checkpoint.
+CHECKPOINT_EVERY = 15
+
 def main():
-    print(f"Reading {METHODS_FILE.name} ...")
-    df = pd.read_csv(METHODS_FILE, dtype=str)
+    if OUTPUT_FILE.exists():
+        print(f"Resuming from existing {OUTPUT_FILE.name} (partial run found)")
+        df = pd.read_csv(OUTPUT_FILE, dtype=str)
+    else:
+        print(f"Reading {METHODS_FILE.name} ...")
+        df = pd.read_csv(METHODS_FILE, dtype=str)
 
     # Add metadata columns if not present
     meta_cols = ["title", "first_author", "authors", "year",
@@ -184,7 +208,7 @@ def main():
             skipped += 1
             continue
 
-        # Skip if already enriched
+        # Skip if already enriched (covers both same-run and resumed rows)
         if str(row.get("title", "")).strip() not in ("", "nan"):
             skipped += 1
             continue
@@ -204,6 +228,9 @@ def main():
             df.at[i, col] = val
 
         fetched += 1
+        if fetched % CHECKPOINT_EVERY == 0:
+            df.to_csv(OUTPUT_FILE, index=False)
+            print(f"    [checkpoint: {fetched} fetched so far, saved to {OUTPUT_FILE.name}]")
         time.sleep(0.2)  # be polite to APIs
 
     print(f"\nDone: {fetched} fetched, {skipped} skipped, {failed} failed")

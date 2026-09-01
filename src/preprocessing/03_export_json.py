@@ -22,7 +22,13 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── Find most recent files ────────────────────────────────────────────────────
 def find_latest(pattern: str) -> Path:
-    files = sorted(PROCESSED_DIR.glob(pattern))
+    # Sort key normalizes "-" to "_" - the date suffix isn't consistently
+    # hyphens or underscores (depends on the source curated .xlsx filename
+    # that day), and plain string sort puts "-" before "_" in ASCII, which
+    # would silently pick an OLDER file as "latest" whenever both formats
+    # are present (caught 2026-09-01: methods_2026-08-29.csv and
+    # methods_2026_07_07.csv existed at the same time).
+    files = sorted(PROCESSED_DIR.glob(pattern), key=lambda p: p.stem.replace("-", "_"))
     if not files:
         raise FileNotFoundError(f"No file matching {pattern} in {PROCESSED_DIR}")
     return files[-1]
@@ -56,6 +62,14 @@ def export_methods(df: pd.DataFrame) -> list:
             "paper_type":        clean(row.get("paper_type")),
             "pipeline_category": clean(row.get("pipeline_category")),
             "spatial_data_category": clean(row.get("spatial_data_category")),
+            # Since the 2026-09-01 category cleanup, `category` and
+            # `pipeline_category` are canonical and ';'-separated when a
+            # paper genuinely has more than one tag (most have exactly one).
+            # These list versions are additive - existing frontend code that
+            # reads the scalar fields above keeps working unchanged; new code
+            # (e.g. a future per-category pie on the graph) should use these.
+            "categories":            parse_id_list(row.get("category")),
+            "pipeline_categories":   parse_id_list(row.get("pipeline_category")),
             "review_status":     clean(row.get("REVIEW_STATUS")),
             "is_placeholder":    str(row.get("is_placeholder", "")).lower() == "true",
             "date_added":        clean(row.get("Date(added_to_dataset)")),
@@ -119,15 +133,24 @@ def export_datasets(df: pd.DataFrame) -> list:
 def compute_stats(methods: list, datasets: list) -> dict:
     total_papers     = len(methods)
     placeholders     = sum(1 for m in methods if m["is_placeholder"])
-    curated          = sum(1 for m in methods if m["review_status"] == "manual")
-    comp_methods     = sum(1 for m in methods if "computational" in m["category"].lower())
-    applications     = sum(1 for m in methods if m["category"].lower().startswith("application"))
+    # "auto_confirmed" (new 2026-09-01 status) means auto-generated then
+    # manually confirmed - counts as curated same as "manual".
+    curated          = sum(1 for m in methods if m["review_status"] in ("manual", "auto_confirmed"))
+    # Was substring-matching the free-text `category` field ("computational"
+    # / starts with "application"); switched to `paper_type`, which is set
+    # directly from which sheet the row came from and no longer depends on
+    # category wording that changed in the 2026-09-01 cleanup.
+    comp_methods     = sum(1 for m in methods if m["paper_type"] == "method")
+    applications     = sum(1 for m in methods if m["paper_type"] == "application")
 
-    # Pipeline category counts
+    # Pipeline category counts. A method with more than one canonical
+    # category (';'-separated) now contributes to each of its categories'
+    # counts, rather than creating one combined "A; B" bucket.
     pipeline_counts = {}
     for m in methods:
-        pc = m["pipeline_category"] or "Other"
-        pipeline_counts[pc] = pipeline_counts.get(pc, 0) + 1
+        pcs = m["pipeline_categories"] or ["Other"]
+        for pc in pcs:
+            pipeline_counts[pc] = pipeline_counts.get(pc, 0) + 1
 
     # Dataset stats
     total_datasets = len(datasets)

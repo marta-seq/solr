@@ -5,7 +5,7 @@ function buildLegend() {
     Object.entries(CATS).map(([k,v]) =>
       `<div class="gli"><div class="gldot" style="background:${v.color}"></div>${k}</div>`
     ).join("") +
-    `<div class="gli"><div class="glsq" style="background:var(--c-data)"></div>Dataset</div>`;
+    `<div class="gli"><div class="glsq" style="background:transparent;border:2px dashed var(--c-data)"></div>Dataset</div>`;
 }
 
 function renderGraph() {
@@ -32,7 +32,10 @@ function renderGraph() {
     catNodes[key].push(m);
   });
 
-  // Place nodes: sunflower spiral around each category centroid
+  // Place nodes: sunflower spiral around each category centroid.
+  // methodPos is kept around so the dataset block below can anchor dataset
+  // nodes near the methods that actually use them, instead of a fixed row.
+  const methodPos = {};
   methods.forEach(m => {
     const info  = catInfo(m.pipeline_category);
     const cit   = parseInt(m.citations) || 0;
@@ -42,9 +45,12 @@ function renderGraph() {
     const idx   = list.indexOf(m);
     const angle  = idx * 2.399;
     const radius = list.length === 1 ? 0 : 25 + Math.sqrt(idx) * 22;
+    const px = info.x + radius * Math.cos(angle);
+    const py = info.y + radius * Math.sin(angle);
+    methodPos[m.id] = { x: px, y: py };
     elements.push({
       data: { id: m.id, label: m.name || m.id, color: info.color, size, type: "method", _m: JSON.stringify(m) },
-      position: { x: info.x + radius * Math.cos(angle), y: info.y + radius * Math.sin(angle) }
+      position: { x: px, y: py }
     });
   });
 
@@ -100,18 +106,41 @@ function renderGraph() {
     });
   }
 
-  // Dataset nodes + edges
+  // Dataset nodes + edges.
+  // Previously: dataset nodes were placed in one long row (x:100+i*110,
+  // y:900), completely unrelated to which methods used them. Method nodes
+  // live in a tight x:180-1100, y:130-580 cluster, so with more than a
+  // handful of datasets that row stretched the bounding box enormously -
+  // cy.fit() then zoomed out to fit it, shrinking the whole method graph to
+  // near-invisible dots. This is the "toggling datasets doesn't work" bug.
+  // Fix: anchor each dataset node at the centroid of the method node(s)
+  // that actually link to it, with a small radial offset so it doesn't sit
+  // exactly on top of them.
   if (showData) {
     const usedIds = new Set();
     methods.forEach(m => (m.data_ids || []).forEach(d => { if (d.trim()) usedIds.add(d.trim()); }));
     const dsMap = {};
     DATASETS.forEach(d => { if (usedIds.has(d.id)) dsMap[d.id] = d; });
-    Object.values(dsMap).forEach((d, i) => {
+
+    const dsLinks = {};
+    methods.forEach(m => (m.data_ids || []).forEach(did => {
+      did = did.trim();
+      if (did && dsMap[did]) (dsLinks[did] = dsLinks[did] || []).push(m.id);
+    }));
+
+    Object.entries(dsMap).forEach(([id, d], i) => {
+      const linkedIds = dsLinks[id] || [];
+      const pts = linkedIds.map(mid => methodPos[mid]).filter(Boolean);
+      const cx  = pts.length ? pts.reduce((s, p) => s + p.x, 0) / pts.length : 640;
+      const cyy = pts.length ? pts.reduce((s, p) => s + p.y, 0) / pts.length : 350;
+      const angle = i * 2.399;
+      const r = 30;
       elements.push({
         data: { id: d.id, label: d.internal_name || d.id, type: "dataset", _d: JSON.stringify(d) },
-        position: { x: 100 + i * 110, y: 900 }
+        position: { x: cx + r * Math.cos(angle), y: cyy + r * Math.sin(angle) }
       });
     });
+
     methods.forEach(m => {
       (m.data_ids || []).forEach(did => {
         did = did.trim();
@@ -135,7 +164,12 @@ function renderGraph() {
         "border-width": 1.5, "border-color": "#21262d",
       }},
       { selector: "node[type='dataset']", style: {
-        "background-color": "#39d353", "shape": "rectangle",
+        // Dashed-outline "entity" look (dark fill, dashed green border)
+        // instead of a solid green square, so datasets read visually as a
+        // different kind of thing from method nodes rather than just
+        // another colored dot.
+        "background-color": "#0d1117", "shape": "round-rectangle",
+        "border-width": 2, "border-style": "dashed", "border-color": "#39d353",
         "width": 14, "height": 14,
         "label": "data(label)", "color": "#e6edf3",
         "font-size": "8px", "font-family": "JetBrains Mono,monospace",

@@ -35,7 +35,12 @@ function sortT(which,col) {
 
 
 // ── Methods ──
-function isComp(m) { return (m.category||"").toLowerCase().includes("computational"); }
+// Was a substring check on the free-text `category` field ("computational");
+// switched to `paper_type`, which 01_parse_excel.py already sets directly
+// from which sheet a row came from (method_pub -> "method") rather than
+// deriving it from category text - more robust, and category values no
+// longer reliably contain "computational" after the 2026-09-01 cleanup.
+function isComp(m) { return m.paper_type === "method"; }
 
 function renderMethods() {
   const q=(document.getElementById("methods-search").value||"").toLowerCase();

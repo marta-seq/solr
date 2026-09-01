@@ -20,6 +20,21 @@ const CATS = {
   "Subcellular localization":                   {color:"#bc8cff", x:900,  y:580},
   "Integration of modalities":                  {color:"#c9d1d9", x:1100, y:280},
   "spatiotemporal dynamics":                    {color:"#f78166", x:1100, y:480},
+  // Added 2026-09-01 alongside the pipeline_category taxonomy cleanup
+  // (see src/preprocessing/category_maps.py) - without an entry here, any
+  // method mapped to one of these fell into the generic gray default at
+  // canvas center instead of getting a real color/position.
+  "Cell segmentation - unspecified":            {color:"#58a6ff", x:420,  y:220},
+  "Clustering":                                 {color:"#a5d6ff", x:660,  y:250},
+  "Survival prediction":                        {color:"#ffab70", x:1250, y:400},
+  "Data alignment / integration / imputation":  {color:"#39c5cf", x:1100, y:150},
+  "Foundation model":                           {color:"#d29922", x:300,  y:650},
+  "Computer vision (H&E)":                      {color:"#ff9bce", x:550,  y:50},
+  "Virtual staining (proteomics)":              {color:"#f2cc60", x:700,  y:50},
+  "Virtual staining (transcriptomics)":         {color:"#56d4dd", x:850,  y:50},
+  "Immune infiltration scoring":                {color:"#e0729c", x:900,  y:250},
+  "Analysis/workflow optimization":             {color:"#768390", x:60,   y:350},
+  "Other":                                      {color:"#8b949e", x:1300, y:700},
 };
 
 function catInfo(cat) {

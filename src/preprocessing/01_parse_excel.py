@@ -31,6 +31,15 @@ from pathlib import Path
 
 import pandas as pd
 
+from category_maps import (
+    CATEGORY_MAP_METHOD_PUB,
+    CATEGORY_MAP_AP_PUB,
+    PIPELINE_CATEGORY_MAP,
+    SPATIAL_DATA_CATEGORY_MAP_METHOD_PUB,
+    SPATIAL_DATA_CATEGORY_MAP_DATA,
+    REVIEW_STATUS_MAP,
+)
+
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parents[2]
 CURATED_DIR   = ROOT / "data" / "data_curated"
@@ -95,6 +104,29 @@ def normalize_doi(doi) -> str:
     if doi.startswith("http://doi.org/"):
         return doi.replace("http://", "https://")
     return doi
+
+# ── Category/status normalization (see category_maps.py) ────────────────────
+def _normalize_or_warn(value, mapping: dict, field_name: str, sheet_name: str, entry_id: str) -> str:
+    """Whole-cell lookup against one of the maps in category_maps.py.
+
+    A value in the map that maps to None means "deliberately left unset for
+    now" (a real decision, not a gap) and becomes "". A value NOT in the map
+    at all means the sheet has a raw value nobody has looked at yet - that's
+    printed loudly rather than guessed at or silently dropped, same
+    philosophy as the suspicious-DOI check above.
+    """
+    if pd.isna(value):
+        return ""
+    raw = str(value).strip()
+    if not raw or raw.lower() in ("na", "nan", "none"):
+        return ""
+    if raw in mapping:
+        mapped = mapping[raw]
+        return "" if mapped is None else mapped
+    print(f"  WARNING [{sheet_name}]: unmapped {field_name} value {raw!r} "
+          f"(entry_id: {entry_id}) - not in category_maps.py, passing through "
+          f"unchanged. Add it to the mapping once you know what it should be.")
+    return raw
 
 def _looks_like_doi_or_url(val: str) -> bool:
     """Loose sanity check, NOT enforcement - just used to print a heads-up
@@ -195,10 +227,40 @@ def parse_pub_sheet(xl: pd.ExcelFile, sheet_name: str, paper_type: str) -> pd.Da
     for col in df.select_dtypes(include="object").columns:
         df[col] = df[col].apply(lambda x: x.strip() if isinstance(x, str) else x)
 
+    # is_placeholder must be computed from the RAW category text, before
+    # normalization below rewrites "Placeholder - method" -> "Placeholder"
+    # (still matches, but keeping this first is clearer/order-independent).
     df["is_placeholder"] = df["category"].astype(str).str.contains(
         "Placeholder", case=False, na=False
     )
     df["paper_type"] = paper_type
+
+    # Normalize category / pipeline_category / spatial_data_category /
+    # REVIEW_STATUS against the whole-cell maps in category_maps.py (see
+    # that file for the reasoning behind each mapping). method_pub and
+    # AP_pub use different category vocabularies; pipeline_category and
+    # spatial_data_category only exist on method_pub.
+    category_map = CATEGORY_MAP_METHOD_PUB if paper_type == "method" else CATEGORY_MAP_AP_PUB
+    if "category" in df.columns:
+        df["category"] = df.apply(
+            lambda r: _normalize_or_warn(r["category"], category_map, "category", sheet_name, r["entry_id"]),
+            axis=1,
+        )
+    if "pipeline_category" in df.columns:
+        df["pipeline_category"] = df.apply(
+            lambda r: _normalize_or_warn(r["pipeline_category"], PIPELINE_CATEGORY_MAP, "pipeline_category", sheet_name, r["entry_id"]),
+            axis=1,
+        )
+    if "spatial_data_category" in df.columns:
+        df["spatial_data_category"] = df.apply(
+            lambda r: _normalize_or_warn(r["spatial_data_category"], SPATIAL_DATA_CATEGORY_MAP_METHOD_PUB, "spatial_data_category", sheet_name, r["entry_id"]),
+            axis=1,
+        )
+    if "REVIEW_STATUS" in df.columns:
+        df["REVIEW_STATUS"] = df.apply(
+            lambda r: _normalize_or_warn(r["REVIEW_STATUS"], REVIEW_STATUS_MAP, "REVIEW_STATUS", sheet_name, r["entry_id"]),
+            axis=1,
+        )
 
     return df
 
@@ -225,6 +287,17 @@ def parse_dataset_sheet(xl: pd.ExcelFile, sheet_name: str) -> pd.DataFrame:
     # Strip whitespace
     for col in df.select_dtypes(include="object").columns:
         df[col] = df[col].apply(lambda x: x.strip() if isinstance(x, str) else x)
+
+    if "spatial_data_category" in df.columns:
+        df["spatial_data_category"] = df.apply(
+            lambda r: _normalize_or_warn(r["spatial_data_category"], SPATIAL_DATA_CATEGORY_MAP_DATA, "spatial_data_category", sheet_name, r["entry_id"]),
+            axis=1,
+        )
+    if "REVIEW_STATUS" in df.columns:
+        df["REVIEW_STATUS"] = df.apply(
+            lambda r: _normalize_or_warn(r["REVIEW_STATUS"], REVIEW_STATUS_MAP, "REVIEW_STATUS", sheet_name, r["entry_id"]),
+            axis=1,
+        )
 
     return df
 
