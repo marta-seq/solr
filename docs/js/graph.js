@@ -19,6 +19,9 @@ function renderGraph() {
       (m.pipeline_category || "").toLowerCase().includes(gStageFilter.toLowerCase())
     );
   }
+  if (gSourceFilter !== "All") {
+    methods = methods.filter(m => (m.source_type || "") === gSourceFilter);
+  }
 
   const maxCit    = Math.max(1, ...methods.map(m => parseInt(m.citations) || 0));
   const methodIds = new Set(methods.map(m => m.id));
@@ -35,6 +38,37 @@ function renderGraph() {
   // Place nodes: sunflower spiral around each category centroid.
   // methodPos is kept around so the dataset block below can anchor dataset
   // nodes near the methods that actually use them, instead of a fixed row.
+  //
+  // Pie slices: most methods have exactly one pipeline_category, but some
+  // genuinely have several (see category_maps.py / pipeline_categories).
+  // Rather than only showing the first one, each node is rendered as a
+  // Cytoscape "pie" with one slice per category (equal shares, capped at 4 -
+  // the real data never has more than 4). A single-category node is just a
+  // pie with one 100% slice, which looks identical to a plain solid circle,
+  // so this one code path covers both cases with no special-casing.
+  const MAX_SLICES = 4;
+  function pieSlices(m) {
+    let cats = (m.pipeline_categories && m.pipeline_categories.length)
+      ? m.pipeline_categories : [m.pipeline_category || "Other"];
+    cats = cats.slice(0, MAX_SLICES);
+    const n = cats.length;
+    const base = Math.floor(100 / n);
+    const slices = {};
+    for (let i = 0; i < MAX_SLICES; i++) {
+      const num = i + 1;
+      if (i < n) {
+        const c = CATS[cats[i]];
+        slices[`p${num}c`] = c ? c.color : "#8b949e";
+        // last slice absorbs the rounding remainder so shares sum to 100
+        slices[`p${num}s`] = (i === n - 1) ? (100 - base * (n - 1)) : base;
+      } else {
+        slices[`p${num}c`] = "#8b949e";
+        slices[`p${num}s`] = 0;
+      }
+    }
+    return slices;
+  }
+
   const methodPos = {};
   methods.forEach(m => {
     const info  = catInfo(m.pipeline_category);
@@ -49,7 +83,8 @@ function renderGraph() {
     const py = info.y + radius * Math.sin(angle);
     methodPos[m.id] = { x: px, y: py };
     elements.push({
-      data: { id: m.id, label: m.name || m.id, color: info.color, size, type: "method", _m: JSON.stringify(m) },
+      data: { id: m.id, label: m.name || m.id, color: info.color, size, type: "method", _m: JSON.stringify(m),
+              ...pieSlices(m) },
       position: { x: px, y: py }
     });
   });
@@ -155,7 +190,17 @@ function renderGraph() {
     elements,
     style: [
       { selector: "node[type='method']", style: {
+        // background-color is a fallback beneath the pie (e.g. if pie
+        // rendering isn't supported); the pie-i-* properties are what
+        // actually render for multi-category nodes - see pieSlices() above.
+        // A single-category node is a pie with one 100%-share slice, which
+        // is visually identical to a plain solid-color circle.
         "background-color":   "data(color)",
+        "pie-size": "100%",
+        "pie-1-background-color": "data(p1c)", "pie-1-background-size": "data(p1s)",
+        "pie-2-background-color": "data(p2c)", "pie-2-background-size": "data(p2s)",
+        "pie-3-background-color": "data(p3c)", "pie-3-background-size": "data(p3s)",
+        "pie-4-background-color": "data(p4c)", "pie-4-background-size": "data(p4s)",
         "width": "data(size)", "height": "data(size)",
         "label": "data(label)", "color": "#e6edf3",
         "font-size": "9px", "font-family": "Inter,sans-serif",

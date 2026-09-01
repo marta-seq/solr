@@ -40,6 +40,30 @@ def clean(val) -> str:
     s = str(val).strip()
     return "" if s.lower() in ("nan", "na", "none") else s
 
+# ── Source type (bioRxiv / arXiv / peer-reviewed / preprint) ────────────────
+# Combines whatever's available, in priority order, rather than requiring
+# any single source to be complete on its own:
+#   1. source_type_manual - Marta's own curation (method_pub only,
+#      "arxiv/bioarxiv/peer reviewed" column renamed in 01_parse_excel.py).
+#      Most authoritative when present, but only ~150/267 method_pub rows
+#      have it and AP_pub rows never do.
+#   2. publication_type - auto-fetched via Crossref in 02_fetch_metadata.py
+#      (already distinguishes "peer-reviewed" from a generic "preprint").
+#      Covers AP_pub too, but doesn't distinguish which preprint server.
+#   3. DOI text containing "arxiv" - catches arXiv papers Crossref returned
+#      as a generic type rather than something recognizably "preprint".
+# Returns "" (unknown) only when none of the above have anything.
+def compute_source_type(row) -> str:
+    manual = clean(row.get("source_type_manual"))
+    if manual:
+        return manual
+    pub_type = clean(row.get("publication_type"))
+    if pub_type in ("peer-reviewed", "preprint"):
+        return pub_type
+    if "arxiv" in clean(row.get("DOI")).lower():
+        return "arXiv"
+    return ""
+
 # ── Parse semicolon-separated ID lists ───────────────────────────────────────
 def parse_id_list(val) -> list:
     s = clean(val)
@@ -55,6 +79,7 @@ def export_methods(df: pd.DataFrame) -> list:
             "id":                clean(row.get("entry_id")),
             "doi":               clean(row.get("DOI")),
             "name":              clean(row.get("name")),
+            "source_type":       compute_source_type(row),
             "category":          clean(row.get("category")),
             # "method" or "application" - added by 01_parse_excel.py when it
             # combines method_pub + AP_pub, so the frontend doesn't need to

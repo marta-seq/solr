@@ -26,6 +26,24 @@ function setGF(v,btn) {
   btn.classList.add("active"); renderGraph();
 }
 
+// ── Source-type filter (peer-reviewed / bioRxiv / arXiv / preprint) ──
+// Combines Marta's manual "arxiv/bioarxiv/peer reviewed" curation with the
+// auto-fetched Crossref publication_type (see compute_source_type in
+// 03_export_json.py) - "Unknown" covers rows neither source could place.
+function initSourceFilters() {
+  const opts=[{k:"All",l:"All"},{k:"peer-reviewed",l:"Peer-reviewed"},
+              {k:"bioRxiv",l:"bioRxiv"},{k:"arXiv",l:"arXiv"},
+              {k:"preprint",l:"Preprint (other)"},{k:"",l:"Unknown"}];
+  document.getElementById("source-filters").innerHTML=opts.map(o=>
+    `<button class="pill ${o.k==="All"?"active":""}" onclick="setSF('${o.k}',this)">${o.l}</button>`
+  ).join("");
+}
+function setSF(v,btn) {
+  gSourceFilter=v;
+  document.querySelectorAll("#source-filters .pill").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active"); renderGraph();
+}
+
 
 // ── Sort ──
 function sortT(which,col) {

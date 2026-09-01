@@ -187,6 +187,11 @@ def drop_junk_columns(df: pd.DataFrame) -> pd.DataFrame:
 CANONICAL_RENAMES = {
     "Resolution and also add dimensions": "Resolution",
     "N markers (proteins/genes …)": "N markers",
+    # method_pub only. Was silently carried through under its raw header
+    # (unused downstream); giving it a stable name so 03_export_json.py can
+    # expose it as part of the source_type filter (peer-reviewed/bioRxiv/
+    # arXiv/etc, added 2026-09-01).
+    "arxiv/bioarxiv/peer reviewed": "source_type_manual",
 }
 
 def apply_canonical_renames(df: pd.DataFrame) -> pd.DataFrame:

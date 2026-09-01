@@ -2,6 +2,7 @@
 let METHODS=[], DATASETS=[], STATS={}, cy=null;
 let mSort={col:"name",dir:1}, dSort={col:"id",dir:1};
 let gStageFilter="All";
+let gSourceFilter="All";
 
 // Centroids are in a ~1400x800 virtual canvas
 // Layout mirrors the pipeline flow: left=upstream, right=downstream
