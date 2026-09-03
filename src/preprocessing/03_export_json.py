@@ -40,7 +40,14 @@ def clean(val) -> str:
     if pd.isna(val):
         return ""
     s = str(val).strip()
-    return "" if s.lower() in ("nan", "na", "none") else s
+    if s.lower() in ("nan", "na", "none"):
+        return ""
+    # Columns with any blank cell (e.g. "year") get read as float64 by
+    # pandas even though every real value is a whole number, so it lands
+    # here as "2022.0" - strip the trailing ".0" so it renders as "2022".
+    if re.fullmatch(r"-?\d+\.0", s):
+        s = s[:-2]
+    return s
 
 # ── Source type (bioRxiv / arXiv / peer-reviewed / preprint) ────────────────
 # Combines whatever's available, in priority order, rather than requiring

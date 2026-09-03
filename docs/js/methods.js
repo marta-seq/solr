@@ -164,10 +164,15 @@ function renderDatasets() {
   const col=dSort.col, dir=dSort.dir;
   items.sort((a,b)=>String(a[col]||"").localeCompare(String(b[col]||""))*dir);
   const tb=document.getElementById("datasets-tbody");
-  if(!items.length){tb.innerHTML=`<tr><td colspan="10" class="empty-state">No datasets found.</td></tr>`;return;}
+  if(!items.length){tb.innerHTML=`<tr><td colspan="11" class="empty-state">No datasets found.</td></tr>`;return;}
+  const MAX_MARKERS_SHOWN=4;
   tb.innerHTML=items.map(d=>{
     const isSP=(d.spatial_data_category||"").toLowerCase().includes("proteomics");
     const feat=d.n_markers||d.n_genes||"—";
+    const markers=d.markers_list||[];
+    const markersCell=markers.length
+      ? `${markers.slice(0,MAX_MARKERS_SHOWN).join(", ")}${markers.length>MAX_MARKERS_SHOWN?` <span style="opacity:0.6;">+${markers.length-MAX_MARKERS_SHOWN}</span>`:""}`
+      : "—";
     return `<tr>
       <td class="tid">${d.id}</td>
       <td class="tname">${d.internal_name||d.id}</td>
@@ -178,6 +183,7 @@ function renderDatasets() {
       <td>${d.disease||"—"}</td>
       <td>${d.year||"—"}</td>
       <td>${feat}</td>
+      <td style="font-size:0.77rem;" title="${markers.join(", ")}">${markersCell}</td>
       <td>${d.access_link?`<a href="${d.access_link}" target="_blank" style="color:var(--c-prep);font-size:0.77rem;">↗</a>`:"—"}</td>
     </tr>`;
   }).join("");
