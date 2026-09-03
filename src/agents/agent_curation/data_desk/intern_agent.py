@@ -10,9 +10,9 @@ Nothing here writes to the master Excel - everything goes through
 common.staging.append_candidate().
 """
 
-from ..common import config, staging
-from ..common.llm_client import call_llm_json, LLMError, LLMExhaustedError
-from ..common.paper_fetcher import fetch_paper, get_agent_text
+from ...common import config, staging
+from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
+from ...common.paper_fetcher import fetch_paper, get_agent_text
 
 FIELD_DESCRIPTIONS = {
     "organism": "the organism the sample is from (e.g. 'human', 'mouse')",

@@ -32,9 +32,9 @@ import time
 CODE_VERSION = "2026-08-08-r18-stop-early-on-llm-exhaustion"
 
 from .common import config, db_loader
-from .mailroom import triage
-from .methods_desk import compared_methods_agent
-from .data_desk import data_fetch_agent, intern_agent
+from .living_ingestion.mailroom import triage
+from .agent_curation.methods_desk import compared_methods_agent
+from .agent_curation.data_desk import data_fetch_agent, intern_agent
 from .common.paper_fetcher import fetch_paper, get_agent_text
 from .common.reference_list_parser import parse_reference_list
 

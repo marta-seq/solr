@@ -2,6 +2,11 @@
 
 Status as of this drop. Everything is built. Update this file as things change.
 
+Layout mirrors the paper's Methods split: `living_ingestion/` (mailroom +
+merge_candidates.py) is Part 2, `agent_curation/` (methods_desk + data_desk)
+is Part 3, `common/` is shared infra used by both, and `run_pipeline.py` at
+the top level is Part 4 (full cycle).
+
 ## Built and tested (against the real methods_metadata/datasets CSVs)
 
 - `common/config.py` — tunable knobs: MAX_HOPS, MAX_PAPERS_PER_RUN, model
@@ -111,7 +116,7 @@ Status as of this drop. Everything is built. Update this file as things change.
   - verified a papers update, a new papers entry, a new Data_ST entry
   (confirming the trailing-space column match), and a Data_multi candidate
   correctly routing to NEEDS_MANUAL_PLACEMENT instead of risking corruption.
-  Run with: `python -m src.agents.merge_candidates`
+  Run with: `python -m src.agents.living_ingestion.merge_candidates`
 
 **Everything above (except merge_candidates.py, tested against your real
 master file directly) has been dry-run tested with mocked fetch/LLM/
@@ -267,7 +272,7 @@ master Excel is never touched at this stage.
 
 **2. When you're ready to actually merge what's in staging.xlsx:**
 ```bash
-python -m src.agents.merge_candidates
+python -m src.agents.living_ingestion.merge_candidates
 ```
 This finds your most recent `datasets_curated_*.xlsx` in
 `data/data_curated/`, applies every staged candidate into a **brand new**

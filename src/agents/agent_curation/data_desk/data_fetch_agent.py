@@ -15,12 +15,12 @@ common.staging.append_candidate().
 
 import re
 
-from ..common import config, staging
-from ..common.doi_utils import normalize_doi
-from ..common.llm_client import call_llm_json, LLMError, LLMExhaustedError
-from ..common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
-from ..common.reference_list_parser import parse_reference_list
-from ..common.reference_resolver import resolve_citation, is_confident
+from ...common import config, staging
+from ...common.doi_utils import normalize_doi
+from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
+from ...common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
+from ...common.reference_list_parser import parse_reference_list
+from ...common.reference_resolver import resolve_citation, is_confident
 
 SYSTEM_PROMPT = """You are a careful research assistant extracting factual information from a \
 scientific paper's data availability statement (or, if that wasn't available, the paper's full \

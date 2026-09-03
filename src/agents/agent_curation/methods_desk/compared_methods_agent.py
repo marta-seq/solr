@@ -19,11 +19,11 @@ has to (that one processes both method and application papers).
 
 import re
 
-from ..common import config, staging
-from ..common.llm_client import call_llm_json, LLMError, LLMExhaustedError
-from ..common.paper_fetcher import fetch_paper, get_agent_text, was_truncated, is_probably_real_content
-from ..common.reference_list_parser import parse_reference_list
-from ..common.reference_resolver import resolve_citation, is_confident
+from ...common import config, staging
+from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
+from ...common.paper_fetcher import fetch_paper, get_agent_text, was_truncated, is_probably_real_content
+from ...common.reference_list_parser import parse_reference_list
+from ...common.reference_resolver import resolve_citation, is_confident
 
 SYSTEM_PROMPT = """You are a careful research assistant extracting factual information from a \
 scientific paper's methods section. You will be given the methods section text (or, if that \

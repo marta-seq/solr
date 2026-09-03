@@ -29,7 +29,7 @@ Rules:
       genuinely-mismatched sheet.
 
 Usage:
-    python -m src.agents.merge_candidates
+    python -m src.agents.living_ingestion.merge_candidates
 """
 
 import shutil
@@ -38,7 +38,7 @@ from pathlib import Path
 
 import openpyxl
 
-from .common import config
+from ..common import config
 
 # Header row is NOT the same for every sheet in the current schema:
 # method_pub's real header is row 1, but AP_pub and data have a row 1 of
