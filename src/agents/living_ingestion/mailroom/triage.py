@@ -57,6 +57,20 @@ def build_seed_queue(methods_df) -> list:
 
     Excluded from the pool:
       - placeholder rows (is_placeholder == True)
+      - paper_type == "application" (i.e. AP_pub rows) - this track is
+        method_pub-only, full stop. Checked via the paper_type column
+        (set deterministically by 01_parse_excel.py from which sheet a row
+        came from) rather than relying only on the category-keyword check
+        below, because some AP_pub rows have compound category values like
+        "Application; computational analysis - method" or "Technical
+        Methods, Application" that satisfy the keyword match despite
+        genuinely being application papers (caught live: AP_30/AP_31/
+        AP_39/AP_43/AP_52 all have such compound categories, and were
+        slipping into this queue before this check existed - see
+        compared_methods_agent.py's docstring for what that caused
+        downstream). Rows missing paper_type entirely (older data) are NOT
+        excluded by this check - the category-keyword check below still
+        applies to those as before.
       - not tagged as a computational method (category doesn't match
         config.METHOD_CATEGORY_KEYWORDS)
       - already manually reviewed (REVIEW_STATUS == "manual") - don't
@@ -71,6 +85,8 @@ def build_seed_queue(methods_df) -> list:
     queue = []
     for _, row in methods_df.iterrows():
         if _is_true(row.get("is_placeholder")):
+            continue
+        if str(row.get("paper_type", "")).strip().lower() == "application":
             continue
         if not _is_method_category(row.get("category")):
             continue

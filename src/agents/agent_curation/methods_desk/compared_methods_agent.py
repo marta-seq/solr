@@ -9,12 +9,24 @@ so run_pipeline.py can queue them at depth+1 (subject to MAX_HOPS).
 Nothing here writes to the master Excel - everything goes through
 common.staging.append_candidate().
 
-Every staging call here targets sheet="method_pub" specifically (never
-AP_pub) - this track's seed queue (mailroom.triage.build_seed_queue) is
-already filtered to method-category rows, and every entry this agent
-creates is itself a "computational analysis - method" M_AUTO_x row, so
-there's no ambiguity to resolve at write time the way data_fetch_agent.py
-has to (that one processes both method and application papers).
+Newly-created comparison-method entries always target sheet="method_pub"
+(a genuinely new comparison method is always a method, never an
+application). But updates written back onto the SEED paper itself
+(REVIEW_STATUS flags, appended comparison IDs) route by that paper's own
+entry_id prefix via _sheet_for_paper_entry, same as data_fetch_agent.py -
+NOT hardcoded to method_pub. This matters because the seed queue is
+supposed to be method_pub-only, but some AP_pub rows have compound
+category values (e.g. "Application; computational analysis - method")
+that satisfy triage's keyword-based method-category check and slip in
+anyway (caught live: AP_30/AP_31/AP_39/AP_43/AP_52 all have such compound
+categories). Before this fix, an update written for one of those actually
+landed in method_pub - since "AP_30" doesn't exist there, merge_candidates
+created a brand-new, mostly-empty PHANTOM row with that same ID inside
+method_pub, leaving the real AP_30 (with its real DOI/category) untouched
+in AP_pub. Routing by prefix here is defense-in-depth on top of the
+matching fix in mailroom/triage.py (which now excludes paper_type ==
+"application" from the seed queue outright, rather than relying only on
+the free-text category-keyword match).
 """
 
 import re
@@ -81,6 +93,15 @@ def _fallback_marker_from_text(citation_text: str) -> str:
     return m.group(1) if m else ""
 
 
+def _sheet_for_paper_entry(entry_id: str) -> str:
+    """Which sheet the SEED paper itself lives in - AP_pub if its ID starts
+    with 'AP', method_pub otherwise. Mirrors data_fetch_agent.py's helper of
+    the same name. Only for writes targeting the seed paper's own row -
+    genuinely NEW comparison-method entries always go to method_pub
+    regardless of this (see module docstring)."""
+    return "AP_pub" if str(entry_id).upper().startswith("AP") else "method_pub"
+
+
 def _append_to_comparison_list(existing: str, new_id: str) -> str:
     """Mirrors the existing 'M_PR_5, M_PR_2, M_PH_1' comma-separated format
     already used in Method_comparison_P_ENTRY_ID."""
@@ -137,7 +158,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if not methods_text:
         staging.append_candidate(
-            action="update_field", sheet="method_pub", entry_id=entry_id,
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -147,7 +168,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if not is_probably_real_content(methods_text):
         staging.append_candidate(
-            action="update_field", sheet="method_pub", entry_id=entry_id,
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -160,7 +181,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if config.REQUIRE_ISOLATED_SECTION and text_source != "section:methods":
         staging.append_candidate(
-            action="update_field", sheet="method_pub", entry_id=entry_id,
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -185,7 +206,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         extracted, model_used = call_llm_json(SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text))
     except LLMError as e:
         staging.append_candidate(
-            action="update_field", sheet="method_pub", entry_id=entry_id,
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
             fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model="none", confidence=0.0,
@@ -226,7 +247,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         if not resolved_doi:
             # couldn't resolve a DOI at all - stage a note, nothing to link/create
             staging.append_candidate(
-                action="update_field", sheet="method_pub", entry_id=entry_id,
+                action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
                 fields={},
                 source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
                 curation_model=model_used, confidence=0.0,
@@ -276,7 +297,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             updated_value = _append_to_comparison_list(updated_value, new_id)
 
         staging.append_candidate(
-            action="update_field", sheet="method_pub", entry_id=entry_id,
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
             fields={"Method_comparison_P_ENTRY_ID": updated_value},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model=model_used, confidence=None,
