@@ -1,9 +1,15 @@
 // ── Data filters ──
-let dFilter="All";
+// Defaults to spatial proteomics: the structured dataset registry is
+// currently SP-only in scope (per CLAUDE.md) - ST rows are retained in the
+// data because they were already curated, not because ST is in scope, and
+// they're overwhelmingly missing disease/marker annotation (13/69 ST vs
+// 62/72 SP have a disease value), which made the registry look broken when
+// both were mixed under "All". Toggle is kept so ST/All are still reachable.
+let dFilter="proteomics";
 function initDataFilters() {
   const mods=[{k:"All",l:"All"},{k:"proteomics",l:"Spatial Proteomics"},{k:"transcriptomics",l:"Spatial Transcriptomics"}];
   document.getElementById("data-filters").innerHTML=mods.map(m=>
-    `<button class="pill ${m.k==="All"?"active":""}" onclick="setDF('${m.k}',this)">${m.l}</button>`
+    `<button class="pill ${m.k===dFilter?"active":""}" onclick="setDF('${m.k}',this)">${m.l}</button>`
   ).join("");
 }
 function setDF(v,btn) {
