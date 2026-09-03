@@ -12,6 +12,41 @@ function setDF(v,btn) {
   btn.classList.add("active"); renderDatasets();
 }
 
+// ── Disease/tissue/marker filters (canonicalized - see tissue_disease_maps.py
+// and 03_export_json.py's markers_list) ──
+let diseaseFilter="All", tissueFilter="All", markerFilter="All";
+
+function initDiseaseFilters() {
+  const diseases=["All",...Object.keys(STATS.disease_clean_counts||{}).sort()];
+  document.getElementById("data-disease-filters").innerHTML=diseases.map(d=>
+    `<button class="pill ${d==="All"?"active":""}" onclick="setDiseaseFilter('${d}',this)">${d}</button>`
+  ).join("");
+}
+function setDiseaseFilter(v,btn) {
+  diseaseFilter=v;
+  document.querySelectorAll("#data-disease-filters .pill").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active"); renderDatasets();
+}
+
+// Both dropdowns are sorted by real usage frequency (most common tissue/
+// marker first), not alphabetically - matches how marker_counts/
+// tissue_counts were built specifically for this.
+function initTissueFilter() {
+  const entries=Object.entries(STATS.tissue_counts||{}).sort((a,b)=>b[1]-a[1]);
+  const sel=document.getElementById("data-tissue-filter");
+  sel.innerHTML=`<option value="All">All tissues</option>`+
+    entries.map(([t,n])=>`<option value="${t}">${t} (${n})</option>`).join("");
+}
+function setTissueFilter(v) { tissueFilter=v; renderDatasets(); }
+
+function initMarkerFilter() {
+  const entries=Object.entries(STATS.marker_counts||{}).sort((a,b)=>b[1]-a[1]);
+  const sel=document.getElementById("data-marker-filter");
+  sel.innerHTML=`<option value="All">All markers</option>`+
+    entries.map(([m,n])=>`<option value="${m}">${m} (${n})</option>`).join("");
+}
+function setMarkerFilter(v) { markerFilter=v; renderDatasets(); }
+
 
 // ── Graph filters ──
 function initGraphFilters() {
@@ -101,13 +136,24 @@ function renderDatasets() {
   const q=(document.getElementById("data-search").value||"").toLowerCase();
   let items=DATASETS;
   if(dFilter!=="All") items=items.filter(d=>(d.spatial_data_category||"").toLowerCase().includes(dFilter));
+  if(diseaseFilter!=="All") items=items.filter(d=>(d.disease_list||[]).includes(diseaseFilter));
+  if(tissueFilter!=="All") items=items.filter(d=>(d.tissue_list||[]).includes(tissueFilter));
+  if(markerFilter!=="All") items=items.filter(d=>(d.markers_list||[]).includes(markerFilter));
   if(q) items=items.filter(d=>
     (d.id||"").toLowerCase().includes(q)||
     (d.internal_name||"").toLowerCase().includes(q)||
     (d.tissue||"").toLowerCase().includes(q)||
     (d.disease||"").toLowerCase().includes(q)||
     (d.organism||"").toLowerCase().includes(q)||
-    (d.spatial_data_method||"").toLowerCase().includes(q)
+    (d.spatial_data_method||"").toLowerCase().includes(q)||
+    // canonicalized fields - lets search reach through to normalized
+    // values/specifics even when the raw scalar text above doesn't
+    // literally contain the query (e.g. "TNBC" against a raw disease cell
+    // worded differently but captured in disease_specifics_list)
+    (d.tissue_list||[]).some(t=>t.toLowerCase().includes(q))||
+    (d.disease_list||[]).some(x=>x.toLowerCase().includes(q))||
+    (d.disease_specifics_list||[]).some(x=>x.toLowerCase().includes(q))||
+    (d.markers_list||[]).some(x=>x.toLowerCase().includes(q))
   );
   const col=dSort.col, dir=dSort.dir;
   items.sort((a,b)=>String(a[col]||"").localeCompare(String(b[col]||""))*dir);

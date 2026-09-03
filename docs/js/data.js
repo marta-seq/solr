@@ -8,7 +8,8 @@ async function loadData() {
       fetch(base+"data/stats.json").then(r=>{if(!r.ok)throw new Error("stats.json "+r.status);return r.json();}),
     ]);
     METHODS=m; DATASETS=d; STATS=s;
-    initStats(); initDataFilters(); initGraphFilters(); initSourceFilters();
+    initStats(); initDataFilters(); initDiseaseFilters(); initTissueFilter(); initMarkerFilter();
+    initGraphFilters(); initSourceFilters();
     buildLegend(); renderMethods(); renderDatasets();
   } catch(e) { console.error("Load failed:",e); alert("Data load failed: "+e.message); }
 }
