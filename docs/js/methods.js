@@ -18,9 +18,17 @@ function setDF(v,btn) {
   btn.classList.add("active"); renderDatasets();
 }
 
-// ── Disease/tissue/marker filters (canonicalized - see tissue_disease_maps.py
-// and 03_export_json.py's markers_list) ──
-let diseaseFilter="All", tissueFilter="All", markerFilter="All";
+// ── Disease/tissue/platform/marker filters (canonicalized - see
+// tissue_disease_maps.py, platform_maps.py, and 03_export_json.py's
+// markers_list) ──
+let diseaseFilter="All", tissueFilter="All", platformFilter="All";
+// Markers are multi-select with AND semantics (a dataset must contain every
+// selected marker, not just one) - e.g. "all pancreas datasets with CD3,
+// CD45 and FOXP3" needs the intersection, not the union. 509 distinct
+// markers exist in the real data, so this stays a <select> to pick from
+// (browsable/searchable via native browser behavior) with chosen markers
+// shown as removable chips below it, rather than rendering all as pills.
+let markerFilters=[];
 
 function initDiseaseFilters() {
   const diseases=["All",...Object.keys(STATS.disease_clean_counts||{}).sort()];
@@ -31,6 +39,20 @@ function initDiseaseFilters() {
 function setDiseaseFilter(v,btn) {
   diseaseFilter=v;
   document.querySelectorAll("#data-disease-filters .pill").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active"); renderDatasets();
+}
+
+function initPlatformFilters() {
+  const entries=Object.entries(STATS.platform_counts||{}).sort((a,b)=>b[1]-a[1]);
+  document.getElementById("data-platform-filters").innerHTML=
+    `<button class="pill active" onclick="setPlatformFilter('All',this)">All</button>`+
+    entries.map(([p,n])=>
+      `<button class="pill" onclick="setPlatformFilter('${p}',this)">${p} (${n})</button>`
+    ).join("");
+}
+function setPlatformFilter(v,btn) {
+  platformFilter=v;
+  document.querySelectorAll("#data-platform-filters .pill").forEach(p=>p.classList.remove("active"));
   btn.classList.add("active"); renderDatasets();
 }
 
@@ -48,10 +70,25 @@ function setTissueFilter(v) { tissueFilter=v; renderDatasets(); }
 function initMarkerFilter() {
   const entries=Object.entries(STATS.marker_counts||{}).sort((a,b)=>b[1]-a[1]);
   const sel=document.getElementById("data-marker-filter");
-  sel.innerHTML=`<option value="All">All markers</option>`+
+  sel.innerHTML=`<option value="All">Add a marker…</option>`+
     entries.map(([m,n])=>`<option value="${m}">${m} (${n})</option>`).join("");
+  renderMarkerChips();
 }
-function setMarkerFilter(v) { markerFilter=v; renderDatasets(); }
+function addMarkerFilter(v) {
+  const sel=document.getElementById("data-marker-filter");
+  if (v!=="All" && !markerFilters.includes(v)) markerFilters.push(v);
+  sel.value="All";
+  renderMarkerChips(); renderDatasets();
+}
+function removeMarkerFilter(v) {
+  markerFilters=markerFilters.filter(m=>m!==v);
+  renderMarkerChips(); renderDatasets();
+}
+function renderMarkerChips() {
+  document.getElementById("data-marker-chips").innerHTML=markerFilters.map(m=>
+    `<span class="chip">${m}<span class="chip-x" onclick="removeMarkerFilter('${m}')">×</span></span>`
+  ).join("");
+}
 
 
 // ── Graph filters ──
@@ -112,11 +149,15 @@ function renderMethods() {
     (m.journal||"").toLowerCase().includes(q)
   );
   const col=mSort.col, dir=mSort.dir;
-  items.sort((a,b)=>{
-    const av=String(a[col]||""), bv=String(b[col]||"");
-    if(col==="citations"||col==="year") return ((parseInt(av)||0)-(parseInt(bv)||0))*dir;
-    return av.localeCompare(bv)*dir;
-  });
+  if (col === "excel_order") {
+    if (dir === -1) items.reverse();
+  } else {
+    items.sort((a,b)=>{
+      const av=String(a[col]||""), bv=String(b[col]||"");
+      if(col==="citations"||col==="year") return ((parseInt(av)||0)-(parseInt(bv)||0))*dir;
+      return av.localeCompare(bv)*dir;
+    });
+  }
   const tb=document.getElementById("methods-tbody");
   if(!items.length){tb.innerHTML=`<tr><td colspan="9" class="empty-state">No methods found.</td></tr>`;return;}
   tb.innerHTML=items.map(m=>{
@@ -143,8 +184,9 @@ function renderDatasets() {
   let items=DATASETS;
   if(dFilter!=="All") items=items.filter(d=>(d.spatial_data_category||"").toLowerCase().includes(dFilter));
   if(diseaseFilter!=="All") items=items.filter(d=>(d.disease_list||[]).includes(diseaseFilter));
+  if(platformFilter!=="All") items=items.filter(d=>(d.platform_list||[]).includes(platformFilter));
   if(tissueFilter!=="All") items=items.filter(d=>(d.tissue_list||[]).includes(tissueFilter));
-  if(markerFilter!=="All") items=items.filter(d=>(d.markers_list||[]).includes(markerFilter));
+  if(markerFilters.length) items=items.filter(d=>markerFilters.every(m=>(d.markers_list||[]).includes(m)));
   if(q) items=items.filter(d=>
     (d.id||"").toLowerCase().includes(q)||
     (d.internal_name||"").toLowerCase().includes(q)||

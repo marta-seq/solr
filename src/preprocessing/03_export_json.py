@@ -15,6 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 import tissue_disease_maps as tdm
+import platform_maps as pfm
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parents[2]
@@ -56,20 +57,38 @@ def clean(val) -> str:
 #      "arxiv/bioarxiv/peer reviewed" column renamed in 01_parse_excel.py).
 #      Most authoritative when present, but only ~150/267 method_pub rows
 #      have it and AP_pub rows never do.
-#   2. publication_type - auto-fetched via Crossref in 02_fetch_metadata.py
-#      (already distinguishes "peer-reviewed" from a generic "preprint").
-#      Covers AP_pub too, but doesn't distinguish which preprint server.
-#   3. DOI text containing "arxiv" - catches arXiv papers Crossref returned
+#   2. DOI prefix "10.1101/" (bioRxiv/medRxiv's registered Crossref prefix)
+#      or journal text containing "biorxiv"/"medrxiv" - 02_fetch_metadata.py
+#      already detects the journal-text case at fetch time (to route the
+#      abstract fetch to the bioRxiv API) but was collapsing it to the
+#      generic publication_type "preprint" and discarding which server it
+#      was. Re-derived here from data already in the CSV instead of
+#      requiring a re-fetch. The DOI-prefix check is the one that actually
+#      matters in practice: Crossref returns posted-content DOIs (which is
+#      how current bioRxiv papers register) with no container-title at all,
+#      so the journal-text check alone never fires - verified against the
+#      real data 2026-09-15, every currently-mislabeled row has an empty
+#      `journal` and a 10.1101/... DOI.
+#   3. publication_type - auto-fetched via Crossref in 02_fetch_metadata.py
+#      (distinguishes "peer-reviewed" from a generic "preprint" for
+#      preprint servers other than bioRxiv/medRxiv). Covers AP_pub too.
+#   4. DOI text containing "arxiv" - catches arXiv papers Crossref returned
 #      as a generic type rather than something recognizably "preprint".
 # Returns "" (unknown) only when none of the above have anything.
 def compute_source_type(row) -> str:
     manual = clean(row.get("source_type_manual"))
     if manual:
         return manual
+    doi     = clean(row.get("DOI")).lower()
+    journal = clean(row.get("journal")).lower()
+    if "medrxiv" in journal:
+        return "medRxiv"
+    if "biorxiv" in journal or "10.1101/" in doi:
+        return "bioRxiv"
     pub_type = clean(row.get("publication_type"))
     if pub_type in ("peer-reviewed", "preprint"):
         return pub_type
-    if "arxiv" in clean(row.get("DOI")).lower():
+    if "arxiv" in doi:
         return "arXiv"
     return ""
 
@@ -152,7 +171,7 @@ def _normalize_list_or_warn(raw: str, mapping: dict, field_name: str, entry_id: 
         mapped = mapping[raw]
         return [] if mapped is None else [x.strip() for x in re.split(r"[;,]", mapped) if x.strip()]
     print(f"  WARNING [datasets]: unmapped {field_name} value {raw!r} "
-          f"(entry_id: {entry_id}) - not in tissue_disease_maps.py, passing "
+          f"(entry_id: {entry_id}) - not in the {field_name} map, passing "
           f"through unchanged. Add it to the mapping once reviewed.")
     return [raw]
 
@@ -161,6 +180,12 @@ def parse_tissue_list(val, entry_id: str) -> list:
     if not s:
         return []
     return _normalize_list_or_warn(s, tdm.TISSUE_MAP, "tissue", entry_id)
+
+def parse_platform_list(val, entry_id: str) -> list:
+    s = clean(val)
+    if not s:
+        return []
+    return _normalize_list_or_warn(s, pfm.PLATFORM_MAP, "platform", entry_id)
 
 def parse_disease_lists(disease_val, tissue_val, entry_id: str) -> tuple:
     """Returns (disease_list, disease_specifics_list). Also applies
@@ -256,6 +281,11 @@ def export_datasets(df: pd.DataFrame) -> list:
             "review_status":        clean(row.get("REVIEW_STATUS")),
             "spatial_data_category": clean(row.get("spatial_data_category")),
             "spatial_data_method":  clean(row.get("spatial_data_method")),
+            # Canonicalized list version (see platform_maps.py), additive
+            # like tissue_list/disease_list above - raw scalar keeps working
+            # unchanged. A dataset genuinely has >1 platform only for the
+            # rare comparison row (e.g. "CODEX; CyCIF; Vectra; ...").
+            "platform_list":        parse_platform_list(row.get("spatial_data_method"), row.get("entry_id")),
             "organism":             clean(row.get("organism")),
             "tissue":               clean(row.get("tissue")),
             "disease":              clean(row.get("disease")),
@@ -347,6 +377,11 @@ def compute_stats(methods: list, datasets: list) -> dict:
         for t in d["tissue_list"]:
             tissue_counts[t] = tissue_counts.get(t, 0) + 1
 
+    platform_counts = {}
+    for d in datasets:
+        for p in d["platform_list"]:
+            platform_counts[p] = platform_counts.get(p, 0) + 1
+
     disease_clean_counts = {}
     for d in datasets:
         for dis in d["disease_list"]:
@@ -371,6 +406,7 @@ def compute_stats(methods: list, datasets: list) -> dict:
         "disease_counts":    disease_counts,
         "marker_counts":     marker_counts,
         "tissue_counts":     tissue_counts,
+        "platform_counts":   platform_counts,
         "disease_clean_counts":     disease_clean_counts,
         "disease_specifics_counts": disease_specifics_counts,
     }

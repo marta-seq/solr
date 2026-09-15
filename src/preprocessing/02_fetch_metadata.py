@@ -16,6 +16,8 @@ Usage:
 
 import time
 import re
+import shutil
+from datetime import datetime
 from pathlib import Path
 import os
 import pandas as pd
@@ -26,6 +28,7 @@ load_dotenv()
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parents[2]
 PROCESSED_DIR = ROOT / "data" / "processed"
+BACKUP_DIR    = ROOT / "data" / "processed_backup"
 
 # Find the most recent methods CSV. Excludes "methods_metadata_*.csv" - that's
 # THIS script's own output, and without the exclusion it matches the same
@@ -179,7 +182,27 @@ def fetch_abstract(doi: str, publication_type: str) -> str:
 # end, so an interruption only loses work since the last checkpoint.
 CHECKPOINT_EVERY = 15
 
+# OUTPUT_FILE holds real fetched work (Crossref/PubMed/bioRxiv metadata,
+# citation counts) that costs API calls and wall-clock time to rebuild, not
+# just a regenerable intermediate like the raw 01 output - unlike
+# data/data_curated/, it had no backup-before-overwrite safety net even
+# though it's overwritten by every checkpoint and at the end of every run.
+# Mirrors the existing data_curated -> data_curated_backup/ pattern: one
+# dated copy taken before this run touches the file at all, so a crash mid-
+# checkpoint or a bad run can be recovered from without a full 371-row
+# re-fetch. Not git-tracked, same as data_curated_backup/ and processed/.
+def backup_existing_output():
+    if not OUTPUT_FILE.exists():
+        return
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    stamp  = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup = BACKUP_DIR / f"{OUTPUT_FILE.stem}_{stamp}{OUTPUT_FILE.suffix}"
+    shutil.copy2(OUTPUT_FILE, backup)
+    print(f"Backed up existing {OUTPUT_FILE.name} -> {backup.relative_to(ROOT)}")
+
 def main():
+    backup_existing_output()
+
     if OUTPUT_FILE.exists():
         print(f"Resuming from existing {OUTPUT_FILE.name} (partial run found)")
         df = pd.read_csv(OUTPUT_FILE, dtype=str)

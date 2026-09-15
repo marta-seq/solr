@@ -96,6 +96,9 @@ nav {
 .pill:hover, .pill.active { background: var(--border); color: var(--text); }
 .select-filter { padding: 0.3rem 0.6rem; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--font-b); font-size: 0.75rem; outline: none; cursor: pointer; }
 .select-filter:focus { border-color: var(--c-prep); }
+.chip { padding: 0.25rem 0.4rem 0.25rem 0.65rem; border-radius: 20px; border: 1px solid var(--c-prep); background: var(--surface); color: var(--text); font-size: 0.75rem; font-family: var(--font-b); display: inline-flex; align-items: center; gap: 0.35rem; }
+.chip-x { cursor: pointer; opacity: 0.7; font-size: 0.85rem; line-height: 1; }
+.chip-x:hover { opacity: 1; }
 
 /* Table */
 .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
@@ -293,10 +296,12 @@ footer a { color: var(--muted); }
   <input class="search-bar" id="data-search" placeholder="Search tissue, disease, organism, technology, ID…" oninput="renderDatasets()"/>
   <div class="filter-row" id="data-filters"></div>
   <div class="filter-row" id="data-disease-filters"></div>
+  <div class="filter-row" id="data-platform-filters"></div>
   <div class="filter-row">
     <select class="select-filter" id="data-tissue-filter" onchange="setTissueFilter(this.value)"></select>
-    <select class="select-filter" id="data-marker-filter" onchange="setMarkerFilter(this.value)"></select>
+    <select class="select-filter" id="data-marker-filter" onchange="addMarkerFilter(this.value)"></select>
   </div>
+  <div class="filter-row" id="data-marker-chips"></div>
   <div class="tbl-wrap">
     <table>
       <thead><tr>

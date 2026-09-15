@@ -11,6 +11,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -40,6 +41,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -69,6 +71,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer",
@@ -102,6 +107,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -179,6 +187,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer",
@@ -248,6 +259,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "colorectal",
     "disease": "cancer - advanced",
@@ -348,6 +362,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
+    "platform_list": [
+      "IF"
+    ],
     "organism": "human",
     "tissue": "bone marrow",
     "disease": "normal / disease",
@@ -384,6 +401,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "bone marrow",
     "disease": "normal / disease",
@@ -449,6 +469,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "diabetes type 1",
@@ -516,6 +539,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "diabetes type 1",
@@ -586,6 +612,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "colorectal",
     "disease": "cancer - early stage",
@@ -662,6 +691,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "GeoMx DSP",
+    "platform_list": [
+      "GeoMx DSP"
+    ],
     "organism": "human",
     "tissue": "colorectal",
     "disease": "cancer - early stage",
@@ -697,6 +729,9 @@
     "review_status": "",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "",
     "tissue": "breast",
     "disease": "cancer",
@@ -773,6 +808,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -802,6 +838,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "bone",
     "disease": "chordoma",
@@ -879,6 +918,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "bone",
     "disease": "sarcoma; undifferentiated pleomorphic sarcoma; myxofibrosarcoma",
@@ -958,6 +1000,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "COVID-19; acute lung injury",
@@ -1030,6 +1075,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "GeoMx DSP",
+    "platform_list": [
+      "GeoMx DSP"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "COVID-19; acute lung injury",
@@ -1065,6 +1113,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IHC",
+    "platform_list": [
+      "IHC"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "COVID-19; acute lung injury",
@@ -1103,6 +1154,14 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX; CyCIF; Vectra; MIBI-TOF; MxIF; IMC",
+    "platform_list": [
+      "CODEX",
+      "CyCIF",
+      "Vectra",
+      "MIBI-TOF",
+      "MxIF",
+      "IMC"
+    ],
     "organism": "",
     "tissue": "several",
     "disease": "",
@@ -1134,6 +1193,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "skin",
     "disease": "melanoma - stage IV w/ treatment",
@@ -1222,6 +1284,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "colon",
     "disease": "inflammatory bowel disease (IBD)",
@@ -1275,6 +1340,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
+    "platform_list": [
+      "IF"
+    ],
     "organism": "human",
     "tissue": "endometrio",
     "disease": "cancer - high grade",
@@ -1318,6 +1386,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "skin",
     "disease": "melanoma receiving anti-programmed cell death-1 (anti-PD-1) therapy",
@@ -1392,6 +1463,11 @@
     "review_status": "manual",
     "spatial_data_category": "microscopy",
     "spatial_data_method": "Fluorescent; H&E; light microscopy",
+    "platform_list": [
+      "Fluorescent microscopy",
+      "H&E",
+      "light microscopy"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -1421,6 +1497,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer - transition to invasive",
@@ -1494,6 +1573,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
+    "platform_list": [
+      "IF"
+    ],
     "organism": "human",
     "tissue": "colorectal",
     "disease": "cancer",
@@ -1532,6 +1614,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "colorectal",
     "disease": "cancer",
@@ -1565,6 +1650,9 @@
     "review_status": "auto_confirmed",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "mouse",
     "tissue": "spleen",
     "disease": "",
@@ -1596,6 +1684,9 @@
     "review_status": "auto_confirmed",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "lymphoid tissues: three tonsils, a spleen, and a LN",
     "disease": "healthy",
@@ -1678,6 +1769,9 @@
     "review_status": "auto_confirmed",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "TNBC ( Triple Negative Breast Cancer)",
@@ -1751,6 +1845,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "",
     "disease": "tuberculosis",
@@ -1782,6 +1879,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "several; disease-free controls; multiple types of carcinomas, sarcomas, and central nervous system lesions",
     "disease": "disease-free controls; multiple types of carcinomas, sarcomas, and central nervous system lesions",
@@ -1836,6 +1936,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "decidua",
     "disease": "",
@@ -1867,6 +1970,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -1896,6 +2002,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "gliomas",
     "disease": "",
@@ -1931,6 +2040,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -1960,6 +2072,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "t-CyCIF",
+    "platform_list": [
+      "t-CyCIF"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -1989,6 +2104,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "Type-I diabetes, progression",
@@ -2105,6 +2223,7 @@
     "review_status": "manual",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -2134,6 +2253,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -2163,6 +2283,9 @@
     "review_status": "auto_confirmed",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer",
@@ -2241,6 +2364,7 @@
     "review_status": "",
     "spatial_data_category": "check",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -2270,6 +2394,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "Squamous cell carcinoma; Adenocarcinoma; Matched Metastatic Lymph Node",
@@ -2335,6 +2462,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "cancer, Pancreatic ductal adenocarcinoma (PDAC); liver metastases",
@@ -2408,6 +2538,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer",
@@ -2484,6 +2617,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "non-small cell lung cancer",
@@ -2566,6 +2702,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer",
@@ -2639,6 +2778,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer; primary breast tumors and matched lymph node metastases",
@@ -2717,6 +2859,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "triple-negative breast cancer (TNBC). With treatment",
@@ -2799,6 +2944,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "healthy, aging",
@@ -2879,6 +3027,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "intestine;  eight sections from nine individuals. The eight regions (in order of trajectory from the stomach) were as follows: the duodenum, proximal jejunum, mid-jejunum and ileum from the small intestine, and the ascending, transverse, descending and sigmoid regions of the large intestine",
     "disease": "healthy",
@@ -2981,6 +3132,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -3010,6 +3162,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -3039,6 +3192,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -3068,6 +3222,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "orion",
+    "platform_list": [
+      "Orion"
+    ],
     "organism": "human",
     "tissue": "colorectal",
     "disease": "cancer",
@@ -3120,6 +3277,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "cancer; pancreatic ductal adenocarcinoma",
@@ -3189,6 +3349,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "mfIHC",
+    "platform_list": [
+      "mfIHC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "cancer; pancreatic ductal adenocarcinoma",
@@ -3231,6 +3394,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC",
@@ -3308,6 +3474,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
+    "platform_list": [
+      "IF"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC",
@@ -3347,6 +3516,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC",
@@ -3382,6 +3554,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "skin",
     "disease": "benign nevi and 67 melanomas",
@@ -3418,6 +3593,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "non-small cell lung cancer (NSCLC)",
@@ -3490,6 +3668,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "skin",
     "disease": "Cutaneous T cell lymphomas (CTCL). pembrolizumab clinical trial responders vs non responders",
@@ -3584,6 +3765,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "Lung",
     "disease": "Non–Small Cell Lung Cancer",
@@ -3647,6 +3831,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "liver",
     "disease": "hepatocellular carcinoma (HCC)",
@@ -3720,6 +3907,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "liver",
     "disease": "hepatocellular carcinoma (HCC) ( checkpoint immunotherapy )",
@@ -3811,6 +4001,7 @@
     "review_status": "manual",
     "spatial_data_category": "multi_omics (proteomics+transcriptomics)",
     "spatial_data_method": "IMC + mRNA",
+    "platform_list": [],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer",
@@ -3866,6 +4057,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "",
     "disease": "",
@@ -3895,6 +4089,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "murine",
     "tissue": "",
     "disease": "",
@@ -3924,6 +4121,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. phase 2 TONIC trial, with samples spanning primary tumors, pretreatment metastases and on-treatment metastases during nivolumab therapy",
@@ -4004,6 +4204,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. phase 2 TONIC trial, with samples spanning primary tumors, pretreatment metastases and on-treatment metastases during nivolumab therapy",
@@ -4084,6 +4287,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. phase 2 TONIC trial, with samples spanning primary tumors, pretreatment metastases and on-treatment metastases during nivolumab therapy",
@@ -4164,6 +4370,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "Lung",
     "disease": "adenocarcinoma (LUAD)",
@@ -4235,6 +4444,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "pulmonary arterial hypertension (PAH)",
@@ -4304,6 +4516,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. Black vs white women",
@@ -4370,6 +4585,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. Black vs white women",
@@ -4436,6 +4654,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. Black vs white women",
@@ -4506,6 +4727,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10X Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. Black vs white women",
@@ -4542,6 +4766,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Nanostring GeoMx Digital Spatial Profiling (DSP)",
+    "platform_list": [
+      "GeoMx DSP"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer, TNBC. Black vs white women",
@@ -4578,6 +4805,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
+    "platform_list": [
+      "IF"
+    ],
     "organism": "human",
     "tissue": "breast; renal cell; head and neck; colorectal; lung",
     "disease": "breast cancer (BC), renal cell carcinoma (RCC), squamous cell carcinoma of head and neck (SCCHN), colorectal carcinoma (CRC), and non-small cell lung cancer (NSCLC)",
@@ -4629,6 +4859,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "breast; renal cell; head and neck; colorectal; lung",
     "disease": "breast cancer (BC), renal cell carcinoma (RCC), squamous cell carcinoma of head and neck (SCCHN), colorectal carcinoma (CRC), and non-small cell lung cancer (NSCLC)",
@@ -4712,6 +4945,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "mIF",
+    "platform_list": [
+      "mIF"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "NCLC (LUAD + LUSC)",
@@ -4762,6 +4998,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -4791,6 +5028,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "osmFISH",
+    "platform_list": [
+      "osmFISH"
+    ],
     "organism": "mouse",
     "tissue": "brain somatosensory cortex",
     "disease": "",
@@ -4823,6 +5063,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
+    "platform_list": [
+      "MERFISH"
+    ],
     "organism": "mouse",
     "tissue": "brain preoptic hypothalamus",
     "disease": "",
@@ -4855,6 +5098,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "ISS",
+    "platform_list": [
+      "ISS"
+    ],
     "organism": "mouse",
     "tissue": "brain CA1 region",
     "disease": "",
@@ -4887,6 +5133,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
+    "platform_list": [
+      "STARmap"
+    ],
     "organism": "mouse",
     "tissue": "brain mouse VISp? 3D",
     "disease": "",
@@ -4919,6 +5168,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH+",
+    "platform_list": [
+      "seqFISH+"
+    ],
     "organism": "mouse",
     "tissue": "brain subventricular zone and olfactory bulb ; NIH/3T3 cells",
     "disease": "",
@@ -4952,6 +5204,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH",
+    "platform_list": [
+      "seqFISH"
+    ],
     "organism": "mouse",
     "tissue": "embryo",
     "disease": "",
@@ -4983,6 +5238,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
+    "platform_list": [
+      "MERFISH"
+    ],
     "organism": "mouse",
     "tissue": "ileum",
     "disease": "",
@@ -5014,6 +5272,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "smFISH",
+    "platform_list": [
+      "smFISH"
+    ],
     "organism": "mouse",
     "tissue": "VISp",
     "disease": "",
@@ -5045,6 +5306,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "smFISH",
+    "platform_list": [
+      "smFISH"
+    ],
     "organism": "mouse",
     "tissue": "primary visual cortex (VISp)",
     "disease": "",
@@ -5076,6 +5340,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Seq-Scope",
+    "platform_list": [
+      "Seq-Scope"
+    ],
     "organism": "mouse",
     "tissue": "colon",
     "disease": "biopsy-induced physical wounding",
@@ -5111,6 +5378,9 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "Stereo-seq",
+    "platform_list": [
+      "Stereo-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5140,6 +5410,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
+    "platform_list": [
+      "Xenium"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "cancer Infiltrating ductal carcinoma, Ductal carcinoma in situ;  Invasive lobular carcinoma",
@@ -5177,6 +5450,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
+    "platform_list": [
+      "Xenium"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "healthy/cancer Adult human healthy lung section ; Adult human lung with Invasive AdenoCarcinoma",
@@ -5213,6 +5489,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
+    "platform_list": [
+      "Xenium"
+    ],
     "organism": "mouse",
     "tissue": "brain",
     "disease": "",
@@ -5244,6 +5523,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
+    "platform_list": [
+      "MERSCOPE"
+    ],
     "organism": "mouse",
     "tissue": "liver",
     "disease": "",
@@ -5275,6 +5557,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
+    "platform_list": [
+      "MERSCOPE"
+    ],
     "organism": "mouse",
     "tissue": "brain",
     "disease": "",
@@ -5306,6 +5591,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
+    "platform_list": [
+      "MERSCOPE"
+    ],
     "organism": "human",
     "tissue": "",
     "disease": "",
@@ -5335,6 +5623,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5364,6 +5653,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Stereo-seq",
+    "platform_list": [
+      "Stereo-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5393,6 +5685,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seqV2",
+    "platform_list": [
+      "Slide-seqV2"
+    ],
     "organism": "mouse",
     "tissue": "brain hippocampus",
     "disease": "",
@@ -5425,6 +5720,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "CosMx",
+    "platform_list": [
+      "CosMx"
+    ],
     "organism": "human",
     "tissue": "lung",
     "disease": "NSCLC",
@@ -5460,6 +5758,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
+    "platform_list": [
+      "MERFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5489,6 +5790,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
+    "platform_list": [
+      "Xenium"
+    ],
     "organism": "human",
     "tissue": "breast",
     "disease": "",
@@ -5520,6 +5824,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap PLUS",
+    "platform_list": [
+      "STARmap PLUS"
+    ],
     "organism": "mouse",
     "tissue": "brain CNS",
     "disease": "",
@@ -5551,6 +5858,9 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
+    "platform_list": [
+      "MERFISH"
+    ],
     "organism": "mouse",
     "tissue": "whole brain",
     "disease": "",
@@ -5582,6 +5892,7 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "spatial ATAC–RNA-seq & Spatial CUT&Tag–RNA-seq",
+    "platform_list": [],
     "organism": "mouse",
     "tissue": "",
     "disease": "",
@@ -5611,6 +5922,9 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "Stero-seq",
+    "platform_list": [
+      "Stereo-seq"
+    ],
     "organism": "mouse",
     "tissue": "embryo",
     "disease": "",
@@ -5642,6 +5956,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "mice",
     "tissue": "colon, liver",
     "disease": "",
@@ -5674,6 +5989,9 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "VISIUM",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "human",
     "tissue": "heart",
     "disease": "",
@@ -5705,6 +6023,7 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5734,6 +6053,7 @@
     "review_status": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "mouse",
     "tissue": "lung",
     "disease": "healthy",
@@ -5767,6 +6087,9 @@
     "review_status": "auto",
     "spatial_data_category": "",
     "spatial_data_method": "smFISH",
+    "platform_list": [
+      "smFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5796,6 +6119,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
+    "platform_list": [
+      "Slide-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5825,6 +6151,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq v.2",
+    "platform_list": [
+      "Slide-seqV2"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5854,6 +6183,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "CosMX SMI",
+    "platform_list": [
+      "CosMx"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5883,6 +6215,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "VeraFISH",
+    "platform_list": [
+      "VeraFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5912,6 +6247,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5941,6 +6279,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
+    "platform_list": [
+      "STARmap"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5970,6 +6311,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap PLUS",
+    "platform_list": [
+      "STARmap PLUS"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -5999,6 +6343,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6028,6 +6375,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "osmFISH",
+    "platform_list": [
+      "osmFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6057,6 +6407,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARMap",
+    "platform_list": [
+      "STARmap"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6086,6 +6439,7 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6115,6 +6469,7 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6144,6 +6499,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6173,6 +6531,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6202,6 +6563,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
+    "platform_list": [
+      "STARmap"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6231,6 +6595,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH+",
+    "platform_list": [
+      "seqFISH+"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6260,6 +6627,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
+    "platform_list": [
+      "Slide-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6289,6 +6659,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
+    "platform_list": [
+      "Slide-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6318,6 +6691,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
+    "platform_list": [
+      "Slide-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6347,6 +6723,7 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6376,6 +6753,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6405,6 +6785,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH+",
+    "platform_list": [
+      "seqFISH+"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6434,6 +6817,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
+    "platform_list": [
+      "MERFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6463,6 +6849,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
+    "platform_list": [
+      "MERSCOPE"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6492,6 +6881,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "NanoString CosMx",
+    "platform_list": [
+      "CosMx"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6521,6 +6913,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Genomics Xenium",
+    "platform_list": [
+      "Xenium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6550,6 +6945,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Genomics Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6579,6 +6977,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
+    "platform_list": [
+      "MERFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6608,6 +7009,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6637,6 +7041,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "osmFISH",
+    "platform_list": [
+      "osmFISH"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6666,6 +7073,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
+    "platform_list": [
+      "STARmap"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6695,6 +7105,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium (brain)",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6724,6 +7137,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium (kidney)",
+    "platform_list": [
+      "Visium"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6753,6 +7169,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
+    "platform_list": [
+      "Slide-seq"
+    ],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -6782,6 +7201,9 @@
     "review_status": "",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
+    "platform_list": [
+      "CODEX"
+    ],
     "organism": "human",
     "tissue": "brain",
     "disease": "glioblastoma",
@@ -6817,6 +7239,7 @@
     "review_status": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Visium resolution??",
+    "platform_list": [],
     "organism": "human",
     "tissue": "brain",
     "disease": "glioblastoma",
@@ -6852,6 +7275,7 @@
     "review_status": "",
     "spatial_data_category": "protocol of MRNA + IMC",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "this division on multi is tricky. If it is the same samples or different samples put together?",
     "tissue": "",
     "disease": "",
@@ -6881,6 +7305,9 @@
     "review_status": "auto",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "spatial transcriptomics",
     "tissue": "melanoma",
     "disease": "melanoma",
@@ -6921,6 +7348,9 @@
     "review_status": "auto",
     "spatial_data_category": "",
     "spatial_data_method": "imaging mass cytometry",
+    "platform_list": [
+      "IMC"
+    ],
     "organism": "human",
     "tissue": "pancreas",
     "disease": "type 1 diabetes",
@@ -6954,6 +7384,7 @@
     "review_status": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Visium resolution??",
+    "platform_list": [],
     "organism": "",
     "tissue": "dorsolateral prefrontal cortex",
     "disease": "",
@@ -6986,6 +7417,7 @@
     "review_status": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "human",
     "tissue": "",
     "disease": "melanoma",
@@ -7019,6 +7451,7 @@
     "review_status": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "human",
     "tissue": "",
     "disease": "cutaneous squamous cell carcinoma",
@@ -7052,6 +7485,9 @@
     "review_status": "",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI",
+    "platform_list": [
+      "MIBI-TOF"
+    ],
     "organism": "human",
     "tissue": "",
     "disease": "cutaneous squamous cell carcinoma",
@@ -7085,6 +7521,7 @@
     "review_status": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
+    "platform_list": [],
     "organism": "",
     "tissue": "https://support.10xgenomics.com/spatial-gene-expression/datasets/1.2.0/Parent_Visium_Human_OvarianCancer",
     "disease": "",
