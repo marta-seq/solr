@@ -199,6 +199,30 @@ SPATIAL_DATA_CATEGORY_MAP_DATA = {
     "protocol of MRNA + IMC": "protocol of MRNA + IMC",  # passthrough - unresolved, revisit later
 }
 
+# AP_pub's own "type of spatial data" column - never shares raw values with
+# the method_pub/data columns above (AP_pub never populates the shared
+# spatial_data_category column at all, 0/154 rows), so it gets its own map,
+# built from every distinct raw value in the real data 2026-09-15. Multi-
+# label (';'-joined) like the maps above. None = flagged for Marta's
+# review, not guessed.
+SPATIAL_DATA_CATEGORY_MAP_AP_PUB = {
+    "spatial proteomics":                    "spatial_proteomics",
+    "spatial transcriptomics":               "spatial_transcriptomics",
+    "spatial proteomics;spatial transcriptomics": "spatial_proteomics;spatial_transcriptomics",
+    "spatial metabolics; spatial proteomics": "spatial_metabolomics;spatial_proteomics",  # typo fix: metabolics -> metabolomics
+    # Curator's note rather than a clean value, but unambiguous about the
+    # modality itself ("proteomics with 100 plex") - mapped, but confirm.
+    "this one is very important but is still a bioRxiv. Is proteomics with 100 plex":
+                                              "spatial_proteomics",
+    # Dataset IDs / dataset names that leaked into this column instead of
+    # the Associated data column - not a modality value at all, needs
+    # fixing at the source (move to Associated data), not guessed here.
+    "D_SP_IMC_8":       None,
+    "D_SP_IMC12":       None,
+    "D_ST_23":          None,
+    "dataset LIVECell": None,
+}
+
 # ── REVIEW_STATUS ─────────────────────────────────────────────────────────────
 # Same meaning across all three sheets. Resolves the open "REVIEW_STATUS
 # design" item from the project handoff: "manual & auto" / "auto&manual" /

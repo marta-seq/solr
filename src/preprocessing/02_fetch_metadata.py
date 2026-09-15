@@ -110,7 +110,14 @@ def fetch_crossref(doi: str) -> dict:
             "authors":          authors_str,
             "year":             year,
             "journal":          journal,
-            "citations":        data.get("is-referenced-by-count", ""),
+            # str() explicitly: Crossref returns this as an int, and this
+            # column is read/written as pandas' strict StringDtype (not
+            # legacy object dtype) - an int assignment raises TypeError
+            # ("Invalid value '884' for dtype 'str'") instead of silently
+            # coercing, first hit 2026-09-15 once AP_pub rows (which have a
+            # citations-bearing DOI far more often than a title-based skip
+            # check let through before) started actually reaching this code.
+            "citations":        str(data.get("is-referenced-by-count", "")),
             "publication_type": publication_type,
         }
     except Exception as e:
@@ -231,8 +238,17 @@ def main():
             skipped += 1
             continue
 
-        # Skip if already enriched (covers both same-run and resumed rows)
-        if str(row.get("title", "")).strip() not in ("", "nan"):
+        # Skip if already enriched (covers both same-run and resumed rows).
+        # Checks publication_type, not title: title is unreliable here
+        # because AP_pub rows carry their own manually-curated title from
+        # 01_parse_excel.py regardless of whether this script has ever run
+        # on them, so the title-based check was silently skipping every
+        # AP_pub row forever (152/154 have a real DOI, 0/154 ever got an
+        # abstract/year/journal/citations fetched - found 2026-09-15).
+        # publication_type is only ever set by fetch_crossref() succeeding,
+        # never manually curated, so it's a reliable "already fetched" marker
+        # for both method_pub and AP_pub rows.
+        if str(row.get("publication_type", "")).strip() not in ("", "nan"):
             skipped += 1
             continue
 

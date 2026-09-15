@@ -125,8 +125,9 @@ function setSF(v,btn) {
 
 // ── Sort ──
 function sortT(which,col) {
-  if(which==="m") { if(mSort.col===col) mSort.dir*=-1; else{mSort.col=col;mSort.dir=1;} renderMethods(); }
-  else            { if(dSort.col===col) dSort.dir*=-1; else{dSort.col=col;dSort.dir=1;} renderDatasets(); }
+  if(which==="m")      { if(mSort.col===col) mSort.dir*=-1; else{mSort.col=col;mSort.dir=1;} renderMethods(); }
+  else if(which==="a") { if(aSort.col===col) aSort.dir*=-1; else{aSort.col=col;aSort.dir=1;} renderApplications(); }
+  else                 { if(dSort.col===col) dSort.dir*=-1; else{dSort.col=col;dSort.dir=1;} renderDatasets(); }
 }
 
 

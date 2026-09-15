@@ -16,6 +16,7 @@ import pandas as pd
 
 import tissue_disease_maps as tdm
 import platform_maps as pfm
+import category_maps as cm
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parents[2]
@@ -187,6 +188,12 @@ def parse_platform_list(val, entry_id: str) -> list:
         return []
     return _normalize_list_or_warn(s, pfm.PLATFORM_MAP, "platform", entry_id)
 
+def parse_ap_spatial_list(val, entry_id: str) -> list:
+    s = clean(val)
+    if not s:
+        return []
+    return _normalize_list_or_warn(s, cm.SPATIAL_DATA_CATEGORY_MAP_AP_PUB, "spatial_data_type_ap", entry_id)
+
 def parse_disease_lists(disease_val, tissue_val, entry_id: str) -> tuple:
     """Returns (disease_list, disease_specifics_list). Also applies
     CROSS_COLUMN_FIXES for the rare row where disease info leaked into the
@@ -256,7 +263,13 @@ def export_methods(df: pd.DataFrame) -> list:
             # column via the same row.get("title") - no separate handling
             # needed there.
             "associated_data":       clean(row.get("Associated data")),
+            "associated_data_ids":   parse_id_list(row.get("Associated data")),
             "spatial_data_type_ap":  clean(row.get("type of spatial data")),
+            # Canonicalized list version (see category_maps.py's
+            # SPATIAL_DATA_CATEGORY_MAP_AP_PUB) - AP_pub never populates the
+            # shared spatial_data_category field (0/154 rows), so this is
+            # the only source of SP/ST/other modality info for AP_pub.
+            "spatial_modality_ap":   parse_ap_spatial_list(row.get("type of spatial data"), row.get("entry_id")),
             "animal":                clean(row.get("animal")),
             "tissue_disease":        clean(row.get("tissue/disease")),
         })

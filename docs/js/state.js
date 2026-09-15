@@ -1,6 +1,11 @@
 // ── State ──
-let METHODS=[], DATASETS=[], STATS={}, cy=null;
-let mSort={col:"name",dir:1}, dSort={col:"id",dir:1};
+let METHODS=[], DATASETS=[], STATS={}, EMBEDDINGS={}, cy=null;
+// "excel_order" is a sentinel: METHODS already comes out of 03_export_json.py
+// in the source Excel's row order, so the default view just skips sorting
+// rather than re-sorting (e.g. alphabetically) away from that - see the
+// col!=="excel_order" guard in renderMethods(). Datasets tab still defaults
+// to sorting by id for now.
+let mSort={col:"excel_order",dir:1}, dSort={col:"id",dir:1};
 let gStageFilter="All";
 let gSourceFilter="All";
 

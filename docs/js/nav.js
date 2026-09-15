@@ -5,6 +5,7 @@ function showSection(name) {
   document.getElementById("section-"+name).classList.add("active");
   const n=document.getElementById("nav-"+name); if(n) n.classList.add("active");
   if(name==="graph"&&!cy) renderGraph();
+  if(name==="appgraph"&&!appCy) renderAppGraph();
   if(name==="book") loadChapter("index");
   window.scrollTo(0,0);
 }

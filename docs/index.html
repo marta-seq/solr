@@ -181,7 +181,9 @@ footer a { color: var(--muted); }
     <li><a href="#" onclick="showSection('landing');return false;" id="nav-landing">Home</a></li>
     <li><a href="#" onclick="showSection('methods');return false;" id="nav-methods">Methods</a></li>
     <li><a href="#" onclick="showSection('data');return false;"    id="nav-data">Datasets</a></li>
+    <li><a href="#" onclick="showSection('apps');return false;"    id="nav-apps">Applications</a></li>
     <li><a href="#" onclick="showSection('graph');return false;"   id="nav-graph">Graph</a></li>
+    <li><a href="#" onclick="showSection('appgraph');return false;" id="nav-appgraph">App Graph</a></li>
     <li><a href="#" onclick="showSection('book');return false;"    id="nav-book">Book</a></li>
   </ul>
 </nav>
@@ -322,6 +324,27 @@ footer a { color: var(--muted); }
   </div>
 </div>
 
+<!-- Applications -->
+<div id="section-apps" class="main-section">
+  <div class="slabel">Application Papers</div>
+  <input class="search-bar" id="app-search" placeholder="Search title, journal, ID…" oninput="renderApplications()"/>
+  <div class="filter-row" id="app-modality-filters"></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortT('a','id')">ID</th>
+        <th onclick="sortT('a','title')">Title</th>
+        <th onclick="sortT('a','year')">Year</th>
+        <th onclick="sortT('a','journal')">Journal</th>
+        <th>Modality</th>
+        <th>Datasets</th>
+        <th>Status</th>
+      </tr></thead>
+      <tbody id="apps-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
 <!-- Graph -->
 <div id="section-graph" class="main-section" style="max-width:100%;padding:1.5rem 2rem 3rem;">
   <div class="slabel">Methods Graph</div>
@@ -345,6 +368,31 @@ footer a { color: var(--muted); }
     </div>
   </div>
   <div class="glegend" id="glegend"></div>
+</div>
+
+<!-- Applications Graph -->
+<div id="section-appgraph" class="main-section" style="max-width:100%;padding:1.5rem 2rem 3rem;">
+  <div class="slabel">Applications Graph</div>
+  <p style="color:var(--muted);font-size:0.8rem;margin:-0.5rem 0 1rem;">
+    Application papers have no pipeline category, so position here is based only on
+    title/abstract embedding similarity, not a category layout like the Methods Graph.
+  </p>
+  <div class="graph-toolbar">
+    <div class="filter-row" id="app-graph-modality-filters" style="margin:0;flex:1;"></div>
+    <label class="gtoggle"><input type="checkbox" id="tog-appdata" checked onchange="toggleAppData()"/> Dataset connections</label>
+  </div>
+  <div id="graph-wrap">
+    <div id="appgraph-container" style="width:100%;height:640px;background:var(--surface);border:1px solid var(--border);border-radius:10px;"></div>
+    <div class="dpanel" id="appdpanel">
+      <button class="dclose" onclick="closeAppDetail()">✕</button>
+      <div class="did"  id="ad-id"></div>
+      <div class="dname" id="ad-name"></div>
+      <div class="dsub"  id="ad-sub"></div>
+      <div class="dabstract" id="ad-abs"></div>
+      <div class="ddoi" id="ad-doi"></div>
+      <div class="dconns" id="ad-conns"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Book -->
@@ -388,6 +436,7 @@ footer a { color: var(--muted); }
 <script src="js/nav.js"></script>
 <script src="js/methods.js"></script>
 <script src="js/graph.js"></script>
+<script src="js/applications.js"></script>
 <script src="js/book.js"></script>
 <script src="js/init.js"></script>
 </body>

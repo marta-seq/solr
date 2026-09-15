@@ -2,15 +2,19 @@
 async function loadData() {
   try {
     const base = window.location.pathname.includes('/solr/') ? '/solr/' : './';
-    const [m,d,s] = await Promise.all([
+    const [m,d,s,e] = await Promise.all([
       fetch(base+"data/methods.json").then(r=>{if(!r.ok)throw new Error("methods.json "+r.status);return r.json();}),
       fetch(base+"data/datasets.json").then(r=>{if(!r.ok)throw new Error("datasets.json "+r.status);return r.json();}),
       fetch(base+"data/stats.json").then(r=>{if(!r.ok)throw new Error("stats.json "+r.status);return r.json();}),
+      // Optional - the Applications Graph falls back to a grid layout if this
+      // 404s (e.g. 04_compute_embeddings.py hasn't been run yet), rather than
+      // failing the whole page load over a non-essential enhancement.
+      fetch(base+"data/embeddings.json").then(r=>r.ok?r.json():{}).catch(()=>({})),
     ]);
-    METHODS=m; DATASETS=d; STATS=s;
+    METHODS=m; DATASETS=d; STATS=s; EMBEDDINGS=e;
     initStats(); initDataFilters(); initDiseaseFilters(); initPlatformFilters(); initTissueFilter(); initMarkerFilter();
-    initGraphFilters(); initSourceFilters();
-    buildLegend(); renderMethods(); renderDatasets();
+    initGraphFilters(); initSourceFilters(); initAppFilters();
+    buildLegend(); renderMethods(); renderDatasets(); renderApplications();
   } catch(e) { console.error("Load failed:",e); alert("Data load failed: "+e.message); }
 }
 
