@@ -311,7 +311,13 @@ def export_datasets(df: pd.DataFrame) -> list:
             "tissue_list":          parse_tissue_list(row.get("tissue"), row.get("entry_id")),
             "disease_list":         disease_list,
             "disease_specifics_list": disease_specifics_list,
-            "n_samples":            clean(row.get("N samples")),
+            # Was "n_samples": clean(row.get("N samples")) - "N samples" isn't
+            # a real column (checked 2026-09-16), so it was silently always
+            # empty. The actual raw column is "N images"; renamed the output
+            # key to match so it's not misleading. See also `size_type`
+            # (demo/cohort/segmentation dataset), which qualifies what the
+            # image count means but isn't surfaced separately yet.
+            "n_images":             clean(row.get("N images")),
             "n_patients":           clean(row.get("N patients")),
             "clinical_data":        clean(row.get("clinical data")),
             # SP fields

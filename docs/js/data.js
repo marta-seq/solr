@@ -12,7 +12,7 @@ async function loadData() {
       fetch(base+"data/embeddings.json").then(r=>r.ok?r.json():{}).catch(()=>({})),
     ]);
     METHODS=m; DATASETS=d; STATS=s; EMBEDDINGS=e;
-    initStats(); initDataFilters(); initDiseaseFilters(); initPlatformFilters(); initTissueFilter(); initMarkerFilter();
+    initStats(); initDiseaseFilters(); initPlatformFilters(); initTissueFilter(); initMarkerFilter();
     initGraphFilters(); initSourceFilters(); initAppFilters();
     buildLegend(); renderMethods(); renderDatasets(); renderApplications();
   } catch(e) { console.error("Load failed:",e); alert("Data load failed: "+e.message); }

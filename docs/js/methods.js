@@ -1,22 +1,10 @@
 // ── Data filters ──
-// Defaults to spatial proteomics: the structured dataset registry is
-// currently SP-only in scope (per CLAUDE.md) - ST rows are retained in the
-// data because they were already curated, not because ST is in scope, and
-// they're overwhelmingly missing disease/marker annotation (13/69 ST vs
-// 62/72 SP have a disease value), which made the registry look broken when
-// both were mixed under "All". Toggle is kept so ST/All are still reachable.
-let dFilter="proteomics";
-function initDataFilters() {
-  const mods=[{k:"All",l:"All"},{k:"proteomics",l:"Spatial Proteomics"},{k:"transcriptomics",l:"Spatial Transcriptomics"}];
-  document.getElementById("data-filters").innerHTML=mods.map(m=>
-    `<button class="pill ${m.k===dFilter?"active":""}" onclick="setDF('${m.k}',this)">${m.l}</button>`
-  ).join("");
-}
-function setDF(v,btn) {
-  dFilter=v;
-  document.querySelectorAll("#data-filters .pill").forEach(p=>p.classList.remove("active"));
-  btn.classList.add("active"); renderDatasets();
-}
+// Datasets tab is spatial-proteomics-only for now: the structured dataset
+// registry's scope is SP-only (per CLAUDE.md), and ST rows are overwhelmingly
+// missing disease/marker annotation (13/69 ST vs 62/72 SP have a disease
+// value). Previously a toggle let users switch to All/ST; removed per
+// explicit ask (2026-09-16) - only proteomics should appear, full stop, for
+// now. Re-add a modality toggle if/when ST is brought properly into scope.
 
 // ── Disease/tissue/platform/marker filters (canonicalized - see
 // tissue_disease_maps.py, platform_maps.py, and 03_export_json.py's
@@ -182,8 +170,7 @@ function renderMethods() {
 // ── Datasets ──
 function renderDatasets() {
   const q=(document.getElementById("data-search").value||"").toLowerCase();
-  let items=DATASETS;
-  if(dFilter!=="All") items=items.filter(d=>(d.spatial_data_category||"").toLowerCase().includes(dFilter));
+  let items=DATASETS.filter(d=>(d.spatial_data_category||"").toLowerCase().includes("proteomics"));
   if(diseaseFilter!=="All") items=items.filter(d=>(d.disease_list||[]).includes(diseaseFilter));
   if(platformFilter!=="All") items=items.filter(d=>(d.platform_list||[]).includes(platformFilter));
   if(tissueFilter!=="All") items=items.filter(d=>(d.tissue_list||[]).includes(tissueFilter));
@@ -207,7 +194,7 @@ function renderDatasets() {
   const col=dSort.col, dir=dSort.dir;
   items.sort((a,b)=>String(a[col]||"").localeCompare(String(b[col]||""))*dir);
   const tb=document.getElementById("datasets-tbody");
-  if(!items.length){tb.innerHTML=`<tr><td colspan="11" class="empty-state">No datasets found.</td></tr>`;return;}
+  if(!items.length){tb.innerHTML=`<tr><td colspan="13" class="empty-state">No datasets found.</td></tr>`;return;}
   const MAX_MARKERS_SHOWN=4;
   tb.innerHTML=items.map(d=>{
     const isSP=(d.spatial_data_category||"").toLowerCase().includes("proteomics");
@@ -224,6 +211,8 @@ function renderDatasets() {
       <td>${d.organism||"—"}</td>
       <td>${d.tissue||"—"}</td>
       <td>${d.disease||"—"}</td>
+      <td>${d.n_patients||"—"}</td>
+      <td>${d.n_images||"—"}</td>
       <td>${d.year||"—"}</td>
       <td>${feat}</td>
       <td style="font-size:0.77rem;" title="${markers.join(", ")}">${markersCell}</td>

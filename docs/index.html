@@ -296,7 +296,6 @@ footer a { color: var(--muted); }
 <div id="section-data" class="main-section">
   <div class="slabel">Dataset Registry</div>
   <input class="search-bar" id="data-search" placeholder="Search tissue, disease, organism, technology, ID…" oninput="renderDatasets()"/>
-  <div class="filter-row" id="data-filters"></div>
   <div class="filter-row" id="data-disease-filters"></div>
   <div class="filter-row" id="data-platform-filters"></div>
   <div class="filter-row">
@@ -314,6 +313,8 @@ footer a { color: var(--muted); }
         <th onclick="sortT('d','organism')">Organism</th>
         <th onclick="sortT('d','tissue')">Tissue</th>
         <th onclick="sortT('d','disease')">Disease</th>
+        <th onclick="sortT('d','n_patients')">Patients</th>
+        <th onclick="sortT('d','n_images')">Images</th>
         <th onclick="sortT('d','year')">Year</th>
         <th>Features</th>
         <th>Markers</th>
