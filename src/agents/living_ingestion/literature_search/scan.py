@@ -48,7 +48,7 @@ from ...common.llm_client import LLMError
 from . import biorxiv_client, pubmed_client, seen_ledger
 from .relevance import (
     keyword_prefilter, llm_relevance_pass, category_pass_is_confident,
-    publication_type_reject_reason, is_review, build_pubmed_query,
+    publication_type_reject_reason, is_review, build_pubmed_query, load_keywords,
 )
 
 CURATION_AGENT_NAME = "literature_search_scanner"
@@ -144,9 +144,12 @@ def _stage_candidate(db: Database, record: dict, doi: str, verdict: dict) -> str
     return entry_id
 
 
-def _evaluate(record: dict, source_label: str, db: Database, ledger: seen_ledger.SeenLedger) -> str:
+def _evaluate(record: dict, source_label: str, db: Database, ledger: seen_ledger.SeenLedger,
+              keywords: list = None) -> str:
     """Runs one record through the full funnel. Returns what happened:
-    'seen' / 'already_in_db' / 'rejected' / 'staged' / 'llm_error'."""
+    'seen' / 'already_in_db' / 'rejected' / 'staged' / 'llm_error'. `keywords`
+    (default SP_KEYWORDS) is threaded through from scan_pubmed/scan_biorxiv's
+    own --keywords-file, if given."""
     doi = _canonical_doi(record)
     native_id = f"pmid:{record['pmid']}" if record.get("pmid") else ""
     if not doi and not native_id:
@@ -166,7 +169,7 @@ def _evaluate(record: dict, source_label: str, db: Database, ledger: seen_ledger
                      title=record.get("title", ""), notes=reject_reason)
         return "rejected"
 
-    matched_kw = keyword_prefilter(record.get("title", ""), record.get("abstract", ""))
+    matched_kw = keyword_prefilter(record.get("title", ""), record.get("abstract", ""), keywords=keywords)
     if not matched_kw:
         ledger.mark(key, seen_ledger.STATUS_REJECTED, source=source_label,
                      title=record.get("title", ""), notes="failed keyword prefilter")
@@ -192,11 +195,11 @@ def _evaluate(record: dict, source_label: str, db: Database, ledger: seen_ledger
 
 
 def _run_funnel(records: list, source_label: str, db: Database, ledger: seen_ledger.SeenLedger,
-                 max_new: int = None) -> dict:
+                 max_new: int = None, keywords: list = None) -> dict:
     counts = {}
     staged = 0
     for record in records:
-        outcome = _evaluate(record, source_label, db, ledger)
+        outcome = _evaluate(record, source_label, db, ledger, keywords=keywords)
         counts[outcome] = counts.get(outcome, 0) + 1
         if outcome == "staged":
             staged += 1
@@ -207,24 +210,28 @@ def _run_funnel(records: list, source_label: str, db: Database, ledger: seen_led
     return counts
 
 
-def scan_pubmed(query: str = None, mindate: str = None, maxdate: str = None, max_new: int = None) -> dict:
-    query = query or build_pubmed_query()
+def scan_pubmed(query: str = None, mindate: str = None, maxdate: str = None, max_new: int = None,
+                 keywords_file: str = None) -> dict:
+    keywords = load_keywords(keywords_file)
+    query = query or build_pubmed_query(keywords)
     db = Database()
     ledger = seen_ledger.SeenLedger()
     print(f"[scan] PubMed: querying {mindate}-{maxdate} for {query!r}...")
     records = pubmed_client.search_and_fetch(query, mindate, maxdate)
     print(f"[scan] PubMed: fetched {len(records)} candidate records.")
-    return _run_funnel(records, "pubmed", db, ledger, max_new=max_new)
+    return _run_funnel(records, "pubmed", db, ledger, max_new=max_new, keywords=keywords)
 
 
-def scan_biorxiv(start_date: str, end_date: str, server: str = "biorxiv", max_new: int = None) -> dict:
+def scan_biorxiv(start_date: str, end_date: str, server: str = "biorxiv", max_new: int = None,
+                  keywords_file: str = None) -> dict:
+    keywords = load_keywords(keywords_file)
     db = Database()
     ledger = seen_ledger.SeenLedger()
     print(f"[scan] {server}: fetching {start_date}..{end_date}...")
     raw = biorxiv_client.fetch_window(server, start_date, end_date)
     records = [biorxiv_client.normalize(r) for r in raw]
     print(f"[scan] {server}: fetched {len(records)} candidate records.")
-    return _run_funnel(records, server, db, ledger, max_new=max_new)
+    return _run_funnel(records, server, db, ledger, max_new=max_new, keywords=keywords)
 
 
 def _main():
@@ -233,13 +240,24 @@ def _main():
 
     p_pubmed = sub.add_parser("pubmed")
     p_pubmed.add_argument("--query", default=None,
-                           help="Defaults to an OR-join of sp_keywords.txt if omitted "
-                                "(built fresh from the file every run, see relevance.build_pubmed_query)")
+                           help="Defaults to an OR-join of the keyword file (--keywords-file, or "
+                                "sp_keywords.txt if that's also omitted) - built fresh every run, "
+                                "see relevance.build_pubmed_query")
+    p_pubmed.add_argument("--keywords-file", default=None,
+                           help="Path to a keyword file in sp_keywords.txt's format (one keyword/"
+                                "phrase per line, '#'-comments allowed). Defaults to the built-in "
+                                "sp_keywords.txt (spatial proteomics) if omitted - SOLR's current "
+                                "scope is SP-only, but this keeps the door open to point the scanner "
+                                "at a different keyword set entirely without a code change.")
     p_pubmed.add_argument("--mindate", required=True, help="YYYY/MM/DD")
     p_pubmed.add_argument("--maxdate", required=True, help="YYYY/MM/DD")
     p_pubmed.add_argument("--max-new", type=int, default=None)
 
     p_biorxiv = sub.add_parser("biorxiv")
+    p_biorxiv.add_argument("--keywords-file", default=None,
+                           help="Same as pubmed's --keywords-file - bioRxiv/medRxiv have no query "
+                                "param at all, so this is the ONLY relevance filter applied before "
+                                "the LLM call for these two sources.")
     p_biorxiv.add_argument("--start", required=True, help="YYYY-MM-DD")
     p_biorxiv.add_argument("--end", required=True, help="YYYY-MM-DD")
     p_biorxiv.add_argument("--medrxiv", action="store_true", help="scan medRxiv instead of bioRxiv")
@@ -248,10 +266,11 @@ def _main():
     args = parser.parse_args()
 
     if args.source == "pubmed":
-        counts = scan_pubmed(args.query, args.mindate, args.maxdate, max_new=args.max_new)
+        counts = scan_pubmed(args.query, args.mindate, args.maxdate, max_new=args.max_new,
+                              keywords_file=args.keywords_file)
     else:
         counts = scan_biorxiv(args.start, args.end, server="medrxiv" if args.medrxiv else "biorxiv",
-                                max_new=args.max_new)
+                                max_new=args.max_new, keywords_file=args.keywords_file)
 
     print(f"[scan] Done. {counts}")
 

@@ -24,24 +24,35 @@ from ...common.reference_resolver import CONFIDENCE_FLOOR
 from ....preprocessing.category_maps import PIPELINE_CATEGORY_TAXONOMY
 
 
-def _load_keywords() -> list:
-    path = Path(__file__).parent / "sp_keywords.txt"
-    with open(path, "r", encoding="utf-8") as f:
+DEFAULT_KEYWORDS_PATH = Path(__file__).parent / "sp_keywords.txt"
+
+
+def load_keywords(path=None) -> list:
+    """Loads a keyword list from a file in sp_keywords.txt's format (one
+    keyword/phrase per line, '#'-comments and blank lines ignored). Defaults
+    to DEFAULT_KEYWORDS_PATH (the built-in SP keyword list) when no path is
+    given. Public/parameterized (not just an SP_KEYWORDS-loading internal) so
+    scan.py's --keywords-file can point this at a different file entirely -
+    per Marta's 2026-09-17 ask, keeping the door open for SOLR to search a
+    different domain later without a code change, even though the project's
+    current scope is spatial-proteomics-only (see CLAUDE.md)."""
+    with open(path or DEFAULT_KEYWORDS_PATH, "r", encoding="utf-8") as f:
         return [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
 
 
-SP_KEYWORDS = _load_keywords()
+SP_KEYWORDS = load_keywords()
 
 
-def build_pubmed_query() -> str:
-    """OR-joins SP_KEYWORDS into a PubMed query string, quoting any keyword
-    containing a space (PubMed's search treats an unquoted multi-word term as
-    an AND of the individual words, not the exact phrase). Built fresh from
-    sp_keywords.txt every time - editing that file changes this query with no
-    code change needed, per Marta's 2026-09-17 ask (previously this had to be
-    hand-retyped into the CLI --query argument on every run, silently
-    drifting out of sync with the file)."""
-    return " OR ".join(f'"{kw}"' if " " in kw else kw for kw in SP_KEYWORDS)
+def build_pubmed_query(keywords: list = None) -> str:
+    """OR-joins a keyword list (defaults to SP_KEYWORDS) into a PubMed query
+    string, quoting any keyword containing a space (PubMed's search treats an
+    unquoted multi-word term as an AND of the individual words, not the exact
+    phrase). Built fresh every call - editing the underlying file changes
+    this query with no code change needed, per Marta's 2026-09-17 ask
+    (previously this had to be hand-retyped into the CLI --query argument on
+    every run, silently drifting out of sync with the file)."""
+    keywords = keywords if keywords is not None else SP_KEYWORDS
+    return " OR ".join(f'"{kw}"' if " " in kw else kw for kw in keywords)
 
 
 # PubMed PublicationType values (see pubmed_client.py's _parse_article) that
@@ -81,9 +92,12 @@ def is_review(publication_types: list) -> bool:
     return "Review" in publication_types
 
 
-def keyword_prefilter(title: str, abstract: str) -> list:
+def keyword_prefilter(title: str, abstract: str, keywords: list = None) -> list:
     """Returns the list of matched keywords (empty list = no match = reject
-    before spending an LLM call). Checks title+abstract combined.
+    before spending an LLM call). Checks title+abstract combined. `keywords`
+    defaults to SP_KEYWORDS - pass a different list (e.g. from scan.py's
+    --keywords-file) to prefilter against something other than the built-in
+    SP vocabulary.
 
     Matching rule (see sp_keywords.txt's header): a keyword with no space in
     it (an acronym/single token, e.g. IMC, MIBI-TOF) is matched with word
@@ -91,9 +105,10 @@ def keyword_prefilter(title: str, abstract: str) -> list:
     word; a keyword with a space (a phrase, e.g. "spatial proteomics") is a
     plain case-insensitive substring match. Derived automatically from
     whether the keyword contains a space - no per-keyword flag needed."""
+    keywords = keywords if keywords is not None else SP_KEYWORDS
     text = f"{title or ''} {abstract or ''}"
     matched = []
-    for kw in SP_KEYWORDS:
+    for kw in keywords:
         if " " not in kw:
             if re.search(rf"\b{re.escape(kw)}\b", text, re.IGNORECASE):
                 matched.append(kw)
