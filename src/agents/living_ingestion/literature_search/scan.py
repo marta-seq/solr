@@ -12,7 +12,10 @@ merge_candidates.py routing downstream.
 
 NOT wired into run_pipeline.py yet - run standalone:
     python -m src.agents.living_ingestion.literature_search.scan pubmed \
-        --query "spatial proteomics" --mindate 2026/08/01 --maxdate 2026/09/01
+        --mindate 2026/08/01 --maxdate 2026/09/01
+        # --query is optional - defaults to an OR-join of sp_keywords.txt,
+        # built fresh every run (relevance.build_pubmed_query). Pass --query
+        # explicitly only to override with something narrower for testing.
     python -m src.agents.living_ingestion.literature_search.scan biorxiv \
         --start 2026-08-01 --end 2026-09-01 [--medrxiv]
 
@@ -45,7 +48,7 @@ from ...common.llm_client import LLMError
 from . import biorxiv_client, pubmed_client, seen_ledger
 from .relevance import (
     keyword_prefilter, llm_relevance_pass, category_pass_is_confident,
-    publication_type_reject_reason, is_review,
+    publication_type_reject_reason, is_review, build_pubmed_query,
 )
 
 CURATION_AGENT_NAME = "literature_search_scanner"
@@ -204,7 +207,8 @@ def _run_funnel(records: list, source_label: str, db: Database, ledger: seen_led
     return counts
 
 
-def scan_pubmed(query: str, mindate: str, maxdate: str, max_new: int = None) -> dict:
+def scan_pubmed(query: str = None, mindate: str = None, maxdate: str = None, max_new: int = None) -> dict:
+    query = query or build_pubmed_query()
     db = Database()
     ledger = seen_ledger.SeenLedger()
     print(f"[scan] PubMed: querying {mindate}-{maxdate} for {query!r}...")
@@ -228,7 +232,9 @@ def _main():
     sub = parser.add_subparsers(dest="source", required=True)
 
     p_pubmed = sub.add_parser("pubmed")
-    p_pubmed.add_argument("--query", required=True)
+    p_pubmed.add_argument("--query", default=None,
+                           help="Defaults to an OR-join of sp_keywords.txt if omitted "
+                                "(built fresh from the file every run, see relevance.build_pubmed_query)")
     p_pubmed.add_argument("--mindate", required=True, help="YYYY/MM/DD")
     p_pubmed.add_argument("--maxdate", required=True, help="YYYY/MM/DD")
     p_pubmed.add_argument("--max-new", type=int, default=None)

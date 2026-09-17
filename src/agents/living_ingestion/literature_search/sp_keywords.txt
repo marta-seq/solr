@@ -22,6 +22,17 @@
 # Deliberately excludes plain "immunofluorescence"/"IF" - too generic a
 # technique across all of cell biology, would flood the prefilter and defeat
 # the point of prefiltering before spending an LLM call.
+#
+# "Vectra" deliberately qualified to "Vectra Polaris"/"Vectra 3" (2026-09-17,
+# Marta's catch) - bare "Vectra" collides hard with "Vectra DA" (Disease
+# Activity), an unrelated and very common rheumatoid-arthritis blood test in
+# the biomedical literature (Myriad/Crescendo Bioscience) - would flood the
+# prefilter with unrelated rheumatology papers. The qualified instrument
+# names never collide with the blood test.
+#
+# "Akoya" (bare) is lower risk but not zero - flagged, not yet removed. If it
+# turns out to add noise in practice, "Akoya Biosciences" alone likely covers
+# genuine platform mentions.
 
 imaging mass cytometry
 IMC
@@ -33,7 +44,8 @@ PhenoCycler
 CyCIF
 Akoya Biosciences
 Akoya
-Vectra
+Vectra Polaris
+Vectra 3
 Opal multiplex
 spatial proteomics
 multiplexed imaging

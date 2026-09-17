@@ -33,6 +33,17 @@ def _load_keywords() -> list:
 SP_KEYWORDS = _load_keywords()
 
 
+def build_pubmed_query() -> str:
+    """OR-joins SP_KEYWORDS into a PubMed query string, quoting any keyword
+    containing a space (PubMed's search treats an unquoted multi-word term as
+    an AND of the individual words, not the exact phrase). Built fresh from
+    sp_keywords.txt every time - editing that file changes this query with no
+    code change needed, per Marta's 2026-09-17 ask (previously this had to be
+    hand-retyped into the CLI --query argument on every run, silently
+    drifting out of sync with the file)."""
+    return " OR ".join(f'"{kw}"' if " " in kw else kw for kw in SP_KEYWORDS)
+
+
 # PubMed PublicationType values (see pubmed_client.py's _parse_article) that
 # should never be staged regardless of what the title/abstract say - checked
 # BEFORE the keyword prefilter and LLM call, zero cost. Always empty for
