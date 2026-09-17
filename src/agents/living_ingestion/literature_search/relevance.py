@@ -2,46 +2,88 @@
 relevance.py
 Two-stage relevance filter for scraped candidates, per the 2026-09-04 design
 discussion: a cheap keyword prefilter first (catches the obvious no's for
-free, no LLM spend), then an LLM pass on title+abstract only for whatever
-survives, to classify it into method/application (or reject) and catch
-papers that use different vocabulary than the keyword list expects.
+free, no LLM spend), then ONE LLM pass on title+abstract only for whatever
+survives, to classify it into method/application (or reject) AND, in the
+same call, tag pipeline_category. Merged into a single call 2026-09-17
+(was briefly two separate calls; Marta asked to fold it back into one to
+stay light on LLM spend without giving up quality - the paper-type decision
+and the category decision are asked together, one JSON response covers
+both).
 
-Deliberately excludes plain "immunofluorescence"/IF as a keyword - it's a
-generic technique name used across most of cell biology and would flood the
-prefilter with irrelevant matches, defeating the point of prefiltering
-before spending an LLM call. Anchored instead on genuinely spatial-
-proteomics-specific platform names and phrases.
+SP_KEYWORDS is loaded from sp_keywords.txt (same directory) rather than
+hardcoded here, so the keyword list can be reviewed/edited without touching
+code, and so it can double as the future PubMed query source (see that
+file's own header comment).
 """
 
 import re
+from pathlib import Path
 
 from ...common.llm_client import call_llm_json
+from ...common.reference_resolver import CONFIDENCE_FLOOR
+from ....preprocessing.category_maps import PIPELINE_CATEGORY_TAXONOMY
 
-SP_KEYWORDS = [
-    "imaging mass cytometry", "IMC",
-    "multiplexed ion beam imaging", "MIBI", "MIBI-TOF",
-    "CODEX", "PhenoCycler",
-    "CyCIF",
-    "Akoya Biosciences", "Akoya",
-    "Vectra", "Opal multiplex",
-    "spatial proteomics",
-    "multiplexed imaging", "multiplex imaging",
-    "highly multiplexed tissue imaging",
-]
 
-# Short acronyms need word-boundary matching (IMC, MIBI) so they don't match
-# as a substring inside an unrelated word. Multi-word phrases don't have that
-# risk, so a plain case-insensitive substring check is enough for those.
-_ACRONYMS = {"IMC", "MIBI", "MIBI-TOF", "CODEX", "CyCIF"}
+def _load_keywords() -> list:
+    path = Path(__file__).parent / "sp_keywords.txt"
+    with open(path, "r", encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
+
+
+SP_KEYWORDS = _load_keywords()
+
+
+# PubMed PublicationType values (see pubmed_client.py's _parse_article) that
+# should never be staged regardless of what the title/abstract say - checked
+# BEFORE the keyword prefilter and LLM call, zero cost. Always empty for
+# bioRxiv/medRxiv records (no PublicationType concept there). "Editorial"
+# included per Marta's 2026-09-17 call - editorials are structurally
+# commentary (introducing a themed issue, reacting to a same-issue paper,
+# field-debate opinion), essentially never carrying new data/method/dataset
+# content. "Letter" deliberately NOT included - some journals (e.g. Nature)
+# publish genuine short-format research as "Letter", too risky to blanket
+# -reject; left to the normal keyword+LLM funnel instead.
+HARD_REJECT_PUBLICATION_TYPES = {
+    "Editorial",
+    "Comment",
+    "Published Erratum",
+    "Retraction of Publication",
+    "Retracted Publication",
+    "Corrected and Republished Article",
+}
+
+
+def publication_type_reject_reason(publication_types: list) -> str:
+    """Returns a human-readable reject reason if this record's PubMed
+    PublicationType list hits HARD_REJECT_PUBLICATION_TYPES, else "" (don't
+    reject). Checked in scan.py before the keyword prefilter."""
+    hit = next((t for t in publication_types if t in HARD_REJECT_PUBLICATION_TYPES), None)
+    return f"publication type: {hit}" if hit else ""
+
+
+def is_review(publication_types: list) -> bool:
+    """True if PubMed tagged this record "Review". Used to tag the `category`
+    field (see scan.py's _category_field) - deliberately does NOT change the
+    method/application/pipeline_category decision below, which still runs
+    exactly the same for a review as for an original article. Always False
+    for bioRxiv/medRxiv (no PublicationType concept there)."""
+    return "Review" in publication_types
 
 
 def keyword_prefilter(title: str, abstract: str) -> list:
     """Returns the list of matched keywords (empty list = no match = reject
-    before spending an LLM call). Checks title+abstract combined."""
+    before spending an LLM call). Checks title+abstract combined.
+
+    Matching rule (see sp_keywords.txt's header): a keyword with no space in
+    it (an acronym/single token, e.g. IMC, MIBI-TOF) is matched with word
+    boundaries so it can't false-positive as a substring inside an unrelated
+    word; a keyword with a space (a phrase, e.g. "spatial proteomics") is a
+    plain case-insensitive substring match. Derived automatically from
+    whether the keyword contains a space - no per-keyword flag needed."""
     text = f"{title or ''} {abstract or ''}"
     matched = []
     for kw in SP_KEYWORDS:
-        if kw in _ACRONYMS:
+        if " " not in kw:
             if re.search(rf"\b{re.escape(kw)}\b", text, re.IGNORECASE):
                 matched.append(kw)
         elif kw.lower() in text.lower():
@@ -49,35 +91,91 @@ def keyword_prefilter(title: str, abstract: str) -> list:
     return matched
 
 
-_SYSTEM_PROMPT = """You are screening candidate papers for a curated review of \
+_SYSTEM_PROMPT = f"""You are screening candidate papers for a curated review of \
 spatial proteomics computational methods and datasets (protein markers via \
 imaging-based multiplexed tissue technologies like IMC, MIBI, CODEX, CyCIF, \
 Akoya PhenoCycler, Vectra/Opal - NOT spatial transcriptomics / gene panels).
 
 Given a paper's title and abstract, decide:
+
 1. Is this genuinely relevant to spatial proteomics (a new computational \
 method/tool applied to spatial proteomics data, OR a paper that generates/uses \
 a spatial proteomics dataset)? Mentioning immunofluorescence or imaging in \
 passing does NOT count - the paper's actual subject must be spatial \
 proteomics specifically.
-2. If relevant, classify it as "method" (introduces or benchmarks a \
-computational method/tool) or "application" (uses existing methods to study \
-a biological question, e.g. a disease cohort study).
 
-Respond with ONLY a JSON object: {"relevant": true/false, "paper_type": \
-"method" or "application" or null, "reason": "one short sentence"}"""
+2. If relevant, classify it as "method" (introduces or benchmarks a \
+computational method/tool) or "application" (uses existing methods/platforms \
+to study something, rather than introducing a new computational tool).
+
+3. ONLY if you classified it as "application" in step 2: is this a \
+TECHNICAL application - i.e. does it primarily describe, introduce, or \
+improve a wet-lab technique/platform/protocol itself (e.g. introducing IMC \
+or CODEX as a platform, optimizing an antibody panel or staining protocol, \
+improving tissue preparation) - as opposed to a BIOLOGICAL application - \
+i.e. using an already-established platform/protocol to study a biological \
+question (e.g. a disease cohort study, a tissue atlas)? Set \
+"technical_application": true for the former, false for the latter. Only \
+meaningful when paper_type is "application" - set it to false (unused) for \
+"method" or when not relevant.
+
+4. ONLY if you classified it as "method" in step 2: which pipeline \
+category/categories does it belong to? Choose ONLY from this fixed list - do \
+not invent, rename, or reword any label. Copy the exact string(s) character \
+for character:
+{chr(10).join(f'- {c}' for c in PIPELINE_CATEGORY_TAXONOMY)}
+A paper usually fits exactly one category; some genuinely fit more than one \
+(pick every category that clearly applies, don't pad the list). If nothing \
+on the list clearly applies, or you are not confident, return an empty list \
+rather than guessing. Leave this empty for "application" papers - the \
+taxonomy above doesn't apply to them.
+
+Respond with ONLY a JSON object: {{"relevant": true/false, "paper_type": \
+"method" or "application" or null, "technical_application": true/false (only \
+meaningful for paper_type "application", see step 3), "categories": \
+["<exact label>", ...] (only for paper_type "method", else []), \
+"category_confidence": <0.0-1.0, your confidence that every label in \
+"categories" is correct - irrelevant/unused if "categories" is empty>, \
+"reason": "one short sentence"}}"""
 
 
 def llm_relevance_pass(title: str, abstract: str) -> dict:
-    """Returns {"relevant": bool, "paper_type": "method"|"application"|None,
-    "reason": str, "model_used": str}. Raises LLMError/LLMExhaustedError on
-    total failure - same as every other agent's LLM call, let the caller
-    decide whether to skip this one paper or stop the whole scan."""
+    """Single LLM call deciding relevance, method/application type, (for
+    application papers only) technical-vs-biological application, and (for
+    method papers only) pipeline_category tags. Returns {"relevant": bool,
+    "paper_type": "method"|"application"|None, "technical_application": bool
+    (only meaningful for "application" - a paper describing/improving a
+    wet-lab technique/platform/protocol itself, e.g. introducing IMC/CODEX
+    or optimizing a staining protocol, as opposed to using an established
+    platform to study a biological question), "categories": [...] (already
+    validated against PIPELINE_CATEGORY_TAXONOMY - anything the LLM returns
+    that isn't an exact match is dropped, not corrected/guessed),
+    "category_confidence": float, "reason": str, "model_used": str}. Raises
+    LLMError/LLMExhaustedError on total failure - same as every other
+    agent's LLM call, let the caller decide whether to skip this one paper
+    or stop the whole scan."""
     user_prompt = f"Title: {title}\n\nAbstract: {abstract or '(no abstract available)'}"
     parsed, model_used = call_llm_json(_SYSTEM_PROMPT, user_prompt)
+    raw_categories = parsed.get("categories") or []
+    valid_categories = [c for c in raw_categories if c in PIPELINE_CATEGORY_TAXONOMY]
     return {
         "relevant": bool(parsed.get("relevant")),
         "paper_type": parsed.get("paper_type"),
+        "technical_application": bool(parsed.get("technical_application")),
+        "categories": valid_categories,
+        "category_confidence": float(parsed.get("category_confidence") or 0.0),
         "reason": parsed.get("reason", ""),
         "model_used": model_used,
     }
+
+
+def category_pass_is_confident(verdict: dict) -> bool:
+    """Gate per Marta's explicit ask (2026-09-17): below CONFIDENCE_FLOOR
+    (the same 0.55 threshold reference_resolver.py already uses elsewhere in
+    this codebase, reused rather than inventing a new number), don't tag at
+    all - leave pipeline_category blank on the staged candidate rather than
+    stage a low-confidence guess. An empty validated categories list also
+    counts as "not confident" even if the model reported high confidence for
+    nothing. The paper still stages fine either way - this only gates
+    whether the category field gets attached."""
+    return bool(verdict["categories"]) and verdict["category_confidence"] >= CONFIDENCE_FLOOR

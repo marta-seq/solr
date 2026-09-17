@@ -86,4 +86,8 @@ def normalize(record: dict) -> dict:
         "authors": [a.strip() for a in (record.get("authors") or "").split(";") if a.strip()],
         "source": (record.get("server") or "").lower() or "biorxiv",
         "published_doi": is_published(record),
+        # bioRxiv/medRxiv preprints have no PublicationType concept (unlike
+        # PubMed) - always empty, kept only so relevance.py can treat both
+        # sources uniformly without a hasattr/get-with-default dance.
+        "publication_types": [],
     }

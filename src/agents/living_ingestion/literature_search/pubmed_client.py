@@ -97,6 +97,18 @@ def _parse_article(article_el) -> dict:
     ]
     abstract = " ".join(p.strip() for p in abstract_parts if p.strip())
 
+    # PubMed's own PublicationType tags (e.g. "Journal Article", "Review",
+    # "Editorial", "Letter", "Comment", "Published Erratum", "Retraction of
+    # Publication") - real, free metadata, used by relevance.py to
+    # hard-reject corrections/retractions/editorials before spending an LLM
+    # call, and to reliably tag reviews instead of asking the LLM to guess
+    # "review-ness" from title/abstract alone.
+    publication_types = [
+        (el.text or "").strip()
+        for el in article_el.findall(".//Article/PublicationTypeList/PublicationType")
+        if (el.text or "").strip()
+    ]
+
     authors = []
     for author_el in article_el.findall(".//Article/AuthorList/Author"):
         last = _text_or_none(author_el.find("LastName"))
@@ -113,6 +125,7 @@ def _parse_article(article_el) -> dict:
         "abstract": abstract,
         "authors": authors,
         "source": "pubmed",
+        "publication_types": publication_types,
     }
 
 

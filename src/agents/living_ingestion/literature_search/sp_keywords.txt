@@ -1,0 +1,41 @@
+# Spatial-proteomics keyword list - the search/prefilter vocabulary for the
+# literature-search scanner (src/agents/living_ingestion/literature_search/).
+# One keyword or phrase per line. Lines starting with # are comments/blank
+# lines are ignored.
+#
+# Used for two things:
+#   1. The downstream keyword prefilter (relevance.py's keyword_prefilter())
+#      applied to BOTH PubMed and bioRxiv/medRxiv records before any LLM call
+#      - bioRxiv's API has no keyword param at all (see biorxiv_client.py's
+#      docstring), so this is the only thing standing between "every paper
+#      published in the date window" and the LLM.
+#   2. The PubMed query itself (an OR-join of these terms) - not wired up yet,
+#      still open item #1 in LITERATURE_SEARCH_CONTEXT.md.
+#
+# Matching rule (relevance.py): a keyword with NO space in it (an acronym or
+# single token, e.g. IMC, MIBI-TOF) is matched with word boundaries, so it
+# can't false-positive as a substring inside an unrelated word. A keyword
+# WITH a space (a phrase, e.g. "spatial proteomics") is matched as a plain
+# case-insensitive substring. No per-keyword flag needed - this is derived
+# automatically from whether the keyword contains a space.
+#
+# Deliberately excludes plain "immunofluorescence"/"IF" - too generic a
+# technique across all of cell biology, would flood the prefilter and defeat
+# the point of prefiltering before spending an LLM call.
+
+imaging mass cytometry
+IMC
+multiplexed ion beam imaging
+MIBI
+MIBI-TOF
+CODEX
+PhenoCycler
+CyCIF
+Akoya Biosciences
+Akoya
+Vectra
+Opal multiplex
+spatial proteomics
+multiplexed imaging
+multiplex imaging
+highly multiplexed tissue imaging

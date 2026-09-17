@@ -95,14 +95,41 @@ LLM_MODEL_FALLBACK_CHAIN = [
 # any provider whose key isn't set in .env is simply skipped, so this is
 # safe to leave as-is even before you've signed up for any of them.
 # All of these speak the same OpenAI-compatible chat-completions shape.
+#
+# Order matters: tried top to bottom, first success wins. ollama_local comes
+# first - genuinely zero cost and zero rate limit once a model is pulled, no
+# quota to exhaust at all (added 2026-09-17: gaia already has an Ollama
+# server running as a systemd service, 2x idle RTX 2080 Ti, confirmed via
+# `systemctl status ollama`). Groq and Cerebras come next because their free
+# tiers are explicitly documented as such (see each entry's own comment);
+# Gemini is deliberately LAST among the keyed providers - reordered
+# 2026-09-17 after a real run silently spent a chunk of calls on Gemini
+# (whose free-vs-billed status for this specific key was unconfirmed at the
+# time, since confirmed free) when OpenRouter's daily cap hit, even though
+# Groq/Cerebras (confirmed free) were sitting right there unused, later in
+# the list.
+#
+# ollama_local only actually resolves when running ON gaia (or through an
+# SSH tunnel to it) - localhost:11434 isn't reachable from anywhere else.
+# From a machine without that tunnel, every attempt just fails fast
+# ("connection refused", no hang) and falls through to the next provider -
+# same harmless-overhead pattern as OpenRouter's 429s when its quota's
+# exhausted, not a real slowdown.
 FALLBACK_PROVIDERS = [
     {
-        "name": "gemini",
-        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-        "api_key_env": "GEMINI_API_KEY",
-        "models": ["gemini-3.5-flash"],  # gemini-2.5-flash deprecated for new users as of ~July 2026
-                                          # (confirmed by your own 404 error) - 3.5-flash is the
-                                          # current GA replacement per Google's own deprecation page
+        "name": "ollama_local",
+        "url": "http://localhost:11434/v1/chat/completions",
+        # Ollama's OpenAI-compatible endpoint ignores the actual key content -
+        # this just needs to be a non-empty string so call_llm_json's truthy
+        # check doesn't skip the provider. Set OLLAMA_API_KEY=ollama (or any
+        # placeholder) in gaia's .env - it is NOT a real secret.
+        "api_key_env": "OLLAMA_API_KEY",
+        # Pull with `ollama pull qwen2.5:14b` first - fits comfortably on a
+        # single RTX 2080 Ti (11GB VRAM, ~9GB model at Ollama's default
+        # Q4_K_M quantization). qwen2.5:32b is the stronger-quality option if
+        # 14b's classification accuracy turns out too weak in practice -
+        # splits across both idle 2080 Tis (~19GB), still fits.
+        "models": ["qwen2.5:14b"],
     },
     {
         "name": "groq",
@@ -119,6 +146,17 @@ FALLBACK_PROVIDERS = [
         # paid Dedicated Endpoints tier. gpt-oss-120b is the "production"-
         # labeled one, zai-glm-4.7 is preview/evaluation - tried in that order.
         "models": ["gpt-oss-120b", "zai-glm-4.7"],
+    },
+    {
+        "name": "gemini",
+        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "api_key_env": "GEMINI_API_KEY",
+        "models": ["gemini-3.5-flash"],  # gemini-2.5-flash deprecated for new users as of ~July 2026
+                                          # (confirmed by your own 404 error) - 3.5-flash is the
+                                          # current GA replacement per Google's own deprecation page
+                                          # NOTE: unlike Groq/Cerebras above, whether THIS specific key
+                                          # is on a free or billed Google tier isn't confirmed - kept
+                                          # last in the chain until that's checked.
     },
     {
         "name": "zhipu",

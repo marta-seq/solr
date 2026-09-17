@@ -43,7 +43,10 @@ from ...common import config, staging
 from ...common.db_loader import Database
 from ...common.llm_client import LLMError
 from . import biorxiv_client, pubmed_client, seen_ledger
-from .relevance import keyword_prefilter, llm_relevance_pass
+from .relevance import (
+    keyword_prefilter, llm_relevance_pass, category_pass_is_confident,
+    publication_type_reject_reason, is_review,
+)
 
 CURATION_AGENT_NAME = "literature_search_scanner"
 
@@ -55,16 +58,54 @@ def _canonical_doi(record: dict) -> str:
     return record.get("published_doi") or record.get("doi", "")
 
 
+def _category_field(verdict: dict, review: bool) -> tuple:
+    """The coarse `category` field (distinct from the fine-grained
+    pipeline_category taxonomy) - matches canonical values category_maps.py
+    already defines, never invents new ones. Returns (category_string,
+    caveat_note_or_empty).
+
+    `review` (from PubMed's own PublicationType, see relevance.is_review) is
+    an ADDITIONAL tag, not a replacement classification - method vs.
+    application (and pipeline_category for methods) is decided exactly the
+    same whether or not this is a review; review-ness only changes which
+    category string gets used, per Marta's 2026-09-17 clarification (a
+    review of computational methods must still be tagged/categorized as
+    such, not just dumped in a generic "review" bucket blind to that).
+
+    compared_methods_agent.py hardcodes "computational analysis - method"
+    for every new (non-review) method entry; mirrored here for consistency.
+    For application papers, distinguishes technical (lab technique/platform/
+    protocol papers - IMC/CODEX description, protocol improvement) from
+    ordinary biological application papers, using the SAME LLM call's
+    "technical_application" flag - not a separate pass.
+
+    Known taxonomy gap: category_maps.py has no standalone canonical value
+    for "technical application, and also a review" (only a 3-way combo,
+    "Application review; Technical review; General omics review", which
+    doesn't cleanly decompose to just this pair) - collapses to "Application
+    review" in that specific case rather than inventing a new string, with a
+    caveat note so it's visible at merge/review time."""
+    if verdict["paper_type"] == "method":
+        return ("computational analysis - review" if review else "computational analysis - method"), ""
+    if review:
+        caveat = ("collapsed technical_application+review into 'Application review' - "
+                   "no standalone 'technical review' category exists yet") if verdict["technical_application"] else ""
+        return "Application review", caveat
+    return ("Technical Methods; Application" if verdict["technical_application"] else "Application"), ""
+
+
 def _stage_candidate(db: Database, record: dict, doi: str, verdict: dict) -> str:
     sheet = "method_pub" if verdict["paper_type"] == "method" else "AP_pub"
     prefix = "M_AUTO" if sheet == "method_pub" else "AP"
     entry_id = db.id_allocator.next_id(prefix)
 
+    category, category_caveat = _category_field(verdict, is_review(record.get("publication_types", [])))
     fields = {
         "DOI": doi,
         "title": record.get("title", ""),
         "year": record.get("year"),
         "journal": record.get("journal", ""),
+        "category": category,
         "REVIEW_STATUS": config.REVIEW_STATUS_SCRAPED,
     }
     if record.get("doi") and record.get("doi") != doi:
@@ -72,6 +113,18 @@ def _stage_candidate(db: Database, record: dict, doi: str, verdict: dict) -> str
         # instead - keep the original so nothing about how this was found
         # is lost.
         fields["preprint_doi"] = record["doi"]
+
+    notes = verdict["reason"]
+    if category_caveat:
+        notes += f" | NOTE: {category_caveat}"
+    if category_pass_is_confident(verdict):
+        # category_confidence/categories came from the SAME LLM call as
+        # relevant/paper_type above (merged 2026-09-17, see relevance.py's
+        # module docstring) - below CONFIDENCE_FLOOR or empty, just leave
+        # pipeline_category blank rather than stage a low-confidence guess.
+        fields["pipeline_category"] = ";".join(verdict["categories"])
+        notes += (f" | category tag ({verdict['category_confidence']:.2f} "
+                  f"confidence): {verdict['categories']}")
 
     staging.append_candidate(
         action="create_entry",
@@ -82,7 +135,7 @@ def _stage_candidate(db: Database, record: dict, doi: str, verdict: dict) -> str
         curation_agent=CURATION_AGENT_NAME,
         curation_model=verdict["model_used"],
         confidence=None,
-        notes=verdict["reason"],
+        notes=notes,
     )
     db.doi_index.add(doi, entry_id)
     return entry_id
@@ -103,6 +156,12 @@ def _evaluate(record: dict, source_label: str, db: Database, ledger: seen_ledger
     if doi and doi in db.doi_index:
         ledger.mark(key, seen_ledger.STATUS_ALREADY_IN_DB, source=source_label, title=record.get("title", ""))
         return "already_in_db"
+
+    reject_reason = publication_type_reject_reason(record.get("publication_types", []))
+    if reject_reason:
+        ledger.mark(key, seen_ledger.STATUS_REJECTED, source=source_label,
+                     title=record.get("title", ""), notes=reject_reason)
+        return "rejected"
 
     matched_kw = keyword_prefilter(record.get("title", ""), record.get("abstract", ""))
     if not matched_kw:
