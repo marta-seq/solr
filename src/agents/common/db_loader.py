@@ -17,7 +17,17 @@ from .id_allocator import IdAllocator
 
 
 def _latest(pattern: str) -> Path:
-    matches = sorted(config.PROCESSED_DIR.glob(pattern))
+    # Sort key normalizes "-" to "_" - plain sorted() puts "-" before "_" in
+    # ASCII, so e.g. "methods_2026-08-29.csv" would sort (and get picked as
+    # "latest") BEFORE "methods_2026_07_07.csv", silently loading a stale
+    # two-months-older file. Same bug/fix as 01_parse_excel.py's and
+    # 03_export_json.py's find_latest() (fixed there 2026-09-01) - this
+    # module's own copy was missed at the time. Caught 2026-09-17 while
+    # building the literature-search scanner: every agent using
+    # db_loader.Database() (compared_methods_agent.py, data_fetch_agent.py,
+    # this scanner) was silently deduping against a stale DB whenever both
+    # filename date-formats coexisted in data/processed/.
+    matches = sorted(config.PROCESSED_DIR.glob(pattern), key=lambda p: p.stem.replace("-", "_"))
     if not matches:
         raise FileNotFoundError(f"No files matching {pattern} in {config.PROCESSED_DIR}")
     return matches[-1]

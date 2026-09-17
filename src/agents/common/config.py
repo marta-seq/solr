@@ -159,3 +159,8 @@ MAX_SECTION_CHARS = 12000  # roughly ~3000 tokens
 REVIEW_STATUS_MANUAL = "manual"
 REVIEW_STATUS_AUTO = "auto"
 REVIEW_STATUS_NEEDS_REVIEW = "needs_review"
+# Found by the literature-search scanner (living_ingestion/literature_search/),
+# not yet touched by any agentic curation or human review - distinct from
+# REVIEW_STATUS_AUTO, which means an agent already extracted/filled fields.
+# A scraped candidate has only the bare metadata the source API returned.
+REVIEW_STATUS_SCRAPED = "scraped"

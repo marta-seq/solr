@@ -236,4 +236,11 @@ REVIEW_STATUS_MAP = {
     "manual & auto": "auto_confirmed",
     "auto&manual": "auto_confirmed",
     "auto & manual": "auto_confirmed",
+    # 5th value, added 2026-09-17 for the literature-search scanner
+    # (living_ingestion/literature_search/) - a candidate found by automated
+    # search, with only bare source-API metadata, not yet touched by any
+    # agentic curation or human review. Distinct from "auto" (an agent
+    # actually extracted/filled fields) and "needs_review" (an agent extracted
+    # fields but with low confidence).
+    "scraped": "scraped",
 }
