@@ -93,7 +93,12 @@ def fetch_crossref(doi: str) -> dict:
 
         # Publication type
         pub_type = data.get("type", "")
-        if pub_type == "journal-article":
+        if "arxiv" in doi.lower():
+            # Crossref sometimes returns arXiv DOIs as "journal-article" if the
+            # preprint was later published elsewhere - the DOI itself is the
+            # reliable signal, not Crossref's type field.
+            publication_type = "preprint"
+        elif pub_type == "journal-article":
             # Check if bioRxiv/medRxiv preprint
             if any(p in journal.lower() for p in ["biorxiv", "medrxiv"]):
                 publication_type = "preprint"
@@ -128,30 +133,66 @@ def fetch_crossref(doi: str) -> dict:
 PUBMED_SEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 PUBMED_FETCH  = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
-def fetch_pubmed_abstract(doi: str) -> str:
+def fetch_pubmed_abstract(doi: str) -> dict:
+    """Returns {"abstract": str, "keywords": list} - both pulled from the
+    SAME efetch call (MEDLINE text format tags each field: AB=abstract,
+    OT=author-supplied keyword), added 2026-09-18 so keywords don't need a
+    second API round-trip. Keywords come from MEDLINE's OT ("Other Term")
+    field specifically - the genuine author-supplied keyword list, NOT the MH
+    ("MeSH Heading") field, which is NLM's own broad, indexer-assigned
+    controlled-vocabulary subject tags (e.g. "Humans", "Animals") - real PubMed
+    data, not model-invented, but not what a reader means by "the paper's
+    keywords" either (found 2026-09-20, after Marta flagged MH-derived output
+    as "not the keywords from the paper" during review). Not every record has
+    OT lines (depends on whether the journal submitted author keywords) - if
+    none are present, keywords stays an empty list (caller writes "NA", not a
+    MeSH fallback, per Marta's explicit ask). No OT/MH equivalent exists for
+    bioRxiv/medRxiv preprints (not MEDLINE-indexed until published) -
+    keywords stays empty for those, same coverage gap as abstract already has
+    for unpublished preprints."""
     try:
-        # Search for PMID by DOI
+        # Search for PMID by DOI. "[doi]" field restriction added 2026-09-20 -
+        # without it, PubMed's automatic term-mapping can silently fuzzy-match
+        # an unrelated record when the exact DOI isn't indexed (found via the
+        # M_SE_29/RNA2seg contamination incident, 2026-09-19), returning a
+        # confidently wrong abstract/keywords with no signal anything went
+        # wrong. With "[doi]", an unindexed DOI correctly yields zero results
+        # instead of a wrong match.
         r = requests.get(PUBMED_SEARCH, params={
-            "db": "pubmed", "term": doi, "retmode": "json"
+            "db": "pubmed", "term": f"{doi}[doi]", "retmode": "json"
         }, timeout=10)
         ids = r.json().get("esearchresult", {}).get("idlist", [])
         if not ids:
-            return ""
+            return {"abstract": "", "keywords": []}
 
-        # Fetch abstract
+        # Fetch abstract + author keywords. rettype="medline" (NOT "abstract" -
+        # found live 2026-09-18: "abstract" returns a human-readable citation
+        # display with NO tagged fields at all for some records, so the
+        # AB/OT regexes below silently never matched; "medline" reliably
+        # returns proper PMID-/TI-/AB-/OT- tagged text). This alone likely
+        # improves the previously-documented low abstract hit rate too, not
+        # just keywords - both were being extracted from the wrong format.
         r2 = requests.get(PUBMED_FETCH, params={
-            "db": "pubmed", "id": ids[0], "rettype": "abstract", "retmode": "text"
+            "db": "pubmed", "id": ids[0], "rettype": "medline", "retmode": "text"
         }, timeout=10)
         text = r2.text
 
-        # Extract abstract section
+        abstract = ""
         match = re.search(r"AB\s+-\s+(.+?)(?=\n[A-Z]{2}\s+-|\Z)", text, re.DOTALL)
         if match:
-            return " ".join(match.group(1).split())
-        return ""
+            abstract = " ".join(match.group(1).split())
+
+        # OT lines: "OT  - Keyword phrase" - the author-supplied keyword list.
+        keywords = []
+        for line in text.splitlines():
+            m = re.match(r"OT\s+-\s+(.+)", line)
+            if m:
+                keywords.append(m.group(1).strip())
+
+        return {"abstract": abstract, "keywords": keywords}
     except Exception as e:
         print(f"    PubMed error for {doi}: {e}")
-        return ""
+        return {"abstract": "", "keywords": []}
 
 # ── bioRxiv abstract ──────────────────────────────────────────────────────────
 BIORXIV_URL = "https://api.biorxiv.org/details/biorxiv/{doi}/na/json"
@@ -168,12 +209,16 @@ def fetch_biorxiv_abstract(doi: str) -> str:
         print(f"    bioRxiv error for {doi}: {e}")
         return ""
 
-# ── Fetch abstract ────────────────────────────────────────────────────────────
-def fetch_abstract(doi: str, publication_type: str) -> str:
+# ── Fetch abstract + keywords ─────────────────────────────────────────────────
+def fetch_abstract_and_keywords(doi: str, publication_type: str) -> dict:
+    """Returns {"abstract": str, "keywords": list}. bioRxiv/medRxiv preprints
+    have no keyword concept (not MeSH-indexed pre-publication) - only
+    abstract comes back for those. Everything else tries PubMed, which can
+    supply both."""
     if publication_type == "preprint":
         abstract = fetch_biorxiv_abstract(doi)
         if abstract:
-            return abstract
+            return {"abstract": abstract, "keywords": []}
     # Fall back to PubMed for everything else
     return fetch_pubmed_abstract(doi)
 
@@ -219,7 +264,7 @@ def main():
 
     # Add metadata columns if not present
     meta_cols = ["title", "first_author", "authors", "year",
-                 "journal", "citations", "abstract", "publication_type"]
+                 "journal", "citations", "abstract", "publication_type", "keywords"]
     for col in meta_cols:
         if col not in df.columns:
             df[col] = ""
@@ -230,6 +275,9 @@ def main():
     fetched = 0
     failed  = 0
 
+    def _is_blank(v) -> bool:
+        return str(v).strip() in ("", "nan", "NA", "None")
+
     for i, row in df.iterrows():
         doi = str(row.get(doi_col, "")).strip()
 
@@ -238,33 +286,72 @@ def main():
             skipped += 1
             continue
 
-        # Skip if already enriched (covers both same-run and resumed rows).
-        # Checks publication_type, not title: title is unreliable here
-        # because AP_pub rows carry their own manually-curated title from
-        # 01_parse_excel.py regardless of whether this script has ever run
-        # on them, so the title-based check was silently skipping every
-        # AP_pub row forever (152/154 have a real DOI, 0/154 ever got an
-        # abstract/year/journal/citations fetched - found 2026-09-15).
-        # publication_type is only ever set by fetch_crossref() succeeding,
-        # never manually curated, so it's a reliable "already fetched" marker
-        # for both method_pub and AP_pub rows.
-        if str(row.get("publication_type", "")).strip() not in ("", "nan"):
+        # Checked independently, not as one all-or-nothing bundle (changed
+        # 2026-09-18, per Marta's ask: "if entries are missing go search for
+        # them" - fetch only what's actually absent, not blindly everything
+        # whenever ANY one field is missing). Two independent pieces:
+        #   1. Crossref bundle (title/authors/year/journal/citations/
+        #      publication_type) - these all come from ONE Crossref call, so
+        #      they're still fetched together, gated on publication_type
+        #      (reliable "already fetched" marker - see the 2026-09-15 note
+        #      below, still applies). Title is NOT used as that marker:
+        #      AP_pub rows carry their own manually-curated title from
+        #      01_parse_excel.py regardless of whether this script has ever
+        #      run on them, so a title-based check silently skipped every
+        #      AP_pub row forever (152/154 have a real DOI, 0/154 ever got
+        #      abstract/year/journal/citations - found 2026-09-15).
+        #   2. Abstract - fetched via a completely separate method
+        #      (fetch_abstract, PubMed/bioRxiv DOI lookup, not Crossref), so
+        #      it's checked and retried independently of the Crossref bundle.
+        #      This matters now that upstream sources (the literature-search
+        #      scanner) can sometimes supply a real abstract directly - once
+        #      that flows through to the master Excel, this skip check means
+        #      it won't get needlessly overwritten by a re-fetch via the
+        #      lower-hit-rate DOI-search method.
+        needs_crossref = _is_blank(row.get("publication_type"))
+        needs_abstract = _is_blank(row.get("abstract"))
+        # keywords added 2026-09-18 - a genuinely new field nothing has ever
+        # fetched before, so EVERY existing row needs at least one pass to
+        # attempt it, same "fetch only what's missing" principle as abstract.
+        needs_keywords = _is_blank(row.get("keywords"))
+        if not needs_crossref and not needs_abstract and not needs_keywords:
             skipped += 1
             continue
 
-        print(f"  [{i+1}/{total}] {doi}")
+        print(f"  [{i+1}/{total}] {doi}"
+              f"{' (crossref)' if needs_crossref else ''}"
+              f"{' (abstract)' if needs_abstract else ''}"
+              f"{' (keywords)' if needs_keywords else ''}")
 
-        meta = fetch_crossref(doi)
-        if not meta:
-            print(f"    No Crossref data found")
-            failed += 1
-            continue
+        publication_type = row.get("publication_type", "")
+        if needs_crossref:
+            meta = fetch_crossref(doi)
+            if not meta:
+                print(f"    No Crossref data found")
+                failed += 1
+                continue
+            for col, val in meta.items():
+                df.at[i, col] = val
+            publication_type = meta.get("publication_type", "")
 
-        # Fetch abstract separately
-        meta["abstract"] = fetch_abstract(doi, meta.get("publication_type", ""))
-
-        for col, val in meta.items():
-            df.at[i, col] = val
+        if needs_abstract or needs_keywords:
+            # Known trade-off: unlike the Crossref bundle (gated on
+            # publication_type, permanently skipped once set), there's no
+            # "we tried and it's genuinely unavailable" marker here - a
+            # paper whose abstract/keywords truly aren't fetchable via this
+            # method will get retried on every future run, not just once.
+            # Accepted for now rather than adding a sentinel column; revisit
+            # if this becomes a real time cost as the corpus grows.
+            result = fetch_abstract_and_keywords(doi, publication_type)
+            if result["abstract"]:
+                df.at[i, "abstract"] = result["abstract"]
+            if needs_keywords and publication_type != "preprint":
+                # NA on a genuine attempt-and-fail, per Marta's ask 2026-09-20 -
+                # distinguishes "tried, no OT keywords on this record" from
+                # "never attempted". Preprints are skipped here (not marked
+                # NA) since they structurally have no MEDLINE record to try
+                # against - not a failed fetch, just not applicable.
+                df.at[i, "keywords"] = "; ".join(result["keywords"]) if result["keywords"] else "NA"
 
         fetched += 1
         if fetched % CHECKPOINT_EVERY == 0:
