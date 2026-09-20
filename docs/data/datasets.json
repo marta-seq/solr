@@ -9,6 +9,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -39,6 +40,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -69,6 +71,7 @@
     "internal_name": "CATALYST",
     "year": "2018",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -105,6 +108,7 @@
     "internal_name": "MAUI",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI",
     "platform_list": [
@@ -185,6 +189,7 @@
     "internal_name": "Jackson et al., Nature 2020",
     "year": "2019",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -200,8 +205,8 @@
       "cancer"
     ],
     "disease_specifics_list": [],
-    "n_images": "718",
-    "n_patients": "353",
+    "n_images": "",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "35",
     "markers": "Histone H3;H3 (Lys28) trimethylate;Cytokeratin 5;Fibronectin;Cytokeratin 19;Cytokeratin 8/18;Twist;CD68;Keratin 14 (KRT14);SMA;Vimentin;c-Myc;c-erbB-2 - Her2;CD3 epsilon;Histone H3;Slug;Estrogen Receptor Alpha;Rabbit IgG (H+L);Progesterone Receptor A/B;Progesterone Receptor A/B;p53;CD44;CD45;GATA3;CD20;Carbonic Anhydrase IX;E-Cadherin / P-Cadherin;Ki-67;EGFR;p-S6;vWF;CD31;p-mTOR;Cytokeratin 7;pan Cytokeratin;pan Cytokeratin;cleaved PARP;Cleaved Caspase3",
@@ -257,6 +262,7 @@
     "internal_name": "Schurch et al., Cell 2020",
     "year": "2020",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -360,6 +366,7 @@
     "internal_name": "IMCDenoise",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
     "platform_list": [
@@ -399,6 +406,7 @@
     "internal_name": "IMCDenoise",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -467,6 +475,7 @@
     "internal_name": "Kaestner et al., Cell Metab 2019",
     "year": "2018",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -537,6 +546,7 @@
     "internal_name": "Damond et al.; Cell metabolism 2019",
     "year": "2019",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -610,6 +620,7 @@
     "internal_name": "Roelands et al, gut 2022",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -689,6 +700,7 @@
     "internal_name": "Roelands et al, gut 2022",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "GeoMx DSP",
     "platform_list": [
@@ -727,6 +739,7 @@
     "internal_name": "METABRIC1",
     "year": "2020",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -806,6 +819,7 @@
     "internal_name": "METABRIC2???????",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -836,6 +850,7 @@
     "internal_name": "Oost et al., 2024",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -916,6 +931,7 @@
     "internal_name": "Oost et al., 2024",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -998,6 +1014,7 @@
     "internal_name": "Rendeiro, et al.2020",
     "year": "2020",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -1073,6 +1090,7 @@
     "internal_name": "Rendeiro, et al.2020",
     "year": "2020",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "GeoMx DSP",
     "platform_list": [
@@ -1090,7 +1108,7 @@
     "disease_specifics_list": [
       "acute lung injury"
     ],
-    "n_images": "312",
+    "n_images": "",
     "n_patients": "13",
     "clinical_data": "yes",
     "n_markers": "1850",
@@ -1111,6 +1129,7 @@
     "internal_name": "Rendeiro, et al.2020",
     "year": "2020",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IHC",
     "platform_list": [
@@ -1152,6 +1171,7 @@
     "internal_name": "Mesmer/Deepcell",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX; CyCIF; Vectra; MIBI-TOF; MxIF; IMC",
     "platform_list": [
@@ -1168,7 +1188,7 @@
     "tissue_list": [],
     "disease_list": [],
     "disease_specifics_list": [],
-    "n_images": "6800",
+    "n_images": "",
     "n_patients": "",
     "clinical_data": "no",
     "n_markers": "2",
@@ -1191,6 +1211,7 @@
     "internal_name": "Hickey et al. 2023",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -1282,6 +1303,7 @@
     "internal_name": "Matisse",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -1338,6 +1360,7 @@
     "internal_name": "NaroNet",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
     "platform_list": [
@@ -1384,6 +1407,7 @@
     "internal_name": "Xiao2022",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -1461,6 +1485,7 @@
     "internal_name": "2018 Data Science Bowl",
     "year": "2019",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "microscopy",
     "spatial_data_method": "Fluorescent; H&E; light microscopy",
     "platform_list": [
@@ -1495,6 +1520,7 @@
     "internal_name": "Risom et al.  RAHBT_MIBI",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -1512,8 +1538,8 @@
     "disease_specifics_list": [
       "transition to invasive"
     ],
-    "n_images": "79",
-    "n_patients": "79",
+    "n_images": "",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "37",
     "markers": "TPSAB1;KRT7;VIM;CD44;KRT5;KRT;HIF1A;PTPRC;AR;HLA-DRA;SLC2A1;CDH1;MS4A1;MMP9;FAP;ITGAX;ERBB2;CD3D;CD8A;CD36;MPO;CD68;RPS6KB1;GZMB;TP63;MKI67;IDO1;PECAM1;PDCD1;CD14;CD4;COL1A1;ACTA2;PTGS2;H3C1;ESR1;CD274",
@@ -1571,6 +1597,7 @@
     "internal_name": "PENGUIN",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
     "platform_list": [
@@ -1612,6 +1639,7 @@
     "internal_name": "SABR",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -1647,7 +1675,8 @@
     "paper_entry_id": "AP_AUTO_3",
     "internal_name": "",
     "year": "2018",
-    "review_status": "auto_confirmed",
+    "review_status": "manual",
+    "addition_method": "auto",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -1681,7 +1710,8 @@
     "paper_entry_id": "AP_AUTO_12",
     "internal_name": "",
     "year": "",
-    "review_status": "auto_confirmed",
+    "review_status": "manual",
+    "addition_method": "auto",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -1766,7 +1796,8 @@
     "paper_entry_id": "AP_15",
     "internal_name": "",
     "year": "2018",
-    "review_status": "auto_confirmed",
+    "review_status": "manual",
+    "addition_method": "auto",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -1843,6 +1874,7 @@
     "internal_name": "",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -1877,6 +1909,7 @@
     "internal_name": "mibiLiu2022",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -1934,6 +1967,7 @@
     "internal_name": "",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -1968,6 +2002,7 @@
     "internal_name": "PAN-M_Nimbus",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -2000,6 +2035,7 @@
     "internal_name": "",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -2038,6 +2074,7 @@
     "internal_name": "",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2070,6 +2107,7 @@
     "internal_name": "",
     "year": "2019",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "t-CyCIF",
     "platform_list": [
@@ -2102,6 +2140,7 @@
     "internal_name": "Steenbuck26",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2221,6 +2260,7 @@
     "internal_name": "LIVECell",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -2251,6 +2291,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -2280,7 +2321,8 @@
     "paper_entry_id": "AP_27",
     "internal_name": "3D IMC breast",
     "year": "2021",
-    "review_status": "auto_confirmed",
+    "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2362,6 +2404,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "check",
     "spatial_data_method": "",
     "platform_list": [],
@@ -2392,6 +2435,7 @@
     "internal_name": "",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2460,6 +2504,7 @@
     "internal_name": "",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2536,6 +2581,7 @@
     "internal_name": "cords2023",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2615,6 +2661,7 @@
     "internal_name": "cords2024",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2700,6 +2747,7 @@
     "internal_name": "METABRIC_danenberg2022",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2776,6 +2824,7 @@
     "internal_name": "fischer2023",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2857,6 +2906,7 @@
     "internal_name": "SparTile",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -2875,7 +2925,7 @@
       "TNBC",
       "with treatment"
     ],
-    "n_images": "176",
+    "n_images": "",
     "n_patients": "88",
     "clinical_data": "yes",
     "n_markers": "45",
@@ -2942,6 +2992,7 @@
     "internal_name": "gupta2026",
     "year": "2026",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3025,26 +3076,23 @@
     "internal_name": "hickey2023",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
       "CODEX"
     ],
     "organism": "human",
-    "tissue": "intestine;  eight sections from nine individuals. The eight regions (in order of trajectory from the stomach) were as follows: the duodenum, proximal jejunum, mid-jejunum and ileum from the small intestine, and the ascending, transverse, descending and sigmoid regions of the large intestine",
+    "tissue": "intestine",
     "disease": "healthy",
     "tissue_list": [
-      "small intestine",
-      "large intestine",
-      "duodenum",
-      "jejunum",
-      "ileum"
+      "intestine"
     ],
     "disease_list": [
       "healthy"
     ],
     "disease_specifics_list": [],
-    "n_images": "72",
+    "n_images": "",
     "n_patients": "9",
     "clinical_data": "yes",
     "n_markers": "54",
@@ -3130,6 +3178,7 @@
     "internal_name": "hoch2022",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -3160,6 +3209,7 @@
     "internal_name": "scSpaMet_hu2023",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -3190,6 +3240,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -3220,6 +3271,7 @@
     "internal_name": "orion2023",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "orion",
     "platform_list": [
@@ -3275,6 +3327,7 @@
     "internal_name": "malchiodi2024",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3347,6 +3400,7 @@
     "internal_name": "malchiodi2024",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "mfIHC",
     "platform_list": [
@@ -3392,6 +3446,7 @@
     "internal_name": "meyer2025",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3472,6 +3527,7 @@
     "internal_name": "meyer2025",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
     "platform_list": [
@@ -3514,6 +3570,7 @@
     "internal_name": "wang2023",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3552,6 +3609,7 @@
     "internal_name": "moldoveanu2022",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3571,7 +3629,7 @@
       "melanoma"
     ],
     "n_images": "",
-    "n_patients": "72",
+    "n_patients": "",
     "clinical_data": "",
     "n_markers": "35",
     "markers": "",
@@ -3591,6 +3649,7 @@
     "internal_name": "monkman2024",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -3666,6 +3725,7 @@
     "internal_name": "phillips2021",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -3763,6 +3823,7 @@
     "internal_name": "rigamonti2024",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3829,6 +3890,7 @@
     "internal_name": "ruf2023",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -3905,6 +3967,7 @@
     "internal_name": "salie2025",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -3999,6 +4062,7 @@
     "internal_name": "mRNA&proteinIMCbreast",
     "year": "2018",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "multi_omics (proteomics+transcriptomics)",
     "spatial_data_method": "IMC + mRNA",
     "platform_list": [],
@@ -4055,6 +4119,7 @@
     "internal_name": "zhu2024",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4087,6 +4152,7 @@
     "internal_name": "zhu2024",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4119,6 +4185,7 @@
     "internal_name": "SpaceCat_Greenwald26",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -4202,6 +4269,7 @@
     "internal_name": "quiche_ranek2026",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -4225,7 +4293,7 @@
       "on-treatment metastases"
     ],
     "n_images": "548",
-    "n_patients": "314",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "39",
     "markers": "Calprotectin; Mast Cell Chymase; Mast Cell Tryptase; SMA; Vimentin; CD4; CD69; FAP; FOXP3; PD1; CD31; Ecadherin; CD56; CD38; TCF1 TCF7; TBET; CD45RB; CD68; CD11c; CD8; CD3e; IDO1; CD45RO; TIM-3; CD163; CD20; FN1; Glut1; HLADR; CD14; CD45; Cytokeratin17; COL1A1; H3K27me3; CD57; H3K9ac; Ki67; HLA1 class ABC; PDL1",
@@ -4285,6 +4353,7 @@
     "internal_name": "quiche_ranek2026",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -4308,7 +4377,7 @@
       "on-treatment metastases"
     ],
     "n_images": "",
-    "n_patients": "142",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "39",
     "markers": "Calprotectin; Mast Cell Chymase; Mast Cell Tryptase; SMA; Vimentin; CD4; CD69; FAP; FOXP3; PD1; CD31; Ecadherin; CD56; CD38; TCF1 TCF7; TBET; CD45RB; CD68; CD11c; CD8; CD3e; IDO1; CD45RO; TIM-3; CD163; CD20; FN1; Glut1; HLADR; CD14; CD45; Cytokeratin17; COL1A1; H3K27me3; CD57; H3K9ac; Ki67; HLA1 class ABC; PDL1",
@@ -4368,6 +4437,7 @@
     "internal_name": "sorin23_luad",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4385,8 +4455,8 @@
     "disease_specifics_list": [
       "LUAD"
     ],
-    "n_images": "536",
-    "n_patients": "346",
+    "n_images": "",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "35",
     "markers": "αSMA; CD16; Ki-67; CD14; MPO; BCL2; CD31; TTF1; HIF1α; PD-L1; M-CSF-R; CD45; CD117; CD11c; FOXP3; CD4; ARG1; CD68; MMP9; CD20; CD8α; pSTAT3; CD163; PD1; B7-H4; CD39; CD40; CD94; CD3; pERK; CC3; B7-H3; HLA-DR; PanCK; Histone H3",
@@ -4442,6 +4512,7 @@
     "internal_name": "Ferrian24",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI-TOF",
     "platform_list": [
@@ -4514,6 +4585,7 @@
     "internal_name": "Zhu25_TNBC_race",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4533,7 +4605,7 @@
       "Black vs white women cohort"
     ],
     "n_images": "98",
-    "n_patients": "57",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "26",
     "markers": "Vimentin; PLK1; AR; CD16; CD163; PanCK; CD31; PD-L1; PD-1; CD45; CD11c; Foxp3; CD4; E-Cadherin; CD68; CD152; CD8a; VEGF; MPO; HIF1a; CD45RA; GranzymeB; Ki67; CD3; CD45RO; KIFC1; pHH3;191Ir; 193Ir",
@@ -4583,6 +4655,7 @@
     "internal_name": "Zhu25_TNBC_race",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4652,6 +4725,7 @@
     "internal_name": "Zhu25_TNBC_race",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4671,7 +4745,7 @@
       "Black vs white women cohort"
     ],
     "n_images": "46",
-    "n_patients": "46",
+    "n_patients": "",
     "clinical_data": "yes",
     "n_markers": "32",
     "markers": "CD8a; CD20; Vimentin; PLK1; AR; CD16; CD163; PanCK; CD31; PD-L1; PD-1; CD45; CD11c; Foxp3; CD4; E-Cadherin; CD68; CD14; CD152; NOS2; VEGF; MPO; HIF1a; CD45RA; GranzymeB; Ki67; Arginase-1; CD3; CD45RO; KIFC1; pHH3; 191Ir; 193Ir",
@@ -4725,6 +4799,7 @@
     "internal_name": "Zhu25_TNBC_race",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10X Visium",
     "platform_list": [
@@ -4764,6 +4839,7 @@
     "internal_name": "Zhu25_TNBC_race",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Nanostring GeoMx Digital Spatial Profiling (DSP)",
     "platform_list": [
@@ -4803,6 +4879,7 @@
     "internal_name": "IMMUcan/ IFQuant",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IF",
     "platform_list": [
@@ -4857,6 +4934,7 @@
     "internal_name": "IMMUcan/ IFQuant",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -4943,6 +5021,7 @@
     "internal_name": "Schallenberg25",
     "year": "2025",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "mIF",
     "platform_list": [
@@ -4962,7 +5041,7 @@
       "LUAD",
       "LUSC"
     ],
-    "n_images": "4672",
+    "n_images": "",
     "n_patients": "1168",
     "clinical_data": "",
     "n_markers": "12",
@@ -4996,6 +5075,7 @@
     "internal_name": "",
     "year": "2025",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -5026,6 +5106,7 @@
     "internal_name": "osmFISH",
     "year": "2018",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "osmFISH",
     "platform_list": [
@@ -5061,6 +5142,7 @@
     "internal_name": "Moffitt et al., 2018",
     "year": "2018",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
     "platform_list": [
@@ -5096,6 +5178,7 @@
     "internal_name": "pciSeq",
     "year": "2020",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "ISS",
     "platform_list": [
@@ -5131,6 +5214,7 @@
     "internal_name": "STARMAP",
     "year": "2018",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
     "platform_list": [
@@ -5166,6 +5250,7 @@
     "internal_name": "seqFISH+",
     "year": "2019",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH+",
     "platform_list": [
@@ -5202,6 +5287,7 @@
     "internal_name": "",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH",
     "platform_list": [
@@ -5236,6 +5322,7 @@
     "internal_name": "Baysor",
     "year": "2021",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
     "platform_list": [
@@ -5270,6 +5357,7 @@
     "internal_name": "Allen smFISH spacejam",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "smFISH",
     "platform_list": [
@@ -5304,6 +5392,7 @@
     "internal_name": "SSAM",
     "year": "2019",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "smFISH",
     "platform_list": [
@@ -5338,6 +5427,7 @@
     "internal_name": "FICTURE",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Seq-Scope",
     "platform_list": [
@@ -5376,6 +5466,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "Stereo-seq",
     "platform_list": [
@@ -5408,6 +5499,7 @@
     "internal_name": "Xenium demo data breast",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
     "platform_list": [
@@ -5448,6 +5540,7 @@
     "internal_name": "Xenium demo data lung",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
     "platform_list": [
@@ -5487,6 +5580,7 @@
     "internal_name": "Xenium demo mouse brain data",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
     "platform_list": [
@@ -5521,6 +5615,7 @@
     "internal_name": "Vizgen MERSCOPE demo liver data",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
     "platform_list": [
@@ -5555,6 +5650,7 @@
     "internal_name": "Vizgen MERSCOPE demo Mouse Brain Receptor Map",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
     "platform_list": [
@@ -5589,6 +5685,7 @@
     "internal_name": "Vizgen MERSCOPE FFPE",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
     "platform_list": [
@@ -5621,6 +5718,7 @@
     "internal_name": "Vizgen MERSCOPE 1000 genes",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -5650,7 +5748,8 @@
     "paper_entry_id": "AP_41",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Stereo-seq",
     "platform_list": [
@@ -5683,6 +5782,7 @@
     "internal_name": "Slide-seqV2",
     "year": "2020",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seqV2",
     "platform_list": [
@@ -5718,6 +5818,7 @@
     "internal_name": "CosMx NSCLC FFPE",
     "year": "2022",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "CosMx",
     "platform_list": [
@@ -5755,7 +5856,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
     "platform_list": [
@@ -5788,6 +5890,7 @@
     "internal_name": "Xenium",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Xenium",
     "platform_list": [
@@ -5822,6 +5925,7 @@
     "internal_name": "STARmap PLUS",
     "year": "",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap PLUS",
     "platform_list": [
@@ -5856,6 +5960,7 @@
     "internal_name": "",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
     "platform_list": [
@@ -5890,6 +5995,7 @@
     "internal_name": "Spatial epigenome–transcriptome",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "spatial ATAC–RNA-seq & Spatial CUT&Tag–RNA-seq",
     "platform_list": [],
@@ -5920,6 +6026,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "Stero-seq",
     "platform_list": [
@@ -5954,6 +6061,7 @@
     "internal_name": "seqscope21",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
@@ -5987,6 +6095,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "VISIUM",
     "platform_list": [
@@ -6021,6 +6130,7 @@
     "internal_name": "",
     "year": "2023",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -6051,6 +6161,7 @@
     "internal_name": "ComSegData",
     "year": "2024",
     "review_status": "manual",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -6084,7 +6195,8 @@
     "paper_entry_id": "",
     "internal_name": "Merfish_single_cell",
     "year": "2015",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "citation_chase",
     "spatial_data_category": "",
     "spatial_data_method": "smFISH",
     "platform_list": [
@@ -6116,7 +6228,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
     "platform_list": [
@@ -6148,7 +6261,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq v.2",
     "platform_list": [
@@ -6180,7 +6294,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "CosMX SMI",
     "platform_list": [
@@ -6212,7 +6327,8 @@
     "paper_entry_id": "M_NI_39",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "VeraFISH",
     "platform_list": [
@@ -6244,7 +6360,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Visium",
     "platform_list": [
@@ -6276,7 +6393,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
     "platform_list": [
@@ -6308,7 +6426,8 @@
     "paper_entry_id": "AP_38",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap PLUS",
     "platform_list": [
@@ -6340,7 +6459,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
     "platform_list": [
@@ -6372,7 +6492,8 @@
     "paper_entry_id": "AP_3_osmfish",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "osmFISH",
     "platform_list": [
@@ -6404,7 +6525,8 @@
     "paper_entry_id": "AP_11",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARMap",
     "platform_list": [
@@ -6436,7 +6558,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -6466,7 +6589,8 @@
     "paper_entry_id": "AP_12",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -6496,7 +6620,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
     "platform_list": [
@@ -6528,7 +6653,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
     "platform_list": [
@@ -6560,7 +6686,8 @@
     "paper_entry_id": "AP_5",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
     "platform_list": [
@@ -6592,7 +6719,8 @@
     "paper_entry_id": "AP_6",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH+",
     "platform_list": [
@@ -6624,7 +6752,8 @@
     "paper_entry_id": "AP_31",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
     "platform_list": [
@@ -6656,7 +6785,8 @@
     "paper_entry_id": "AP_8",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
     "platform_list": [
@@ -6688,7 +6818,8 @@
     "paper_entry_id": "AP_44",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
     "platform_list": [
@@ -6720,7 +6851,8 @@
     "paper_entry_id": "AP_45",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -6750,7 +6882,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
     "platform_list": [
@@ -6782,7 +6915,8 @@
     "paper_entry_id": "AP_6",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "seqFISH+",
     "platform_list": [
@@ -6814,7 +6948,8 @@
     "paper_entry_id": "AP_50",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
     "platform_list": [
@@ -6846,7 +6981,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERSCOPE",
     "platform_list": [
@@ -6878,7 +7014,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "NanoString CosMx",
     "platform_list": [
@@ -6910,7 +7047,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Genomics Xenium",
     "platform_list": [
@@ -6942,7 +7080,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Genomics Visium",
     "platform_list": [
@@ -6974,7 +7113,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "MERFISH",
     "platform_list": [
@@ -7006,7 +7146,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium",
     "platform_list": [
@@ -7038,7 +7179,8 @@
     "paper_entry_id": "AP_3_osmfish",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "osmFISH",
     "platform_list": [
@@ -7070,7 +7212,8 @@
     "paper_entry_id": "AP_5",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "STARmap",
     "platform_list": [
@@ -7102,7 +7245,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium (brain)",
     "platform_list": [
@@ -7134,7 +7278,8 @@
     "paper_entry_id": "",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Visium (kidney)",
     "platform_list": [
@@ -7166,7 +7311,8 @@
     "paper_entry_id": "AP_31",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "manual",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "Slide-seq",
     "platform_list": [
@@ -7199,6 +7345,7 @@
     "internal_name": "",
     "year": "2024",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "CODEX",
     "platform_list": [
@@ -7237,6 +7384,7 @@
     "internal_name": "",
     "year": "2024",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Visium resolution??",
     "platform_list": [],
@@ -7273,6 +7421,7 @@
     "internal_name": "",
     "year": "2018",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "protocol of MRNA + IMC",
     "spatial_data_method": "",
     "platform_list": [],
@@ -7302,7 +7451,8 @@
     "paper_entry_id": "AP_49",
     "internal_name": "",
     "year": "2022",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "citation_chase",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "IMC",
     "platform_list": [
@@ -7345,7 +7495,8 @@
     "paper_entry_id": "AP_61",
     "internal_name": "",
     "year": "",
-    "review_status": "auto",
+    "review_status": "auto-1",
+    "addition_method": "citation_chase",
     "spatial_data_category": "",
     "spatial_data_method": "imaging mass cytometry",
     "platform_list": [
@@ -7382,6 +7533,7 @@
     "internal_name": "https://doi.org/10.1038/s41593-020-00787-0",
     "year": "2021",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "10x Visium resolution??",
     "platform_list": [],
@@ -7415,6 +7567,7 @@
     "internal_name": "https://doi.org/10.1158/0008-5472.CAN-18-0747",
     "year": "2018",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -7449,6 +7602,7 @@
     "internal_name": "10.1016/j.cell.2020.05.039",
     "year": "2020",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "",
     "platform_list": [],
@@ -7483,6 +7637,7 @@
     "internal_name": "10.1016/j.cell.2020.05.039",
     "year": "2020",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "MIBI",
     "platform_list": [
@@ -7519,6 +7674,7 @@
     "internal_name": "",
     "year": "",
     "review_status": "",
+    "addition_method": "",
     "spatial_data_category": "",
     "spatial_data_method": "",
     "platform_list": [],
