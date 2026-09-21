@@ -32,6 +32,7 @@ Usage:
     python -m src.agents.living_ingestion.merge_candidates
 """
 
+import re
 import shutil
 from datetime import date
 from pathlib import Path
@@ -39,6 +40,24 @@ from pathlib import Path
 import openpyxl
 
 from ..common import config
+
+_AUTO_LEVEL_COL_RE = re.compile(r"^AUTO_CURATION_DATE_LEVEL(\d+)$")
+
+
+def _current_max_level(ws, row_num, header_map: dict) -> int:
+    """Highest N for which this row already has a non-empty
+    AUTO_CURATION_DATE_LEVELN cell - 0 if none (a brand-new row, being
+    create_entry'd right now, or an existing row with no automated touches
+    yet). Added 2026-09-18 as part of the leveled-audit-trail redesign - see
+    config.py's REVIEW_STATUS section for the full reasoning."""
+    if row_num is None:
+        return 0
+    max_level = 0
+    for header, col_idx in header_map.items():
+        m = _AUTO_LEVEL_COL_RE.match(header)
+        if m and ws.cell(row=row_num, column=col_idx).value not in (None, ""):
+            max_level = max(max_level, int(m.group(1)))
+    return max_level
 
 # Header row is NOT the same for every sheet in the current schema:
 # method_pub's real header is row 1, but AP_pub and data have a row 1 of
@@ -210,32 +229,43 @@ def merge():
             if k not in _BOOKKEEPING_COLUMNS and v not in (None, "")
         }
 
+        # Leveled-audit-trail resolution (added 2026-09-18): every candidate
+        # reaching this point came from an agent (never a human - Marta only
+        # ever sets REVIEW_STATUS="manual" by typing directly into the
+        # Excel, no agent does), so every create_entry/update_field
+        # represents one more automated touch on this row. next_level = how
+        # many such touches this row will have had after this one.
+        next_level = _current_max_level(ws, existing_row, header_map) + 1
+        if candidate_fields.get("REVIEW_STATUS") == config.REVIEW_STATUS_AUTO:
+            # Generic staging-time marker -> resolve to the real level now
+            # that we can see this row's current state. "manual",
+            # "needs_review", or an already-specific "auto-N" (e.g. from the
+            # literature-search scanner, always level 1) pass through as-is.
+            candidate_fields["REVIEW_STATUS"] = config.auto_level_status(next_level)
+
         if existing_row is None:
             # create_entry (or an update_field that arrived before any
             # create_entry for the same id, which shouldn't normally happen)
             new_row_num = ws.max_row + 1
             id_col_idx = _get_or_add_column(ws, header_map, id_col_name, header_row)
             ws.cell(row=new_row_num, column=id_col_idx, value=entry_id)
-            for field_name, value in candidate_fields.items():
-                col_idx = _get_or_add_column(ws, header_map, field_name, header_row)
-                ws.cell(row=new_row_num, column=col_idx, value=value)
-            for audit_field in ("curation_agent", "curation_model", "curation_date", "confidence", "notes"):
-                if rec.get(audit_field) not in (None, ""):
-                    col_idx = _get_or_add_column(ws, header_map, f"AUTO_{audit_field.upper()}", header_row)
-                    ws.cell(row=new_row_num, column=col_idx, value=rec.get(audit_field))
-            applied += 1
+            target_row = new_row_num
         else:
             # update_field on an existing row (or create_entry for an id
             # that's somehow already there - treat as an update, don't
             # duplicate the row)
-            for field_name, value in candidate_fields.items():
-                col_idx = _get_or_add_column(ws, header_map, field_name, header_row)
-                ws.cell(row=existing_row, column=col_idx, value=value)
-            for audit_field in ("curation_agent", "curation_model", "curation_date", "confidence", "notes"):
-                if rec.get(audit_field) not in (None, ""):
-                    col_idx = _get_or_add_column(ws, header_map, f"AUTO_{audit_field.upper()}", header_row)
-                    ws.cell(row=existing_row, column=col_idx, value=rec.get(audit_field))
-            applied += 1
+            target_row = existing_row
+
+        for field_name, value in candidate_fields.items():
+            col_idx = _get_or_add_column(ws, header_map, field_name, header_row)
+            ws.cell(row=target_row, column=col_idx, value=value)
+        for audit_field in ("curation_agent", "curation_model", "curation_date", "confidence", "notes"):
+            if rec.get(audit_field) not in (None, ""):
+                col_idx = _get_or_add_column(
+                    ws, header_map, f"AUTO_{audit_field.upper()}_LEVEL{next_level}", header_row
+                )
+                ws.cell(row=target_row, column=col_idx, value=rec.get(audit_field))
+        applied += 1
 
     if needs_manual_placement:
         ws_manual = master_wb.create_sheet("NEEDS_MANUAL_PLACEMENT")

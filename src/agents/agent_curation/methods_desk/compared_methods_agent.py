@@ -30,12 +30,36 @@ the free-text category-keyword match).
 """
 
 import re
+from datetime import datetime, timezone
 
-from ...common import config, staging
+from ...common import config, staging, audit_log
 from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ...common.paper_fetcher import fetch_paper, get_agent_text, was_truncated, is_probably_real_content
 from ...common.reference_list_parser import parse_reference_list
 from ...common.reference_resolver import resolve_citation, is_confident
+
+# Per-field review-provenance column added 2026-09-20 (see CLAUDE.md's
+# "Per-field review-provenance columns" design decision) - tracks whether
+# THIS paper's comparison list specifically has ever been attempted,
+# independent of the whole-row REVIEW_STATUS. Values: "NA" (never attempted),
+# "auto" (an agent attempted it, whether or not it found anything), "manual"
+# (a human populated/confirmed it). Checking this INSTEAD of relying on
+# triage.py's whole-row REVIEW_STATUS check fixes two real bugs found
+# 2026-09-20: (1) a paper where the LLM was called and found ZERO comparisons
+# previously got no REVIEW_STATUS stamp at all, so it was re-fetched and
+# re-processed on every future run forever; (2) a citation-chased M_AUTO_*
+# entry, once merged at REVIEW_STATUS="auto-1", was permanently excluded from
+# ever having its OWN comparisons checked in a later run (the "auto-N always
+# excluded" rule in triage.py), even though only the whole-row status had
+# been touched, not this specific field.
+_COMPARISON_STATUS_COL = "METHOD_COMPARISON_REVIEW_STATUS"
+
+
+def _comparison_status(methods_df, entry_id: str) -> str:
+    if _COMPARISON_STATUS_COL not in methods_df.columns:
+        return ""
+    row = methods_df.loc[methods_df["entry_id"] == entry_id, _COMPARISON_STATUS_COL]
+    return str(row.iloc[0]).strip().lower() if not row.empty else ""
 
 SYSTEM_PROMPT = """You are a careful research assistant extracting factual information from a \
 scientific paper's methods section. You will be given the methods section text (or, if that \
@@ -73,6 +97,21 @@ If no comparison methods are mentioned, return an empty JSON array: []
 
 def _build_user_prompt(paper_entry_id: str, methods_text: str) -> str:
     return f"Methods section (paper {paper_entry_id}):\n\n{methods_text}"
+
+
+def _describe_existing(methods_df, entry_id: str) -> str:
+    """Human-readable label for an EXISTING entry being linked to (not
+    created) - added 2026-09-21 so staging.xlsx's notes and the audit log
+    show what a linked ID actually IS, not just the bare ID, without Marta
+    having to manually cross-reference the master Excel during review. Only
+    affects review-time text - the actual Method_comparison_P_ENTRY_ID field
+    written to the master stays ID-only, same as every existing cross-
+    reference in that column."""
+    row = methods_df.loc[methods_df["entry_id"] == entry_id]
+    if row.empty:
+        return entry_id
+    title = str(row.iloc[0].get("title", "") or "").strip()
+    return f"{entry_id} ({title})" if title else entry_id
 
 
 def _fallback_marker_from_text(citation_text: str) -> str:
@@ -152,6 +191,11 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
     doi = paper_entry["doi"]
     depth = paper_entry["depth"]
 
+    existing_status = _comparison_status(db.methods, entry_id)
+    if existing_status in ("auto", "manual"):
+        return _empty_stats(f"comparison list already {existing_status} "
+                             f"({_COMPARISON_STATUS_COL}) - not re-attempting")
+
     if fetched is None:
         fetched = fetch_paper(doi)
     methods_text, text_source = get_agent_text(fetched, "methods")
@@ -203,7 +247,21 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         reference_map = parse_reference_list(references_text) if references_text else {}
 
     try:
-        extracted, model_used = call_llm_json(SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text))
+        # only_provider="gemini" (changed 2026-09-21, superseding the
+        # earlier skip_openrouter=True choice): real testing that day (the
+        # PENGUIN paper, a denser real methods section than the earlier
+        # MAPS validation) showed qwen2.5:14b can ignore the "return ONLY a
+        # JSON array" instruction entirely on harder input, and qwen2.5:32b
+        # is too slow to be viable (300s+ per call) - neither is reliable
+        # enough to be the primary. Gemini was reliable and fast (~13s) on
+        # every real test run. Deliberately NO fallback beyond Gemini - see
+        # _build_provider_chain()'s docstring: once Gemini's free quota is
+        # exhausted, LLMExhaustedError should fire immediately so
+        # run_pipeline.py stops the run rather than silently degrading to a
+        # weaker/slower model or looping.
+        extracted, model_used = call_llm_json(
+            SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text), only_provider="gemini"
+        )
     except LLMError as e:
         staging.append_candidate(
             action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
@@ -220,12 +278,15 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     new_queue_items = []
     comparison_ids_added = []
+    item_outcomes = []
 
     for item in extracted:
         method_name = (item or {}).get("method_name", "").strip()
         citation_marker = (item or {}).get("citation_marker", "").strip()
         citation_text = (item or {}).get("citation_text", "").strip()
         if not method_name or not (citation_marker or citation_text):
+            item_outcomes.append({"outcome": "skipped",
+                                   "reason": "no method_name or citation info in this item"})
             continue
 
         if not citation_marker and citation_text:
@@ -242,6 +303,9 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             # already in the DB (or already staged earlier this run) - just link it
             matched_id = db.doi_index.lookup(resolved_doi)
             comparison_ids_added.append(matched_id)
+            item_outcomes.append({"outcome": "linked_existing", "entry_id": matched_id,
+                                   "description": _describe_existing(db.methods, matched_id),
+                                   "matched_by": "doi", "resolved_doi": resolved_doi})
             continue
 
         if not resolved_doi:
@@ -254,6 +318,8 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 notes=f"Could not resolve DOI for compared method '{method_name}' "
                       f"(marker: '{citation_marker}', citation: {resolved['input_text'][:200]})",
             )
+            item_outcomes.append({"outcome": "skipped",
+                                   "reason": f"could not resolve a DOI for '{method_name}'"})
             continue
 
         # genuinely new - allocate an ID and stage a new M_AUTO entry
@@ -274,6 +340,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 "category": "computational analysis - method",
                 "name": method_name,
                 "REVIEW_STATUS": review_status,
+                "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
             },
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model=model_used, confidence=resolved["confidence"],
@@ -284,8 +351,23 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         # so later papers this same run see it and don't duplicate-create it
         db.doi_index.add(resolved_doi, new_id)
         comparison_ids_added.append(new_id)
+        item_outcomes.append({"outcome": "created_new", "entry_id": new_id,
+                               "confidence": resolved["confidence"], "review_status": review_status})
 
         new_queue_items.append({"entry_id": new_id, "doi": resolved_doi, "depth": depth + 1})
+
+    audit_log.log_extraction("compared_methods_agent", entry_id, model_used, extracted, item_outcomes)
+
+    # Always stamp the per-field review status once the LLM has genuinely
+    # been called, whether or not it found anything - a "zero comparisons
+    # found" result is a completed, successful pass, not a skip (see
+    # _COMPARISON_STATUS_COL's module-level comment for the bug this fixes).
+    review_fields = {
+        _COMPARISON_STATUS_COL: "auto",
+        "METHOD_COMPARISON_REVIEW_AGENT": "compared_methods_agent",
+        "METHOD_COMPARISON_REVIEW_MODEL": model_used,
+        "METHOD_COMPARISON_REVIEW_DATE": datetime.now(timezone.utc).isoformat(),
+    }
 
     if comparison_ids_added:
         existing_value = ""
@@ -296,12 +378,30 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         for new_id in comparison_ids_added:
             updated_value = _append_to_comparison_list(updated_value, new_id)
 
+        # Human-readable per-ID breakdown, not just "IDs were appended" - so
+        # the notes column itself (not just the audit log) shows what each
+        # linked ID actually is without cross-referencing the master Excel.
+        added_descriptions = [
+            (o.get("description") or o["entry_id"]) for o in item_outcomes
+            if o.get("outcome") in ("linked_existing", "created_new") and o.get("entry_id") in comparison_ids_added
+        ]
         staging.append_candidate(
             action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
-            fields={"Method_comparison_P_ENTRY_ID": updated_value},
+            fields={"Method_comparison_P_ENTRY_ID": updated_value, **review_fields},
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model=model_used, confidence=None,
-            notes="Appended newly-found comparison method IDs.",
+            notes="Appended comparison method IDs: " + "; ".join(added_descriptions),
+        )
+    else:
+        staging.append_candidate(
+            action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id,
+            fields=review_fields,
+            source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
+            curation_model=model_used, confidence=None,
+            notes=f"Methods desk pass completed - {len(extracted)} comparison mention(s) "
+                  f"encountered, none resolved to a linkable/creatable entry."
+                  if extracted else
+                  "Methods desk pass completed - no comparison methods found in this paper.",
         )
 
     return {

@@ -41,6 +41,16 @@ already-in-DB case.
 """
 
 import argparse
+from datetime import datetime, timezone
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    # Graceful fallback if tqdm isn't installed wherever this runs - a
+    # progress bar is a nice-to-have, not worth hard-failing the whole scan
+    # over. Just iterate normally with no bar.
+    def tqdm(iterable, **kwargs):
+        return iterable
 
 from ...common import config, staging
 from ...common.db_loader import Database
@@ -109,7 +119,25 @@ def _stage_candidate(db: Database, record: dict, doi: str, verdict: dict) -> str
         "year": record.get("year"),
         "journal": record.get("journal", ""),
         "category": category,
-        "REVIEW_STATUS": config.REVIEW_STATUS_SCRAPED,
+        # REVIEW_STATUS/ADDITION_METHOD split 2026-09-18 (previously this
+        # scanner (mis)used REVIEW_STATUS="scraped" for both "how did this
+        # get here" and "has it been reviewed" at once - see config.py's
+        # REVIEW_STATUS section for the full reasoning). This scanner only
+        # ever creates brand-new rows, so the level is unambiguously 1 - no
+        # need for merge_candidates.py's generic auto-marker resolution.
+        "REVIEW_STATUS": config.auto_level_status(1),
+        "addition_method": config.ADDITION_METHOD_SCRAPED,
+        # Matches the master Excel's existing convention for this column -
+        # confirmed live 2026-09-18 (manually-entered rows store this as a
+        # plain YYYYMMDD integer, e.g. 20260704, not a date object or string).
+        "Date(added_to_dataset)": int(datetime.now(timezone.utc).strftime("%Y%m%d")),
+        # Saved so it isn't silently lost after being used for the LLM call
+        # above. 02_fetch_metadata.py's per-field skip logic (2026-09-18)
+        # means a real abstract saved here won't get needlessly overwritten
+        # by a re-fetch via the lower-hit-rate DOI-search method once this
+        # flows through 01_parse_excel.py (which already carries through any
+        # column present, no changes needed there).
+        "abstract": record.get("abstract", ""),
     }
     if record.get("doi") and record.get("doi") != doi:
         # Only true for a preprint whose published DOI we staged under
@@ -198,9 +226,12 @@ def _run_funnel(records: list, source_label: str, db: Database, ledger: seen_led
                  max_new: int = None, keywords: list = None) -> dict:
     counts = {}
     staged = 0
-    for record in records:
+    progress = tqdm(records, desc=f"{source_label} funnel", unit="paper")
+    for record in progress:
         outcome = _evaluate(record, source_label, db, ledger, keywords=keywords)
         counts[outcome] = counts.get(outcome, 0) + 1
+        if hasattr(progress, "set_postfix"):
+            progress.set_postfix(counts)
         if outcome == "staged":
             staged += 1
             if max_new is not None and staged >= max_new:

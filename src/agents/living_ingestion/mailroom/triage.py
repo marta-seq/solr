@@ -23,31 +23,107 @@ def _is_method_category(category: str) -> bool:
 
 
 def _is_already_reviewed(review_status: str) -> bool:
-    """True if this row has already gone through review - manual OR auto.
-    Only truly untouched rows (empty REVIEW_STATUS) should be re-processed."""
+    """True if this row has already gone through review - manual OR auto
+    (any level - "auto-1", "auto-2", etc, per the 2026-09-18 leveled-
+    REVIEW_STATUS redesign, see config.py). Only truly untouched rows
+    (blank, or "needs_review" - which specifically means "retry me") should
+    be re-processed. Behavior-preserving vs. the old flat "auto" check -
+    just recognizes the new "auto-N" format too."""
     status = str(review_status).strip().lower()
-    return status in (config.REVIEW_STATUS_MANUAL, config.REVIEW_STATUS_AUTO)
+    return status == config.REVIEW_STATUS_MANUAL or config.parse_auto_level(status) is not None
+
+
+_DESK_DONE_STATUSES = ("auto", "manual")
+
+
+def _desk_field_done(row, column: str) -> bool:
+    """True if `column` (one of the per-field review-provenance columns
+    added 2026-09-20, e.g. METHOD_COMPARISON_REVIEW_STATUS) shows this
+    specific desk has already completed a pass on this row - "auto" (an
+    agent attempted it, whether or not it found anything) or "manual" (a
+    human populated/confirmed it). Missing column or "NA"/blank both mean
+    "not attempted yet"."""
+    if column not in row.index:
+        return False
+    return str(row.get(column)).strip().lower() in _DESK_DONE_STATUSES
+
+
+def _still_needs_a_desk_pass(row) -> bool:
+    """True if EITHER the methods desk or the data desk still has work to do
+    on this row, per its own per-field status - NOT the whole-row
+    REVIEW_STATUS. Replaces relying on whole-row REVIEW_STATUS=auto-N to mean
+    "done, never touch again", which had two real bugs (found 2026-09-20):
+    (1) a paper where the LLM was called and found zero comparisons got no
+    REVIEW_STATUS stamp at all, so it kept being re-queued forever; (2) a
+    citation-chased entry, once merged at REVIEW_STATUS=auto-1, was
+    permanently excluded from ever having its OWN comparisons/datasets
+    checked in a later run, even though only the whole-row status had been
+    touched, not these specific fields. Both agents independently re-check
+    their own field before actually doing work (see
+    compared_methods_agent.py's/data_fetch_agent.py's own skip gates), so
+    this only needs to decide whether the row belongs in the queue at all."""
+    return (not _desk_field_done(row, "METHOD_COMPARISON_REVIEW_STATUS")
+            or not _desk_field_done(row, "DATASET_REVIEW_STATUS"))
 
 
 def _has_doi(doi: str) -> bool:
     return bool(doi) and str(doi).strip().lower() not in ("", "nan", "na")
 
 
-def _get_already_attempted_paper_ids() -> set:
-    """Papers already attempted this session (staged something, whether it
-    succeeded, was skipped, or failed) - re-attempting them right now would
-    just waste LLM budget re-discovering the same outcome, since nothing
-    changes about a paper between runs until you actually merge staging.xlsx
-    into the master CSV (REVIEW_STATUS only updates at that point). Without
-    this, re-running the pipeline before merging restarts from the SAME
-    seed papers instead of continuing to the next unprocessed ones."""
+def _get_already_attempted_paper_ids(agents=("compared_methods_agent", "data_fetch_agent")) -> set:
+    """Papers already attempted THIS SESSION by any of `agents` (staged
+    something, whether it succeeded, was skipped, or failed) - re-attempting
+    them right now would just waste LLM budget re-discovering the same
+    outcome, since nothing changes about a paper between runs until you
+    actually merge staging.xlsx into the master CSV. Without this, re-running
+    the pipeline before merging restarts from the SAME papers instead of
+    continuing to the next unprocessed ones."""
     attempted = set()
     for rec in staging.load_all_candidates_for_run():
-        if rec.get("curation_agent") in ("compared_methods_agent", "data_fetch_agent"):
+        if rec.get("curation_agent") in agents:
             source_id = rec.get("source_paper_entry_id")
             if source_id:
                 attempted.add(source_id)
     return attempted
+
+
+def build_category_audit_pool(methods_df) -> list:
+    """Candidate pool for category_audit_agent.py - every method-category
+    row that isn't a placeholder, isn't manually reviewed, and hasn't
+    already been attempted this session.
+
+    KNOWN LIMITATION, not yet resolved (flagged 2026-09-20, needs Marta's
+    call): there is no persistent per-row marker for "already audited,
+    verdict was clean" - unlike the methods/data desks, which got a
+    dedicated per-field review column each (METHOD_COMPARISON_REVIEW_STATUS/
+    DATASET_REVIEW_STATUS). Adding a THIRD such column wasn't something
+    Marta explicitly signed off on when scoping that schema change ("just
+    the 2 fields"), so this deliberately doesn't invent one unilaterally.
+    Practical effect: a row that audits clean in one run will be re-audited
+    (another LLM call) in every SEPARATE future run, since only the
+    session-scoped staging check prevents re-attempts WITHIN one run. A row
+    that gets flagged is fine either way - REVIEW_STATUS=needs_review
+    already keeps it out of both this pool and the seed queue afterward.
+    Revisit if repeated-audit cost turns out to matter in practice; the fix
+    would be a third per-field column (e.g. CATEGORY_AUDIT_STATUS),
+    mirroring the existing two."""
+    already_attempted = _get_already_attempted_paper_ids(agents=("category_audit_agent",))
+    pool = []
+    for _, row in methods_df.iterrows():
+        if _is_true(row.get("is_placeholder")):
+            continue
+        if str(row.get("paper_type", "")).strip().lower() == "application":
+            continue
+        if not _is_method_category(row.get("category")):
+            continue
+        if str(row.get("REVIEW_STATUS", "")).strip().lower() == config.REVIEW_STATUS_MANUAL:
+            continue
+        if row["entry_id"] in already_attempted:
+            continue
+        entry_id = row["entry_id"]
+        sheet = "AP_pub" if str(entry_id).upper().startswith("AP") else "method_pub"
+        pool.append({"entry_id": entry_id, "sheet": sheet})
+    return pool
 
 
 def build_seed_queue(methods_df) -> list:
@@ -75,6 +151,13 @@ def build_seed_queue(methods_df) -> list:
         config.METHOD_CATEGORY_KEYWORDS)
       - already manually reviewed (REVIEW_STATUS == "manual") - don't
         re-touch curated work
+      - BOTH desks have already completed a pass, per the per-field
+        METHOD_COMPARISON_REVIEW_STATUS/DATASET_REVIEW_STATUS columns (added
+        2026-09-20) - see _still_needs_a_desk_pass()'s own docstring for why
+        this replaced a whole-row-REVIEW_STATUS-based check. A row with
+        REVIEW_STATUS="auto-1" (e.g. merged in from the literature scanner)
+        is NOT excluded by this alone - if neither desk has touched its
+        comparison/dataset list yet, it still belongs in the queue.
       - no DOI to fetch text with in the first place
       - already attempted this session (staged something in staging.xlsx,
         even if the outcome was "skipped" or "failed") - re-run of the
@@ -90,7 +173,9 @@ def build_seed_queue(methods_df) -> list:
             continue
         if not _is_method_category(row.get("category")):
             continue
-        if _is_already_reviewed(row.get("REVIEW_STATUS")):
+        if str(row.get("REVIEW_STATUS", "")).strip().lower() == config.REVIEW_STATUS_MANUAL:
+            continue
+        if not _still_needs_a_desk_pass(row):
             continue
         if not _has_doi(row.get("DOI")):
             continue

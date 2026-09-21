@@ -25,16 +25,43 @@ Two things worth knowing that shaped this module:
    needed.
 """
 
+import re
 import time
 
 import requests
 
 from ...common import config
 
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
 BASE_URL = "https://api.biorxiv.org/details"
 PAGE_SIZE = 30  # fixed by the API, not configurable
 
 _MIN_REQUEST_INTERVAL_S = 0.5  # no documented rate limit, but be polite
+_MAX_PAGE_RETRIES = 4  # transient network blips are expected over a full
+                        # month's pagination (~60 pages) - caught live
+                        # 2026-09-17: a single ReadTimeout on page ~20 killed
+                        # an otherwise-healthy run with no retry at all
+
+
+def _get_page(url: str):
+    """One page fetch with retry+backoff for transient network errors
+    (timeouts, connection resets) - NOT for a malformed-date/API-shape
+    problem, which should still fail fast and loud (see fetch_window's
+    ValueError paths, raised outside this function)."""
+    last_error = None
+    for attempt in range(_MAX_PAGE_RETRIES):
+        try:
+            resp = requests.get(url, timeout=config.FETCH_TIMEOUT_S)
+            resp.raise_for_status()
+            return resp
+        except requests.exceptions.RequestException as e:
+            last_error = e
+            wait = 2 * (attempt + 1)
+            print(f"[biorxiv_client] {url} failed (attempt {attempt + 1}/{_MAX_PAGE_RETRIES}): "
+                  f"{e} - retrying in {wait}s...", flush=True)
+            time.sleep(wait)
+    raise last_error
 
 
 def is_published(record: dict) -> str:
@@ -49,15 +76,30 @@ def fetch_window(server: str, start_date: str, end_date: str, max_pages: int = N
     max_pages caps how many pages to fetch (for testing / a bounded first
     pass) - None means fetch the whole window."""
     assert server in ("biorxiv", "medrxiv")
+    # Catches a malformed/truncated date (e.g. "2026-09-1" instead of
+    # "2026-09-10") BEFORE it goes out as a URL path segment - caught live
+    # 2026-09-17, where an unpadded day caused the API to return an empty/
+    # non-JSON 200 response instead of a clean 4xx, surfacing only as a
+    # confusing raw JSONDecodeError traceback several frames away from the
+    # actual mistake.
+    for label, d in (("start_date", start_date), ("end_date", end_date)):
+        if not _DATE_RE.match(d):
+            raise ValueError(f"{label}={d!r} is not in YYYY-MM-DD format (zero-padded, e.g. "
+                              f"'2026-09-10' not '2026-09-1') - bioRxiv's API silently returns "
+                              f"an empty/non-JSON response for a malformed date instead of a "
+                              f"clean error.")
     records = []
     cursor = 0
     page = 0
     while True:
         time.sleep(_MIN_REQUEST_INTERVAL_S)
-        resp = requests.get(f"{BASE_URL}/{server}/{start_date}/{end_date}/{cursor}",
-                             timeout=config.FETCH_TIMEOUT_S)
-        resp.raise_for_status()
-        data = resp.json()
+        url = f"{BASE_URL}/{server}/{start_date}/{end_date}/{cursor}"
+        resp = _get_page(url)
+        try:
+            data = resp.json()
+        except ValueError as e:
+            raise ValueError(f"bioRxiv API returned a non-JSON response for {url!r} "
+                              f"(HTTP {resp.status_code}, body: {resp.text[:200]!r}): {e}")
         page_records = data.get("collection", [])
         records.extend(page_records)
         page += 1

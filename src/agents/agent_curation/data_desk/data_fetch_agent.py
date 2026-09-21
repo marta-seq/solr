@@ -14,13 +14,30 @@ common.staging.append_candidate().
 """
 
 import re
+from datetime import datetime, timezone
 
-from ...common import config, staging
+from ...common import config, staging, audit_log
 from ...common.doi_utils import normalize_doi
 from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ...common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
 from ...common.reference_list_parser import parse_reference_list
 from ...common.reference_resolver import resolve_citation, is_confident
+
+# Per-field review-provenance column added 2026-09-20 - same column name on
+# both method_pub and AP_pub (see CLAUDE.md's "Per-field review-provenance
+# columns" design decision). Tracks whether THIS paper's dataset list
+# specifically has ever been attempted, independent of the whole-row
+# REVIEW_STATUS - see compared_methods_agent.py's identical mechanism for the
+# two bugs this fixes (zero-found papers never getting stamped -> re-fetched
+# forever; auto-N papers being permanently excluded from later passes).
+_DATASET_STATUS_COL = "DATASET_REVIEW_STATUS"
+
+
+def _dataset_status(methods_df, entry_id: str) -> str:
+    if _DATASET_STATUS_COL not in methods_df.columns:
+        return ""
+    row = methods_df.loc[methods_df["entry_id"] == entry_id, _DATASET_STATUS_COL]
+    return str(row.iloc[0]).strip().lower() if not row.empty else ""
 
 SYSTEM_PROMPT = """You are a careful research assistant extracting factual information from a \
 scientific paper's data availability statement (or, if that wasn't available, the paper's full \
@@ -52,6 +69,24 @@ only actual experimental datasets. If nothing is mentioned, return an empty JSON
 
 def _build_user_prompt(paper_entry_id: str, text: str) -> str:
     return f"Data availability text (paper {paper_entry_id}):\n\n{text}"
+
+
+def _describe_existing_dataset(datasets_df, entry_id: str) -> str:
+    """Human-readable label for an EXISTING dataset entry being linked to
+    (not created) - added 2026-09-21, same reasoning as
+    compared_methods_agent.py's _describe_existing(). Datasets have no
+    single "title" column, so this builds a short composite from whatever's
+    actually populated (technique/tissue/disease) instead. Review-time text
+    only - the actual DataID/Associated data fields written to the master
+    stay ID-only."""
+    row = datasets_df.loc[datasets_df["entry_id"] == entry_id]
+    if row.empty:
+        return entry_id
+    r = row.iloc[0]
+    parts = [str(r.get(f, "") or "").strip() for f in ("spatial_data_method", "tissue", "disease")]
+    parts = [p for p in parts if p and p.lower() not in ("nan", "na", "none")]
+    desc = ", ".join(parts)
+    return f"{entry_id} ({desc})" if desc else entry_id
 
 
 def _sheet_for_modality(modality: str) -> str:
@@ -154,6 +189,11 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
     doi = paper_entry["doi"]
     data_ids_linked = []
 
+    existing_status = _dataset_status(db.methods, entry_id)
+    if existing_status in ("auto", "manual"):
+        return _empty_stats(f"dataset list already {existing_status} "
+                             f"({_DATASET_STATUS_COL}) - not re-attempting")
+
     if fetched is None:
         fetched = fetch_paper(doi)
 
@@ -199,7 +239,14 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         reference_map = parse_reference_list(references_text) if references_text else {}
 
     try:
-        extracted, model_used = call_llm_json(SYSTEM_PROMPT, _build_user_prompt(entry_id, text))
+        # only_provider="gemini" (changed 2026-09-21) - see
+        # compared_methods_agent.py's identical change for the full
+        # reasoning (qwen2.5:14b/32b both proved unreliable/impractical on
+        # real test papers; Gemini was fast and correct; deliberately no
+        # fallback so quota exhaustion stops the run rather than degrading).
+        extracted, model_used = call_llm_json(
+            SYSTEM_PROMPT, _build_user_prompt(entry_id, text), only_provider="gemini"
+        )
     except LLMError as e:
         staging.append_candidate(
             action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id, fields={},
@@ -211,6 +258,8 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
     if not isinstance(extracted, list):
         extracted = []
+
+    item_outcomes = []
 
     for item in extracted:
         item = item or {}
@@ -224,15 +273,30 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         origin_text = (item.get("origin_citation_text") or "").strip()
 
         if not accession and not data_doi and not access_link:
+            # KNOWN LIMITATION (flagged 2026-09-21, not fixed): a dataset
+            # mention with no identifier at all gets dropped here regardless
+            # of modality - e.g. a paper self-generating both IMC and IF data
+            # with neither formally deposited would lose both. See CLAUDE.md.
+            item_outcomes.append({"outcome": "skipped",
+                                   "reason": "no accession/data_doi/access_link on this mention"})
             continue  # nothing usable in this mention
 
-        # --- matching against existing DB first ---
+        # --- matching against existing DB first - keyed on THIS mention's
+        # own accession/DOI, never on the paper's DOI, so a paper with
+        # multiple datasets (e.g. IMC + IF) can never get confused between
+        # them: each mention only ever matches the specific existing entry
+        # that carries its exact identifier. ---
         existing_id = db.doi_index.lookup(data_doi) if data_doi else None
+        matched_by = "data_doi" if existing_id else None
         if existing_id is None and accession:
             existing_id = _find_by_accession(db.datasets, accession)
+            matched_by = "accession" if existing_id else None
 
         if existing_id:
             data_ids_linked.append(existing_id)
+            item_outcomes.append({"outcome": "linked_existing", "entry_id": existing_id,
+                                   "description": _describe_existing_dataset(db.datasets, existing_id),
+                                   "matched_by": matched_by})
             continue
 
         # --- not found: resolve who produced this data before creating ---
@@ -260,6 +324,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                             "DOI": origin_doi,
                             "category": "Application",
                             "REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW,
+                            "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
                         },
                         source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
                         curation_model=model_used, confidence=resolved["confidence"],
@@ -293,6 +358,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 "spatial_data_category": modality,
                 "spatial_data_method": technique,
                 "REVIEW_STATUS": review_status,
+                "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
             },
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model=model_used, confidence=origin_confidence,
@@ -303,21 +369,53 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         if data_doi:
             db.doi_index.add(data_doi, new_id)
         data_ids_linked.append(new_id)
+        item_outcomes.append({"outcome": "created_new", "entry_id": new_id,
+                               "confidence": origin_confidence, "review_status": review_status})
+
+    audit_log.log_extraction("data_fetch_agent", entry_id, model_used, extracted, item_outcomes)
+
+    paper_sheet = _sheet_for_paper_entry(entry_id)
+
+    # Always stamp the per-field review status once the LLM has genuinely
+    # been called, whether or not it found anything - see
+    # _DATASET_STATUS_COL's module-level comment for the bug this fixes.
+    review_fields = {
+        _DATASET_STATUS_COL: "auto",
+        "DATASET_REVIEW_AGENT": "data_fetch_agent",
+        "DATASET_REVIEW_MODEL": model_used,
+        "DATASET_REVIEW_DATE": datetime.now(timezone.utc).isoformat(),
+    }
 
     if data_ids_linked:
-        paper_sheet = _sheet_for_paper_entry(entry_id)
         data_used_field = _data_used_field_for_sheet(paper_sheet)
         existing_value = _lookup_field(db.methods, entry_id, data_used_field)
         updated_value = existing_value
         for did in data_ids_linked:
             updated_value = _append_id_list(updated_value, did)
 
+        # Human-readable per-ID breakdown, not just "IDs were appended" -
+        # same reasoning as compared_methods_agent.py's identical change.
+        added_descriptions = [
+            (o.get("description") or o["entry_id"]) for o in item_outcomes
+            if o.get("outcome") in ("linked_existing", "created_new") and o.get("entry_id") in data_ids_linked
+        ]
         staging.append_candidate(
             action="update_field", sheet=paper_sheet, entry_id=entry_id,
-            fields={data_used_field: updated_value},
+            fields={data_used_field: updated_value, **review_fields},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
             curation_model=model_used, confidence=None,
-            notes="Appended newly-found/linked dataset IDs.",
+            notes="Appended/linked dataset IDs: " + "; ".join(added_descriptions),
+        )
+    else:
+        staging.append_candidate(
+            action="update_field", sheet=paper_sheet, entry_id=entry_id,
+            fields=review_fields,
+            source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
+            curation_model=model_used, confidence=None,
+            notes=f"Data desk pass completed - {len(extracted)} dataset mention(s) "
+                  f"encountered, none resolved to a linkable/creatable entry."
+                  if extracted else
+                  "Data desk pass completed - no datasets found in this paper.",
         )
 
     return {

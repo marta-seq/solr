@@ -41,11 +41,41 @@ from pathlib import Path
 from openpyxl import Workbook, load_workbook
 
 from . import config
+from .doi_utils import normalize_doi
 
 BASE_COLUMNS = [
     "entry_id", "action", "target_sheet", "curation_agent", "curation_model",
     "curation_date", "confidence", "source_paper_entry_id", "notes",
 ]
+
+# Any field name that's known to carry a DOI, across every agent that stages
+# through this module - added 2026-09-21 as a safety net after a real bug
+# (a reference-list numbering collision in normalize_doi()) produced a
+# garbled DOI in a staged entry (M_AUTO_375/UTAG). That specific bug is fixed
+# at its root cause now, but this check exists so ANY future malformed DOI -
+# from this agent, a new one, or a bug nobody's found yet - gets caught here,
+# at the one chokepoint every agent already writes through, rather than
+# relying on each agent to remember to sanitize its own output.
+_DOI_FIELDS = ("DOI", "data_DOI", "paper_DOI")
+
+
+def _sanitize_doi_fields(fields: dict) -> tuple:
+    """Re-runs any known DOI-bearing field through normalize_doi() before
+    staging, regardless of whether the calling agent already did so. Returns
+    (cleaned_fields, warning_note) - warning_note is a non-empty string
+    listing exactly what got cleaned up, meant to be appended to the staged
+    row's notes so the cleanup is visible during review, not silent."""
+    cleaned = dict(fields)
+    warnings = []
+    for field_name in _DOI_FIELDS:
+        if field_name in cleaned and cleaned[field_name]:
+            original = str(cleaned[field_name])
+            fixed = normalize_doi(original)
+            if fixed != original:
+                warnings.append(f"{field_name} auto-cleaned by staging safety net "
+                                 f"(was: {original[:120]!r})")
+                cleaned[field_name] = fixed
+    return cleaned, "; ".join(warnings)
 
 
 def _workbook_path() -> Path:
@@ -92,6 +122,10 @@ def append_candidate(
 ) -> None:
     assert action in ("create_entry", "update_field")
     assert sheet in ("method_pub", "AP_pub", "data")
+
+    fields, doi_warning = _sanitize_doi_fields(fields)
+    if doi_warning:
+        notes = f"{notes} [{doi_warning}]" if notes else f"[{doi_warning}]"
 
     path = _workbook_path()
     wb = _load_or_create_workbook(path)

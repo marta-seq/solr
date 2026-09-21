@@ -6,6 +6,7 @@ Nothing here should require touching agent code to change behaviour.
 
 from pathlib import Path
 import os
+import re
 
 # ── Paths (mirrors 01_parse_excel.py conventions) ────────────────────────────
 ROOT           = Path(__file__).resolve().parents[3]
@@ -100,14 +101,16 @@ LLM_MODEL_FALLBACK_CHAIN = [
 # first - genuinely zero cost and zero rate limit once a model is pulled, no
 # quota to exhaust at all (added 2026-09-17: gaia already has an Ollama
 # server running as a systemd service, 2x idle RTX 2080 Ti, confirmed via
-# `systemctl status ollama`). Groq and Cerebras come next because their free
-# tiers are explicitly documented as such (see each entry's own comment);
-# Gemini is deliberately LAST among the keyed providers - reordered
-# 2026-09-17 after a real run silently spent a chunk of calls on Gemini
-# (whose free-vs-billed status for this specific key was unconfirmed at the
-# time, since confirmed free) when OpenRouter's daily cap hit, even though
-# Groq/Cerebras (confirmed free) were sitting right there unused, later in
-# the list.
+# `systemctl status ollama`). Groq comes next - its free tier is explicitly
+# documented as such (see its own comment below). Cerebras REMOVED 2026-09-20
+# - both of its free-catalog models (gpt-oss-120b, zai-glm-4.7) were
+# confirmed 100% broken (402 payment-required, 404 archived respectively) and
+# never recovered, so it was permanent dead weight in the chain. Gemini is
+# deliberately LAST among the keyed providers - reordered 2026-09-17 after a
+# real run silently spent a chunk of calls on Gemini (whose free-vs-billed
+# status for this specific key was unconfirmed at the time, since confirmed
+# free) when OpenRouter's daily cap hit, even though Groq (confirmed free)
+# was sitting right there unused, later in the list.
 #
 # ollama_local only actually resolves when running ON gaia (or through an
 # SSH tunnel to it) - localhost:11434 isn't reachable from anywhere else.
@@ -136,16 +139,6 @@ FALLBACK_PROVIDERS = [
         "url": "https://api.groq.com/openai/v1/chat/completions",
         "api_key_env": "GROQ_API_KEY",
         "models": ["llama-3.3-70b-versatile"],
-    },
-    {
-        "name": "cerebras",
-        "url": "https://api.cerebras.ai/v1/chat/completions",
-        "api_key_env": "CEREBRAS_API_KEY",
-        # Cerebras's free self-serve catalog narrowed hard by mid-2026 to just
-        # these two - llama-3.3-70b (what this used to say) moved behind the
-        # paid Dedicated Endpoints tier. gpt-oss-120b is the "production"-
-        # labeled one, zai-glm-4.7 is preview/evaluation - tried in that order.
-        "models": ["gpt-oss-120b", "zai-glm-4.7"],
     },
     {
         "name": "gemini",
@@ -188,17 +181,64 @@ CONTACT_EMAIL = os.environ.get("SOLR_EMAIL", "your@email.com")
 FETCH_TIMEOUT_S = 20
 
 # ── Section text sent to the LLM ─────────────────────────────────────────────
-# Free-tier models vary a lot in usable context before quality degrades, and
-# every extra character costs against the 20 req/min pacing too - cap what
-# any single agent call gets, regardless of how long the real section is.
-MAX_SECTION_CHARS = 12000  # roughly ~3000 tokens
+# Raised 2026-09-20 (was 12000, ~3000 tokens) - every provider actually in
+# FALLBACK_PROVIDERS/OpenRouter's chain (Groq's Llama-3.3-70B, Gemini,
+# Zhipu's GLM, DeepSeek, even locally-hosted qwen2.5) supports well beyond
+# this in real context window, so the old cap was truncating real Methods
+# sections on any paper with a long baseline-comparison writeup long before
+# hitting any actual model limit - a self-imposed bottleneck, not a real one.
+# Free-tier cost here is latency/rate-limit, not per-token billing, so there's
+# real room to stop truncating this aggressively.
+MAX_SECTION_CHARS = 60000  # roughly ~15000 tokens
 
 # ── Review status enum (written back to the master DB after human merge) ────
+# Redesigned 2026-09-18, per Marta's ask to stop conflating "how did this row
+# enter the DB" with "has it been reviewed / how many automated stages have
+# touched it". Two independent axes now:
+#   - REVIEW_STATUS (this section): "manual" (a human has reviewed/confirmed
+#     this row - regardless of how it originally got there), "needs_review"
+#     (an agent extracted/filled fields with LOW confidence - kept as its
+#     own distinct signal, not folded into the auto-N levels below, because
+#     it specifically means "retry/look at this again", not just "was
+#     touched once"), or "auto-N" (auto_level_status(N) below) meaning
+#     "automatically processed by N distinct stages so far" - e.g. N=1 for
+#     the literature-search scanner's own classification, N=2 if it's later
+#     also enriched by the citation-chasing desk, etc. Always construct/
+#     parse the "auto-N" string via the two helpers below, never hand-write
+#     it, so the format can't drift.
+#   - ADDITION_METHOD (further below): how the row FIRST entered the DB -
+#     set once at creation, never changed again. Independent of the above.
 REVIEW_STATUS_MANUAL = "manual"
-REVIEW_STATUS_AUTO = "auto"
 REVIEW_STATUS_NEEDS_REVIEW = "needs_review"
-# Found by the literature-search scanner (living_ingestion/literature_search/),
-# not yet touched by any agentic curation or human review - distinct from
-# REVIEW_STATUS_AUTO, which means an agent already extracted/filled fields.
-# A scraped candidate has only the bare metadata the source API returned.
-REVIEW_STATUS_SCRAPED = "scraped"
+# Staging-time marker ONLY - never write this literally into the master DB.
+# An agent writes this when it doesn't know (and shouldn't need to know)
+# what level this row is currently at - merge_candidates.py resolves it into
+# the real "auto-N" at merge time, based on the row's current state. A
+# create_entry action for a brand-new row (always level 1 - e.g. the
+# literature-search scanner, which only ever creates new rows) can skip this
+# marker entirely and just call auto_level_status(1) directly, since there's
+# no ambiguity to resolve.
+REVIEW_STATUS_AUTO = "auto"
+
+_AUTO_LEVEL_RE = re.compile(r"^auto-(\d+)$")
+
+
+def auto_level_status(level: int) -> str:
+    return f"auto-{level}"
+
+
+def parse_auto_level(status) -> int:
+    """Returns the level N if `status` matches "auto-N" (case-insensitive),
+    else None (covers "manual", "needs_review", blank, or anything else)."""
+    m = _AUTO_LEVEL_RE.match(str(status).strip().lower())
+    return int(m.group(1)) if m else None
+
+
+# ── Addition method (how a row first entered the DB) ─────────────────────────
+# New 2026-09-18. Set once at row creation, never touched again - independent
+# of REVIEW_STATUS above. The literature-search scanner previously (mis)used
+# REVIEW_STATUS="scraped" for this; that value is retired in favor of
+# ADDITION_METHOD_SCRAPED + REVIEW_STATUS=auto_level_status(1).
+ADDITION_METHOD_MANUAL = "manual"
+ADDITION_METHOD_SCRAPED = "scraped"
+ADDITION_METHOD_CITATION_CHASE = "citation_chase"

@@ -11,7 +11,8 @@ pipeline never re-fetches a paper it already has. Returns a dict:
 
     {
         "doi": "https://doi.org/...",
-        "source": "unpaywall_pdf" | "europepmc" | "biorxiv" | "crossref_abstract_only",
+        "source": "unpaywall_pdf" | "europepmc" | "biorxiv_fulltext" | "biorxiv_abstract" |
+                   "crossref_abstract_only",
         "is_full_text": bool,
         "text": "<all extracted text or just the abstract>",
         "sections": {"abstract": "...", "methods": "...", "data_availability": "..."},
@@ -404,7 +405,40 @@ def _try_europepmc(doi: str):
         return None
 
 
+def _try_biorxiv_fulltext(jatsxml_url: str):
+    """Fetches bioRxiv's own JATS XML source (the `jatsxml` field on the
+    details-API record) and parses it with the SAME JATS parser already
+    built for Europe PMC (_parse_europepmc_xml) - it's the identical format,
+    real <sec> tags for methods/data-availability/references, not a new
+    parser to maintain.
+
+    Added 2026-09-20 to fix a real coverage gap: the details API alone only
+    ever gives an abstract, so REQUIRE_ISOLATED_SECTION permanently blocked
+    the methods/data desks on every bioRxiv-sourced preprint. Direct fetches
+    to biorxiv.org are aggressively bot-protected - confirmed live 2026-09-20:
+    a second request within ~10s of the first already got Cloudflare's
+    rate-limit response (HTTP 429 on the PDF endpoint, "error code: 1015" on
+    this XML endpoint). This is NOT retried or paced around here - on ANY
+    failure (network error, non-200, unparseable content), returns None and
+    the caller falls back to abstract-only, exactly like before this fix
+    existed. Every result is cached to disk per-DOI same as every other
+    source, so a rate-limited attempt just means "no full text this run",
+    never a repeated hit against the same DOI on a later run.
+    Returns (text, sections) or None."""
+    try:
+        r = requests.get(jatsxml_url, headers=HEADERS, timeout=config.FETCH_TIMEOUT_S)
+        if r.status_code != 200 or not r.text or "error code" in r.text[:200].lower():
+            return None
+        text, sections = _parse_europepmc_xml(r.text)
+        return (text, sections) if text and len(text) > 500 else None
+    except Exception:
+        return None
+
+
 def _try_biorxiv(doi: str):
+    """Returns text (str, abstract-only) or (text, sections) tuple if full
+    text was recovered via jatsxml - fetch_paper() checks the type, same
+    convention as _try_unpaywall()."""
     try:
         bd = bare_doi(doi)
         r = requests.get(
@@ -414,8 +448,18 @@ def _try_biorxiv(doi: str):
         collection = r.json().get("collection", [])
         if not collection:
             return None
-        # bioRxiv's public API only reliably gives abstract, not full body text
-        abstract = collection[0].get("abstract", "")
+        record = collection[0]
+        abstract = record.get("abstract", "")
+
+        jatsxml_url = record.get("jatsxml", "")
+        if jatsxml_url:
+            full = _try_biorxiv_fulltext(jatsxml_url)
+            if full:
+                return full
+
+        # No full text (no jatsxml link, or the fetch failed/was
+        # rate-limited) - fall back to abstract-only, the pre-2026-09-20
+        # behavior.
         return abstract if abstract else None
     except Exception:
         return None
@@ -524,10 +568,17 @@ def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
             print(f"[paper_fetcher] {doi}: Europe PMC had nothing usable, trying bioRxiv...", flush=True)
 
     if result is None:
-        text = _try_biorxiv(doi)
-        if text:
-            print(f"[paper_fetcher] {doi}: got abstract via bioRxiv", flush=True)
-            result = {"source": "biorxiv_abstract", "is_full_text": False, "text": text}
+        biorxiv_result = _try_biorxiv(doi)
+        if biorxiv_result:
+            if isinstance(biorxiv_result, tuple):
+                text, structured_sections = biorxiv_result
+                print(f"[paper_fetcher] {doi}: got full text via bioRxiv jatsxml "
+                      f"(structured sections found: {list(structured_sections.keys()) or 'none'})", flush=True)
+                result = {"source": "biorxiv_fulltext", "is_full_text": True, "text": text}
+            else:
+                text = biorxiv_result
+                print(f"[paper_fetcher] {doi}: got abstract via bioRxiv (no full text available)", flush=True)
+                result = {"source": "biorxiv_abstract", "is_full_text": False, "text": text}
         else:
             print(f"[paper_fetcher] {doi}: bioRxiv had nothing usable, trying Crossref abstract...", flush=True)
 

@@ -33,7 +33,7 @@ CODE_VERSION = "2026-08-08-r18-stop-early-on-llm-exhaustion"
 
 from .common import config, db_loader
 from .living_ingestion.mailroom import triage
-from .agent_curation.methods_desk import compared_methods_agent
+from .agent_curation.methods_desk import compared_methods_agent, category_audit_agent
 from .agent_curation.data_desk import data_fetch_agent, intern_agent
 from .common.paper_fetcher import fetch_paper, get_agent_text
 from .common.reference_list_parser import parse_reference_list
@@ -68,6 +68,52 @@ def run_paper_queue(db, budget: int) -> tuple:
 
         entry_id = paper_entry["entry_id"]
         _log(f"[{processed + 1}/{budget}] {entry_id} (depth {paper_entry['depth']})")
+
+        # Category audit gate, added 2026-09-20: cheap (title+abstract only,
+        # no fetch_paper() needed - both already live in db.methods), and
+        # runs BEFORE either desk so a miscategorized paper never burns a
+        # methods-desk/data-desk LLM call at all this run. Only ever FLAGS
+        # (REVIEW_STATUS=needs_review) for Marta to confirm - never
+        # auto-reclassifies or moves the row (see category_audit_agent.py's
+        # own docstring for why). A flagged paper is skipped for the rest of
+        # this iteration but still counts against budget, same as any other
+        # processed paper.
+        sheet = "AP_pub" if str(entry_id).upper().startswith("AP") else "method_pub"
+        audit_result = category_audit_agent.process_entry(db, entry_id, sheet)
+        if audit_result.get("llm_exhausted"):
+            _log(f"  category audit: LLM fallback chain is FULLY EXHAUSTED - stopping this run "
+                 f"early instead of repeating the same doomed wait on each remaining paper.")
+            summary["llm_exhausted"] = True
+            break
+        if audit_result.get("skip_reason") is not None:
+            _log(f"  category audit: SKIPPED - LLM was NOT called ({audit_result['skip_reason']})")
+        elif audit_result["flagged"]:
+            _log(f"  category audit: FLAGGED as possibly not a computational method "
+                 f"(confidence {audit_result['confidence']:.2f}) - {audit_result['reason']} - "
+                 f"staged as needs_review, skipping methods/data desks for this paper this run")
+            summary["processed"].append(entry_id)
+            processed += 1
+            continue
+        else:
+            _log(f"  category audit: OK - correctly categorized "
+                 f"(confidence {audit_result['confidence']:.2f})")
+
+        # ST-only scope skip, added 2026-09-21 per Marta's explicit ask -
+        # "just for now, this first version": skip the methods/data desks
+        # entirely for papers whose spatial_modality is EXACTLY
+        # {spatial_transcriptomics}, nothing else. Matches the same ST-only
+        # rule already confirmed (but not yet built) for the Methods Graph
+        # rendering filter - see category_audit_agent.py's is_st_only for the
+        # exact definition. Deliberately does NOT stage anything (not a data
+        # quality issue, just out of scope for this pass) - so it doesn't
+        # clutter staging.xlsx or the needs_review queue.
+        if audit_result.get("is_st_only"):
+            _log(f"  SKIPPED (out of scope): spatial_transcriptomics-only "
+                 f"({audit_result['spatial_modality']}) - not processing methods/data desks "
+                 f"for this paper (first-version scope limit, see CLAUDE.md)")
+            summary["processed"].append(entry_id)
+            processed += 1
+            continue
 
         # Fetch once, share between both desks - they both need this paper's text
         fetched = fetch_paper(paper_entry["doi"])

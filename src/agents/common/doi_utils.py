@@ -44,7 +44,18 @@ def normalize_doi(doi) -> str:
         result = doi.replace("http://", "https://")
     elif doi.startswith("doi.org/"):
         result = "https://" + doi
-    elif doi.startswith("10."):
+    elif re.match(r"^10\.\d{4,9}/[^\s\"'<>]+$", doi):
+        # Whole-string match ONLY - a bare `doi.startswith("10.")` check (what
+        # this used to be) false-positives on numbered reference-list entries
+        # whose citation marker happens to be exactly "10." (e.g. "10. Kim J
+        # et al... 10.1038/s41592-022-01657-2 36316562 PMC11102857"), since
+        # that string also starts with "10." - the whole messy citation then
+        # got prepended with "https://doi.org/" instead of extracting just
+        # the real embedded DOI. Caught live 2026-09-21 via a real staged
+        # entry (M_AUTO_375/UTAG) with a garbled DOI matching this exact
+        # pattern. Anything that ISN'T a clean bare DOI end-to-end now falls
+        # through to the regex-search branch below, which already correctly
+        # isolates just the DOI substring from surrounding text.
         result = "https://doi.org/" + doi
     else:
         # last resort: strip any leading junk and hope it's a bare DOI

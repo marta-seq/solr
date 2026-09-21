@@ -130,20 +130,36 @@ a spatial proteomics dataset)? Mentioning immunofluorescence or imaging in \
 passing does NOT count - the paper's actual subject must be spatial \
 proteomics specifically.
 
-2. If relevant, classify it as "method" (introduces or benchmarks a \
-computational method/tool) or "application" (uses existing methods/platforms \
-to study something, rather than introducing a new computational tool).
+2. If relevant, classify it as "method" ONLY if it introduces or benchmarks \
+a new COMPUTATIONAL/SOFTWARE tool - an algorithm, a statistical model, a \
+pipeline/package that processes data on a computer. If it instead introduces \
+or improves a WET-LAB technique - new chemistry, a labeling/amplification \
+method, a staining or antibody panel protocol, a tissue-preparation or \
+imaging-hardware technique - that is NOT "method", even though it is also a \
+genuinely new technique. Classify it as "application" instead (see step 3 - \
+it will get the TECHNICAL application tag there). "Introduces something new" \
+is not sufficient for "method" by itself - the new thing must be \
+computational/software, not wet-lab/chemical/hardware.
 
 3. ONLY if you classified it as "application" in step 2: is this a \
-TECHNICAL application - i.e. does it primarily describe, introduce, or \
-improve a wet-lab technique/platform/protocol itself (e.g. introducing IMC \
-or CODEX as a platform, optimizing an antibody panel or staining protocol, \
-improving tissue preparation) - as opposed to a BIOLOGICAL application - \
-i.e. using an already-established platform/protocol to study a biological \
-question (e.g. a disease cohort study, a tissue atlas)? Set \
-"technical_application": true for the former, false for the latter. Only \
-meaningful when paper_type is "application" - set it to false (unused) for \
-"method" or when not relevant.
+TECHNICAL application? Set "technical_application": true ONLY if the paper's \
+MAIN CONTRIBUTION is the technique/protocol/platform itself - it introduces, \
+validates, or improves a wet-lab method (e.g. introducing IMC or CODEX as a \
+platform, a new amplification/labeling chemistry, a new antibody panel or \
+staining protocol, an improved tissue-preparation workflow). Set it to false \
+- a BIOLOGICAL application - if the paper's main contribution is a \
+biological/clinical finding, even if it describes the platform/protocol in \
+detail to justify its use (e.g. "using IMC to characterize the immune \
+microenvironment in pancreatic cancer" is BIOLOGICAL/false, even though it \
+names and describes IMC - the paper is ABOUT pancreatic cancer biology, not \
+about IMC itself). The test is: does the abstract's main claim describe a \
+NEW or IMPROVED technique, or does it describe a biological/clinical \
+finding obtained USING an existing technique? Merely naming, describing, or \
+using a named platform/technology is NOT sufficient for true - disease \
+cohort studies, tissue atlases, and biomarker/mechanism studies are almost \
+always BIOLOGICAL (false), even when the platform is central to the method \
+section. Only meaningful when paper_type is "application" - set it to false \
+(unused) for "method" or when not relevant.
 
 4. ONLY if you classified it as "method" in step 2: which pipeline \
 category/categories does it belong to? Choose ONLY from this fixed list - do \
@@ -181,7 +197,12 @@ def llm_relevance_pass(title: str, abstract: str) -> dict:
     agent's LLM call, let the caller decide whether to skip this one paper
     or stop the whole scan."""
     user_prompt = f"Title: {title}\n\nAbstract: {abstract or '(no abstract available)'}"
-    parsed, model_used = call_llm_json(_SYSTEM_PROMPT, user_prompt)
+    # skip_openrouter=True per Marta's 2026-09-17 ask: this scanner can fetch
+    # and evaluate a high volume of candidates in one run, which would burn
+    # through OpenRouter's low, account-wide daily free cap and starve every
+    # other agent sharing that same account for the rest of the day. Scoped
+    # to just this call - other agents still use OpenRouter normally.
+    parsed, model_used = call_llm_json(_SYSTEM_PROMPT, user_prompt, skip_openrouter=True)
     raw_categories = parsed.get("categories") or []
     valid_categories = [c for c in raw_categories if c in PIPELINE_CATEGORY_TAXONOMY]
     return {

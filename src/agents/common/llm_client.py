@@ -121,31 +121,66 @@ def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_pro
     return choices[0]["message"]["content"], actual_model
 
 
-def _build_provider_chain():
+def _build_provider_chain(skip_openrouter: bool = False, only_provider: str = None):
     """OpenRouter first (its own model chain), then each configured fallback
-    provider in order - skipping any whose API key isn't set."""
-    chain = [{
-        "name": "openrouter",
-        "url": config.OPENROUTER_URL,
-        "api_key_env": "OPENROUTER_API_KEY",
-        "models": config.LLM_MODEL_FALLBACK_CHAIN,
-    }]
+    provider in order - skipping any whose API key isn't set.
+
+    skip_openrouter (added 2026-09-17, per Marta's explicit ask for the
+    literature-search scanner): OpenRouter's free tier is a low, ACCOUNT-WIDE
+    shared daily cap (see config.py's own comment on LLM_MODEL_FALLBACK_CHAIN)
+    - a high-volume caller like a literature scan can burn through it in one
+    run and starve every OTHER agent (compared_methods_agent, data_fetch_agent)
+    sharing the same account for the rest of the day. Scoped per-call rather
+    than a global config flag or an .env key removal, so this doesn't affect
+    those other agents, which still benefit from OpenRouter's free tier when
+    it's available.
+
+    only_provider (added 2026-09-21, per Marta's explicit ask for the desk
+    agents): restricts the WHOLE chain to a single named provider from
+    config.FALLBACK_PROVIDERS - no OpenRouter, no other fallbacks at all.
+    Deliberate, not an oversight: with a single-provider chain, that
+    provider's quota being exhausted IS the whole chain being exhausted, so
+    the existing LLMExhaustedError/stop-the-run-early behavior (see
+    run_pipeline.py) kicks in immediately once Gemini's free tier is used up
+    for the day, instead of silently degrading to a weaker local model that
+    real testing (2026-09-21, the PENGUIN paper) showed can ignore the
+    output-format instruction entirely on harder input. Raises ValueError if
+    the name doesn't match any configured provider - a typo here should fail
+    loudly, not silently fall through to "no providers at all"."""
+    if only_provider:
+        match = next((p for p in config.FALLBACK_PROVIDERS if p["name"] == only_provider), None)
+        if match is None:
+            raise ValueError(f"only_provider={only_provider!r} not found in config.FALLBACK_PROVIDERS")
+        return [match]
+
+    chain = []
+    if not skip_openrouter:
+        chain.append({
+            "name": "openrouter",
+            "url": config.OPENROUTER_URL,
+            "api_key_env": "OPENROUTER_API_KEY",
+            "models": config.LLM_MODEL_FALLBACK_CHAIN,
+        })
     chain.extend(config.FALLBACK_PROVIDERS)
     return chain
 
 
-def call_llm_json(system_prompt: str, user_prompt: str):
+def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = False, only_provider: str = None):
     """
-    Tries OpenRouter's model chain first, then each configured fallback
-    provider in turn, with a couple of retries per model, until one returns
-    parseable JSON.
+    Tries OpenRouter's model chain first (unless skip_openrouter=True or
+    only_provider is set), then each configured fallback provider in turn,
+    with a couple of retries per model, until one returns parseable JSON.
+    If only_provider is set, the chain is restricted to just that one
+    provider - see _build_provider_chain()'s docstring for why.
 
     Returns (parsed_json, model_name_used).
-    Raises LLMError if every provider/model combination fails.
+    Raises LLMError if every provider/model combination fails (LLMExhaustedError
+    specifically when the WHOLE chain - which may be just one provider - is
+    exhausted).
     """
     last_error = None
 
-    for provider in _build_provider_chain():
+    for provider in _build_provider_chain(skip_openrouter=skip_openrouter, only_provider=only_provider):
         api_key = os.environ.get(provider["api_key_env"])
         if not api_key:
             print(f"[llm_client] {provider['name']}: no {provider['api_key_env']} "
