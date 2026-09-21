@@ -239,13 +239,16 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         reference_map = parse_reference_list(references_text) if references_text else {}
 
     try:
-        # only_provider="gemini" (changed 2026-09-21) - see
+        # only_provider=["gemini", "groq"] (changed 2026-09-21) - see
         # compared_methods_agent.py's identical change for the full
         # reasoning (qwen2.5:14b/32b both proved unreliable/impractical on
-        # real test papers; Gemini was fast and correct; deliberately no
-        # fallback so quota exhaustion stops the run rather than degrading).
+        # real test papers; Gemini was fast and correct; Groq added after
+        # Gemini's real quota turned out genuinely exhausted; still
+        # deliberately bounded, no OpenRouter, so full exhaustion stops the
+        # run rather than degrading further or looping).
         extracted, model_used = call_llm_json(
-            SYSTEM_PROMPT, _build_user_prompt(entry_id, text), only_provider="gemini"
+            SYSTEM_PROMPT, _build_user_prompt(entry_id, text),
+            only_provider=["gemini", "groq", "cloudflare"]
         )
     except LLMError as e:
         staging.append_candidate(

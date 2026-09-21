@@ -51,46 +51,42 @@ def clean(val) -> str:
         s = s[:-2]
     return s
 
-# ── Source type (bioRxiv / arXiv / peer-reviewed / preprint) ────────────────
-# Combines whatever's available, in priority order, rather than requiring
-# any single source to be complete on its own:
-#   1. source_type_manual - Marta's own curation (method_pub only,
-#      "arxiv/bioarxiv/peer reviewed" column renamed in 01_parse_excel.py).
-#      Most authoritative when present, but only ~150/267 method_pub rows
-#      have it and AP_pub rows never do.
-#   2. DOI prefix "10.1101/" (bioRxiv/medRxiv's registered Crossref prefix)
-#      or journal text containing "biorxiv"/"medrxiv" - 02_fetch_metadata.py
-#      already detects the journal-text case at fetch time (to route the
-#      abstract fetch to the bioRxiv API) but was collapsing it to the
-#      generic publication_type "preprint" and discarding which server it
-#      was. Re-derived here from data already in the CSV instead of
-#      requiring a re-fetch. The DOI-prefix check is the one that actually
-#      matters in practice: Crossref returns posted-content DOIs (which is
-#      how current bioRxiv papers register) with no container-title at all,
-#      so the journal-text check alone never fires - verified against the
-#      real data 2026-09-15, every currently-mislabeled row has an empty
-#      `journal` and a 10.1101/... DOI.
-#   3. publication_type - auto-fetched via Crossref in 02_fetch_metadata.py
-#      (distinguishes "peer-reviewed" from a generic "preprint" for
-#      preprint servers other than bioRxiv/medRxiv). Covers AP_pub too.
-#   4. DOI text containing "arxiv" - catches arXiv papers Crossref returned
-#      as a generic type rather than something recognizably "preprint".
+# ── Source type (bioRxiv / arXiv / medRxiv / peer-reviewed / preprint) ──────
+# Single consolidated field - the old separate `source_type_manual` column
+# (method_pub-only "arxiv/bioarxiv/peer reviewed") was merged into
+# `publication_type` directly in the master Excel 2026-09-18 (manual value
+# migrated in, column dropped) since having two columns for the same fact
+# was redundant and let them drift out of sync (e.g. M_SE_25: manual said
+# "peer-reviewed", DOI was 10.48550/arXiv.1901.03353 - manual was just
+# wrong there). Priority order, most to least authoritative:
+#   1. DOI prefix "10.1101/" or "10.64898/" (bioRxiv/medRxiv's registered
+#      Crossref prefixes) or journal text containing "biorxiv"/"medrxiv" -
+#      deterministic, derived from the DOI itself so it can't drift stale.
+#      Crossref returns posted-content DOIs (how current bioRxiv papers
+#      register) with no container-title at all, so the journal-text check
+#      alone doesn't catch everything - verified 2026-09-15, every
+#      then-mislabeled row had an empty `journal` and a 10.1101/... DOI.
+#   2. DOI text containing "arxiv" - same reasoning; must come before the
+#      generic publication_type check below, since Crossref/manual curation
+#      can both mislabel an arXiv DOI as "peer-reviewed" or "preprint".
+#   3. publication_type - auto-fetched via Crossref in 02_fetch_metadata.py,
+#      or a manually-curated value now living in the same column. Covers
+#      AP_pub too (which never had the old manual column).
 # Returns "" (unknown) only when none of the above have anything.
+BIORXIV_DOI_PREFIXES = ("10.1101/", "10.64898/")
+
 def compute_source_type(row) -> str:
-    manual = clean(row.get("source_type_manual"))
-    if manual:
-        return manual
     doi     = clean(row.get("DOI")).lower()
     journal = clean(row.get("journal")).lower()
     if "medrxiv" in journal:
         return "medRxiv"
-    if "biorxiv" in journal or "10.1101/" in doi:
+    if "biorxiv" in journal or any(p in doi for p in BIORXIV_DOI_PREFIXES):
         return "bioRxiv"
+    if "arxiv" in doi:
+        return "arXiv"
     pub_type = clean(row.get("publication_type"))
     if pub_type in ("peer-reviewed", "preprint"):
         return pub_type
-    if "arxiv" in doi:
-        return "arXiv"
     return ""
 
 # ── Parse semicolon-separated ID lists ───────────────────────────────────────
@@ -244,17 +240,27 @@ def export_methods(df: pd.DataFrame) -> list:
             "categories":            parse_id_list(row.get("category")),
             "pipeline_categories":   parse_id_list(row.get("pipeline_category")),
             "review_status":     clean(row.get("REVIEW_STATUS")),
+            # New 2026-09-18, split out of review_status - see config.py's
+            # REVIEW_STATUS section for the reasoning (how a row entered the
+            # DB vs. whether/how much it's been automatically/manually
+            # reviewed are now two independent things).
+            "addition_method":   clean(row.get("addition_method")),
             "is_placeholder":    str(row.get("is_placeholder", "")).lower() == "true",
             "date_added":        clean(row.get("Date(added_to_dataset)")),
             # metadata from script 02
             "title":             clean(row.get("title")),
-            "first_author":      clean(row.get("first_author")),
             "authors":           clean(row.get("authors")),
             "year":              clean(row.get("year")),
             "journal":           clean(row.get("journal")),
             "citations":         clean(row.get("citations")),
             "abstract":          clean(row.get("abstract")),
             "publication_type":  clean(row.get("publication_type")),
+            # New 2026-09-18: PubMed MeSH headings, fetched from the same
+            # efetch call as abstract (see 02_fetch_metadata.py). Only
+            # available for papers PubMed has already curator-indexed -
+            # typically has a lag of weeks-to-months after publication, so
+            # coverage is lower than abstract's, not a bug.
+            "keywords":          parse_id_list(row.get("keywords")),
             # relationships (method_pub only - empty for AP_pub rows)
             "data_ids":          parse_id_list(row.get("DataID (data_used_in_the_paper)")),
             "comparison_ids":    parse_id_list(row.get("Method_comparison_P_ENTRY_ID")),
@@ -292,6 +298,7 @@ def export_datasets(df: pd.DataFrame) -> list:
             "internal_name":        clean(row.get("paper_internal_name")),
             "year":                 clean(row.get("year")),
             "review_status":        clean(row.get("REVIEW_STATUS")),
+            "addition_method":      clean(row.get("addition_method")),
             "spatial_data_category": clean(row.get("spatial_data_category")),
             "spatial_data_method":  clean(row.get("spatial_data_method")),
             # Canonicalized list version (see platform_maps.py), additive
@@ -343,8 +350,11 @@ def export_datasets(df: pd.DataFrame) -> list:
 def compute_stats(methods: list, datasets: list) -> dict:
     total_papers     = len(methods)
     placeholders     = sum(1 for m in methods if m["is_placeholder"])
-    # "auto_confirmed" (new 2026-09-01 status) means auto-generated then
-    # manually confirmed - counts as curated same as "manual".
+    # "auto_confirmed" (the 2026-09-01 status meaning auto-generated then
+    # manually confirmed) was retired 2026-09-18 - those rows were migrated
+    # to plain "manual" (addition_method now separately records that they
+    # originated automatically). Kept in this check anyway, harmlessly, in
+    # case an un-migrated older export ever gets read here.
     curated          = sum(1 for m in methods if m["review_status"] in ("manual", "auto_confirmed"))
     # Was substring-matching the free-text `category` field ("computational"
     # / starts with "application"); switched to `paper_type`, which is set

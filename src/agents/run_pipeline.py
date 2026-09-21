@@ -79,6 +79,21 @@ def run_paper_queue(db, budget: int) -> tuple:
         # this iteration but still counts against budget, same as any other
         # processed paper.
         sheet = "AP_pub" if str(entry_id).upper().startswith("AP") else "method_pub"
+
+        # Zero-cost pre-audit gate, added 2026-09-21 per Marta's explicit ask:
+        # if this row's spatial_data_category is ALREADY known (persisted by
+        # a prior audit this run or an earlier one, or manual curation) to be
+        # ST-only, skip straight past the audit LLM call entirely - a
+        # DataFrame lookup instead of a real request. See
+        # category_audit_agent.is_known_st_only()'s own docstring.
+        row_match = db.methods.loc[db.methods["entry_id"] == entry_id]
+        if not row_match.empty and category_audit_agent.is_known_st_only(row_match.iloc[0]):
+            _log(f"  category audit: SKIPPED (zero LLM cost) - spatial_data_category already "
+                 f"known to be ST-only from a prior pass")
+            summary["processed"].append(entry_id)
+            processed += 1
+            continue
+
         audit_result = category_audit_agent.process_entry(db, entry_id, sheet)
         if audit_result.get("llm_exhausted"):
             _log(f"  category audit: LLM fallback chain is FULLY EXHAUSTED - stopping this run "
@@ -151,7 +166,8 @@ def run_paper_queue(db, budget: int) -> tuple:
         methods_ok = True
         try:
             methods_result = compared_methods_agent.process_paper(
-                db, paper_entry, fetched=fetched, reference_map=reference_map
+                db, paper_entry, fetched=fetched, reference_map=reference_map,
+                seed_spatial_modality=audit_result.get("spatial_modality")
             )
         except Exception as e:
             _log(f"  methods desk CRASHED on {entry_id}: {e}")

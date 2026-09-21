@@ -130,29 +130,66 @@ def audit_entry(entry_id: str, title: str, abstract: str) -> dict:
     }
 
 
+def known_spatial_modality(row) -> list:
+    """Reads the EXISTING spatial_data_category value off a row (already in
+    the DB, from a prior audit or manual curation) - returns [] if blank/
+    unset. Used to decide whether a fresh LLM audit call is even needed at
+    all - see is_known_st_only() and run_pipeline.py's pre-audit gate."""
+    raw = str(row.get("spatial_data_category", "") or "").strip()
+    if not raw or raw.upper() == "NA":
+        return []
+    return [m.strip() for m in raw.split(";") if m.strip() in _VALID_MODALITIES]
+
+
+def is_known_st_only(row) -> bool:
+    """True if this row's EXISTING spatial_data_category already says
+    ST-only, with zero LLM calls needed to know that. Added 2026-09-21 per
+    Marta's explicit ask: once a paper's modality is known (from a prior
+    audit this run, an earlier run, or manual curation), re-auditing it on
+    every future run just to re-derive the same answer wastes a real LLM
+    call on a paper we're going to skip anyway - a DataFrame lookup costs
+    nothing, an LLM call does."""
+    return known_spatial_modality(row) == ["spatial_transcriptomics"]
+
+
 def process_entry(db, entry_id: str, sheet: str) -> dict:
     """Looks up title/abstract from db.methods, runs the audit, and stages a
     needs_review flag only if the category looks wrong - a clean
     "correctly categorized" verdict isn't new information worth writing to
     the row, so nothing is staged for it (keeps staging.xlsx focused on
-    things Marta actually needs to look at)."""
+    things Marta actually needs to look at). Also persists the determined
+    spatial_modality onto THIS row's own spatial_data_category field if it
+    wasn't already set - added 2026-09-21 so future runs' is_known_st_only()
+    check has something to find, and so newly-discovered comparison methods
+    (see compared_methods_agent.py) have a value to inherit from their
+    source paper. Never overwrites an existing non-blank value - could be
+    real manual curation, not something an agent should clobber."""
     row = db.methods.loc[db.methods["entry_id"] == entry_id]
     if row.empty:
         return _empty_result("entry not found in DB")
 
-    title = str(row.iloc[0].get("title", "") or "")
-    abstract = str(row.iloc[0].get("abstract", "") or "")
+    row0 = row.iloc[0]
+    title = str(row0.get("title", "") or "")
+    abstract = str(row0.get("abstract", "") or "")
 
     result = audit_entry(entry_id, title, abstract)
 
+    fields = {}
     if result["flagged"]:
+        fields["REVIEW_STATUS"] = config.REVIEW_STATUS_NEEDS_REVIEW
+    if result["spatial_modality"] and not known_spatial_modality(row0):
+        fields["spatial_data_category"] = ";".join(result["spatial_modality"])
+
+    if fields:
+        notes = (f"Category audit flagged this entry as possibly NOT a computational "
+                  f"method: {result['reason']}") if result["flagged"] else \
+                 "Category audit determined spatial_data_category."
         staging.append_candidate(
             action="update_field", sheet=sheet, entry_id=entry_id,
-            fields={"REVIEW_STATUS": config.REVIEW_STATUS_NEEDS_REVIEW},
+            fields=fields,
             source_paper_entry_id=entry_id, curation_agent="category_audit_agent",
             curation_model=result["model_used"], confidence=result["confidence"],
-            notes=f"Category audit flagged this entry as possibly NOT a computational "
-                  f"method: {result['reason']}",
+            notes=notes,
         )
 
     return result

@@ -25,6 +25,7 @@ Usage:
     python src/preprocessing/01_parse_excel.py
 """
 
+import re
 import shutil
 from datetime import date
 from pathlib import Path
@@ -99,13 +100,36 @@ def normalize_doi(doi) -> str:
         return doi
     if doi.startswith("doi.org/"):
         return "https://" + doi
-    if doi.startswith("10."):
+    # Whole-string match ONLY, not a bare startswith("10.") check - see
+    # src/agents/common/doi_utils.py's normalize_doi() for the real bug this
+    # fixes (found 2026-09-21): a numbered reference-list citation whose
+    # marker happens to be exactly "10." also starts with "10.", so a plain
+    # prefix check wrongly swallows the whole citation sentence as if it
+    # were the DOI itself.
+    if re.match(r"^10\.\d{4,9}/[^\s\"'<>]+$", doi):
         return "https://doi.org/" + doi
     if doi.startswith("http://doi.org/"):
         return doi.replace("http://", "https://")
     return doi
 
 # ── Category/status normalization (see category_maps.py) ────────────────────
+_AUTO_LEVEL_RE = re.compile(r"^auto-\d+$")
+
+
+def _normalize_review_status(value, sheet_name: str, entry_id: str) -> str:
+    """REVIEW_STATUS-specific wrapper around _normalize_or_warn: "auto-N"
+    (any N) is already-canonical as of the 2026-09-18 leveled-REVIEW_STATUS
+    redesign (see config.py in src/agents/common/) - an open-ended pattern,
+    not a fixed set of values REVIEW_STATUS_MAP could enumerate, so this
+    skips the map lookup (and its warning) entirely for anything already
+    matching that shape, falling back to the ordinary whole-cell map lookup
+    for everything else (manual/needs_review/legacy raw variants)."""
+    raw = "" if pd.isna(value) else str(value).strip()
+    if _AUTO_LEVEL_RE.match(raw.lower()):
+        return raw.lower()
+    return _normalize_or_warn(value, REVIEW_STATUS_MAP, "REVIEW_STATUS", sheet_name, entry_id)
+
+
 def _normalize_or_warn(value, mapping: dict, field_name: str, sheet_name: str, entry_id: str) -> str:
     """Whole-cell lookup against one of the maps in category_maps.py.
 
@@ -187,11 +211,6 @@ def drop_junk_columns(df: pd.DataFrame) -> pd.DataFrame:
 CANONICAL_RENAMES = {
     "Resolution and also add dimensions": "Resolution",
     "N markers (proteins/genes …)": "N markers",
-    # method_pub only. Was silently carried through under its raw header
-    # (unused downstream); giving it a stable name so 03_export_json.py can
-    # expose it as part of the source_type filter (peer-reviewed/bioRxiv/
-    # arXiv/etc, added 2026-09-01).
-    "arxiv/bioarxiv/peer reviewed": "source_type_manual",
 }
 
 def apply_canonical_renames(df: pd.DataFrame) -> pd.DataFrame:
@@ -217,8 +236,18 @@ def parse_pub_sheet(xl: pd.ExcelFile, sheet_name: str, paper_type: str) -> pd.Da
     # Normalize DOI, with a lightweight sanity check
     for col in df.columns:
         if str(col).upper() == "DOI":
+            # pd.isna() check added 2026-09-18: a genuinely blank cell reads
+            # back as pandas NaN (not Python None - first attempt at this
+            # fix wrongly checked for None), and str(nan) is the literal
+            # string "nan" (non-empty!) - was being misread as "has
+            # suspicious content" instead of "no DOI at all" (a real,
+            # expected case for some PubMed papers - not every article has
+            # a DOI, see AP_138 2026-09-17). Found via the literature-search
+            # scanner's new method_pub entries, several of which genuinely
+            # lack a DOI.
             suspicious = df[col].apply(
-                lambda v: bool(str(v).strip()) and not _looks_like_doi_or_url(str(v).strip())
+                lambda v: not pd.isna(v) and bool(str(v).strip())
+                          and not _looks_like_doi_or_url(str(v).strip())
             )
             if suspicious.any():
                 bad_ids = df.loc[suspicious, "entry_id"].tolist()
@@ -263,7 +292,7 @@ def parse_pub_sheet(xl: pd.ExcelFile, sheet_name: str, paper_type: str) -> pd.Da
         )
     if "REVIEW_STATUS" in df.columns:
         df["REVIEW_STATUS"] = df.apply(
-            lambda r: _normalize_or_warn(r["REVIEW_STATUS"], REVIEW_STATUS_MAP, "REVIEW_STATUS", sheet_name, r["entry_id"]),
+            lambda r: _normalize_review_status(r["REVIEW_STATUS"], sheet_name, r["entry_id"]),
             axis=1,
         )
 
@@ -300,7 +329,7 @@ def parse_dataset_sheet(xl: pd.ExcelFile, sheet_name: str) -> pd.DataFrame:
         )
     if "REVIEW_STATUS" in df.columns:
         df["REVIEW_STATUS"] = df.apply(
-            lambda r: _normalize_or_warn(r["REVIEW_STATUS"], REVIEW_STATUS_MAP, "REVIEW_STATUS", sheet_name, r["entry_id"]),
+            lambda r: _normalize_review_status(r["REVIEW_STATUS"], sheet_name, r["entry_id"]),
             axis=1,
         )
 

@@ -170,12 +170,21 @@ def _empty_stats(skip_reason: str, new_queue_items=None, llm_exhausted: bool = F
     }
 
 
-def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: dict = None) -> dict:
+def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: dict = None,
+                   seed_spatial_modality: list = None) -> dict:
     """
     paper_entry: {"entry_id": ..., "doi": ..., "depth": ...}
     fetched/reference_map: pass these in if the orchestrator already fetched
     this paper (e.g. for a shared pass with data_fetch_agent), to avoid
     re-fetching/re-parsing the same paper twice.
+    seed_spatial_modality: the SEED paper's own spatial_modality (from
+    category_audit_agent, e.g. ["spatial_proteomics"]) - propagated onto any
+    newly-created comparison-method entry's spatial_data_category, added
+    2026-09-21 per Marta's ask so new entries aren't left with this field
+    blank (which would otherwise force a full LLM audit call to determine it
+    later). This is an INHERITED default, not independently verified for
+    the comparison method itself - flagged as such in that entry's notes,
+    since a paper can in principle cite a cross-modality comparison.
 
     Returns {"new_queue_items": [...], "total_encountered": N,
     "total_resolved": M, "skip_reason": str or None}. skip_reason is None
@@ -247,20 +256,24 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         reference_map = parse_reference_list(references_text) if references_text else {}
 
     try:
-        # only_provider="gemini" (changed 2026-09-21, superseding the
-        # earlier skip_openrouter=True choice): real testing that day (the
-        # PENGUIN paper, a denser real methods section than the earlier
-        # MAPS validation) showed qwen2.5:14b can ignore the "return ONLY a
-        # JSON array" instruction entirely on harder input, and qwen2.5:32b
-        # is too slow to be viable (300s+ per call) - neither is reliable
-        # enough to be the primary. Gemini was reliable and fast (~13s) on
-        # every real test run. Deliberately NO fallback beyond Gemini - see
-        # _build_provider_chain()'s docstring: once Gemini's free quota is
-        # exhausted, LLMExhaustedError should fire immediately so
-        # run_pipeline.py stops the run rather than silently degrading to a
-        # weaker/slower model or looping.
+        # only_provider=["gemini", "groq", "cloudflare"] (Gemini added
+        # 2026-09-21, superseding the earlier skip_openrouter=True choice;
+        # Groq + Cloudflare added same day after Gemini's real quota turned
+        # out genuinely exhausted - both confirmed genuinely free, no card,
+        # not trials): real testing that day (the PENGUIN paper, denser text
+        # than the earlier MAPS validation) showed qwen2.5:14b can ignore the
+        # "return ONLY a JSON array" instruction on harder input, and
+        # qwen2.5:32b is too slow to be viable (300s+/call) - neither
+        # reliable enough to be primary. Gemini was reliable and fast (~13s)
+        # on every real test. Still deliberately bounded, no OpenRouter,
+        # no OpenAI/Grok/DeepSeek/Cerebras (all confirmed to require payment
+        # now, not genuinely free - see CLAUDE.md) - see
+        # _build_provider_chain()'s docstring: once every listed provider is
+        # exhausted, LLMExhaustedError fires so run_pipeline.py stops the run
+        # rather than silently degrading further or looping.
         extracted, model_used = call_llm_json(
-            SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text), only_provider="gemini"
+            SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text),
+            only_provider=["gemini", "groq", "cloudflare"]
         )
     except LLMError as e:
         staging.append_candidate(
@@ -333,19 +346,26 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         new_id = db.id_allocator.next_id("M_AUTO")
         review_status = config.REVIEW_STATUS_AUTO if confident else config.REVIEW_STATUS_NEEDS_REVIEW
 
+        new_fields = {
+            "DOI": resolved_doi,
+            "category": "computational analysis - method",
+            "name": method_name,
+            "REVIEW_STATUS": review_status,
+            "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
+        }
+        modality_note = ""
+        if seed_spatial_modality:
+            new_fields["spatial_data_category"] = ";".join(seed_spatial_modality)
+            modality_note = (f" spatial_data_category inherited from {entry_id} "
+                              f"({';'.join(seed_spatial_modality)}) - not independently verified.")
+
         staging.append_candidate(
             action="create_entry", sheet="method_pub", entry_id=new_id,
-            fields={
-                "DOI": resolved_doi,
-                "category": "computational analysis - method",
-                "name": method_name,
-                "REVIEW_STATUS": review_status,
-                "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
-            },
+            fields=new_fields,
             source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
             curation_model=model_used, confidence=resolved["confidence"],
             notes=f"Discovered as a comparison method in {entry_id}. "
-                  f"Matched Crossref title: '{resolved['matched_title']}'{truncated_note}",
+                  f"Matched Crossref title: '{resolved['matched_title']}'{truncated_note}{modality_note}",
         )
 
         # so later papers this same run see it and don't duplicate-create it

@@ -121,7 +121,7 @@ def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_pro
     return choices[0]["message"]["content"], actual_model
 
 
-def _build_provider_chain(skip_openrouter: bool = False, only_provider: str = None):
+def _build_provider_chain(skip_openrouter: bool = False, only_provider=None):
     """OpenRouter first (its own model chain), then each configured fallback
     provider in order - skipping any whose API key isn't set.
 
@@ -136,22 +136,31 @@ def _build_provider_chain(skip_openrouter: bool = False, only_provider: str = No
     it's available.
 
     only_provider (added 2026-09-21, per Marta's explicit ask for the desk
-    agents): restricts the WHOLE chain to a single named provider from
-    config.FALLBACK_PROVIDERS - no OpenRouter, no other fallbacks at all.
-    Deliberate, not an oversight: with a single-provider chain, that
-    provider's quota being exhausted IS the whole chain being exhausted, so
-    the existing LLMExhaustedError/stop-the-run-early behavior (see
-    run_pipeline.py) kicks in immediately once Gemini's free tier is used up
-    for the day, instead of silently degrading to a weaker local model that
-    real testing (2026-09-21, the PENGUIN paper) showed can ignore the
-    output-format instruction entirely on harder input. Raises ValueError if
-    the name doesn't match any configured provider - a typo here should fail
-    loudly, not silently fall through to "no providers at all"."""
+    agents; extended same day to accept a list, not just a single name):
+    restricts the WHOLE chain to specific named provider(s) from
+    config.FALLBACK_PROVIDERS, in the order given - no OpenRouter, no other
+    fallbacks at all. Deliberate, not an oversight: with a chain restricted
+    to only these providers, ALL of them being exhausted IS the whole chain
+    being exhausted, so the existing LLMExhaustedError/stop-the-run-early
+    behavior (see run_pipeline.py) kicks in once every listed provider has
+    failed, instead of silently degrading to a weaker local model that real
+    testing (2026-09-21, the PENGUIN paper) showed can ignore the output-
+    format instruction entirely on harder input. Accepts a str (single
+    provider, back-compat) or a list (e.g. ["gemini", "groq"] - both direct
+    providers, still no OpenRouter, added the same day after Marta's actual
+    Gemini quota turned out to be genuinely exhausted, not just a transient
+    503 as first suspected). Raises ValueError if any name doesn't match a
+    configured provider - a typo here should fail loudly, not silently fall
+    through to "no providers at all"."""
     if only_provider:
-        match = next((p for p in config.FALLBACK_PROVIDERS if p["name"] == only_provider), None)
-        if match is None:
-            raise ValueError(f"only_provider={only_provider!r} not found in config.FALLBACK_PROVIDERS")
-        return [match]
+        names = [only_provider] if isinstance(only_provider, str) else list(only_provider)
+        chain = []
+        for name in names:
+            match = next((p for p in config.FALLBACK_PROVIDERS if p["name"] == name), None)
+            if match is None:
+                raise ValueError(f"only_provider name {name!r} not found in config.FALLBACK_PROVIDERS")
+            chain.append(match)
+        return chain
 
     chain = []
     if not skip_openrouter:
@@ -165,7 +174,7 @@ def _build_provider_chain(skip_openrouter: bool = False, only_provider: str = No
     return chain
 
 
-def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = False, only_provider: str = None):
+def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = False, only_provider=None):
     """
     Tries OpenRouter's model chain first (unless skip_openrouter=True or
     only_provider is set), then each configured fallback provider in turn,

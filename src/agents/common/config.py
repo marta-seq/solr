@@ -138,13 +138,37 @@ FALLBACK_PROVIDERS = [
         "name": "groq",
         "url": "https://api.groq.com/openai/v1/chat/completions",
         "api_key_env": "GROQ_API_KEY",
-        "models": ["llama-3.3-70b-versatile"],
+        # llama-3.3-70b-versatile REMOVED 2026-09-21 - confirmed via live query
+        # against api.groq.com/openai/v1/models (with the real key) that it's
+        # no longer in Groq's catalog at all, not just renamed - same
+        # provider-changed-their-roster pattern as Cerebras's removal above.
+        # openai/gpt-oss-120b confirmed present in that same live query -
+        # a real, substantial open-weight model, not a toy/audio one.
+        "models": ["openai/gpt-oss-120b"],
+    },
+    {
+        # Added 2026-09-21 - genuinely free permanent tier (verified live,
+        # not a time-limited trial like Cerebras's now-dead one), 10,000
+        # "Neurons"/day, no credit card, resets daily at 00:00 UTC. Uses
+        # Cloudflare's own OpenAI-compatible endpoint (confirmed to exist and
+        # match the standard chat-completions shape, not their native
+        # differently-shaped REST API) so this needs zero special-case code -
+        # same _call_model() as every other provider. Runs the SAME
+        # gpt-oss-120b model already validated via Groq above - not model
+        # diversity, but a genuinely independent second free quota bucket for
+        # a model already trusted. account_id is embedded in the URL itself
+        # (Cloudflare's API shape, not ours) - read from env at import time,
+        # same as every other secret/identifier here.
+        "name": "cloudflare",
+        "url": f"https://api.cloudflare.com/client/v4/accounts/{os.environ.get('CLOUDFLARE_ACCOUNT_ID', '')}/ai/v1/chat/completions",
+        "api_key_env": "CLOUDFLARE_API_KEY",
+        "models": ["@cf/openai/gpt-oss-120b"],
     },
     {
         "name": "gemini",
         "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
         "api_key_env": "GEMINI_API_KEY",
-        "models": ["gemini-3.5-flash"],  # gemini-2.5-flash deprecated for new users as of ~July 2026
+        "models": ["gemini-3.5-flash", "gemini-3.5-flash-lite"],  # gemini-2.5-flash deprecated for new users as of ~July 2026
                                           # (confirmed by your own 404 error) - 3.5-flash is the
                                           # current GA replacement per Google's own deprecation page
                                           # NOTE: unlike Groq/Cerebras above, whether THIS specific key
