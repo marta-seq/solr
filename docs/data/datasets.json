@@ -3182,7 +3182,7 @@
     "spatial_data_category": "",
     "spatial_data_method": "Imaging Mass Cytometry (IMC)",
     "platform_list": [
-      "Imaging Mass Cytometry (IMC)"
+      "IMC"
     ],
     "organism": "",
     "tissue": "",
@@ -3223,12 +3223,16 @@
     "tissue": "lung cancer; tonsil; endometrium",
     "disease": "lung cancer",
     "tissue_list": [
-      "lung cancer; tonsil; endometrium"
+      "lung",
+      "tonsil",
+      "endometrium"
     ],
     "disease_list": [
+      "cancer"
+    ],
+    "disease_specifics_list": [
       "lung cancer"
     ],
-    "disease_specifics_list": [],
     "n_images": "50",
     "n_patients": "35",
     "clinical_data": "",
@@ -3259,9 +3263,11 @@
     "disease": "colorectal cancer",
     "tissue_list": [],
     "disease_list": [
+      "cancer"
+    ],
+    "disease_specifics_list": [
       "colorectal cancer"
     ],
-    "disease_specifics_list": [],
     "n_images": "",
     "n_patients": "",
     "clinical_data": "",
@@ -7439,7 +7445,7 @@
     "spatial_data_category": "protocol of MRNA + IMC",
     "spatial_data_method": "Imaging Mass Cytometry",
     "platform_list": [
-      "Imaging Mass Cytometry"
+      "IMC"
     ],
     "organism": "this division on multi is tricky. If it is the same samples or different samples put together?",
     "tissue": "breast",
@@ -7448,9 +7454,11 @@
       "breast"
     ],
     "disease_list": [
+      "cancer"
+    ],
+    "disease_specifics_list": [
       "breast cancer"
     ],
-    "disease_specifics_list": [],
     "n_images": "",
     "n_patients": "",
     "clinical_data": "",
@@ -7590,9 +7598,7 @@
     "addition_method": "",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "spatial transcriptomics",
-    "platform_list": [
-      "spatial transcriptomics"
-    ],
+    "platform_list": [],
     "organism": "human",
     "tissue": "lymph node",
     "disease": "melanoma",
@@ -7630,7 +7636,7 @@
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "spatial transcriptomics; multiplexed ion beam imaging",
     "platform_list": [
-      "spatial transcriptomics; multiplexed ion beam imaging"
+      "MIBI-TOF"
     ],
     "organism": "human",
     "tissue": "skin",
@@ -8102,7 +8108,7 @@
     "spatial_data_category": "spatial_multi",
     "spatial_data_method": "spatial CUT&Tag-RNA-seq",
     "platform_list": [
-      "spatial CUT&Tag-RNA-seq"
+      "Spatial CUT&Tag-RNA-seq"
     ],
     "organism": "",
     "tissue": "",
@@ -8134,9 +8140,7 @@
     "addition_method": "citation_chase",
     "spatial_data_category": "spatial_transcriptomics",
     "spatial_data_method": "IST",
-    "platform_list": [
-      "IST"
-    ],
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -8167,9 +8171,7 @@
     "addition_method": "citation_chase",
     "spatial_data_category": "unknown",
     "spatial_data_method": "SpaSim",
-    "platform_list": [
-      "SpaSim"
-    ],
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -8523,7 +8525,7 @@
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "Phenocycler",
     "platform_list": [
-      "Phenocycler"
+      "CODEX"
     ],
     "organism": "",
     "tissue": "",
@@ -12476,7 +12478,7 @@
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "VectraPolaris",
     "platform_list": [
-      "VectraPolaris"
+      "Vectra/Polaris"
     ],
     "organism": "",
     "tissue": "",
@@ -12606,7 +12608,7 @@
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "Vectra Polaris",
     "platform_list": [
-      "Vectra Polaris"
+      "Vectra/Polaris"
     ],
     "organism": "",
     "tissue": "",
@@ -13824,7 +13826,7 @@
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "multiplex immunofluorescence",
     "platform_list": [
-      "multiplex immunofluorescence"
+      "mIF"
     ],
     "organism": "",
     "tissue": "",
@@ -14385,9 +14387,7 @@
     "addition_method": "citation_chase",
     "spatial_data_category": "unknown",
     "spatial_data_method": "IBT",
-    "platform_list": [
-      "IBT"
-    ],
+    "platform_list": [],
     "organism": "",
     "tissue": "",
     "disease": "",
@@ -14419,7 +14419,7 @@
     "spatial_data_category": "spatial_proteomics",
     "spatial_data_method": "cycif",
     "platform_list": [
-      "cycif"
+      "t-CyCIF"
     ],
     "organism": "",
     "tissue": "",

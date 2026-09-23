@@ -132,6 +132,16 @@ TISSUE_MAP = {
     "several; disease-free controls; multiple types of carcinomas, "
     "sarcomas, and central nervous system lesions":
                                               None,
+
+    # Added 2026-09-23: new raw values from Phase 3 agent-created dataset
+    # rows, found via 03_export_json.py's unmapped-value warnings.
+    "tonsil":                                "tonsil",
+    "lymph node":                            "lymph node",
+    "intestine":                             "intestine",
+    # same "disease name leaked into tissue cell" pattern as "gliomas"/
+    # "melanoma" above - "lung cancer" here means the tissue is lung, the
+    # cancer part is already captured separately in the disease column.
+    "lung cancer; tonsil; endometrium":      "lung; tonsil; endometrium",
 }
 
 # raw `disease` cell -> canonical ';'-joined disease string (small
@@ -191,6 +201,12 @@ DISEASE_MAP = {
     "triple-negative breast cancer (TNBC). With treatment": "cancer",
     "tuberculosis":                          "tuberculosis",
     "type 1 diabetes":                       "diabetes type 1",
+
+    # Added 2026-09-23: new raw values from Phase 3 agent-created dataset
+    # rows, found via 03_export_json.py's unmapped-value warnings.
+    "lung cancer":                           "cancer",
+    "colorectal cancer":                     "cancer",
+    "breast cancer":                         "cancer",
 }
 
 # raw `disease` cell -> canonical ';'-joined disease_specifics string (loose
@@ -246,6 +262,11 @@ DISEASE_SPECIFICS_MAP = {
                                               "sarcoma; undifferentiated pleomorphic sarcoma; myxofibrosarcoma",
     "triple-negative breast cancer (TNBC). With treatment": "TNBC; with treatment",
     "biopsy-induced physical wounding":      "biopsy-induced physical wounding model",
+
+    # Added 2026-09-23, alongside the matching DISEASE_MAP entries above.
+    "lung cancer":                           "lung cancer",
+    "colorectal cancer":                     "colorectal cancer",
+    "breast cancer":                         "breast cancer",
 }
 
 # One-off cross-column fixes: a raw value that leaked disease information

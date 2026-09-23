@@ -18,54 +18,101 @@ let diseaseFilter="All", tissueFilter="All", platformFilter="All";
 // shown as removable chips below it, rather than rendering all as pills.
 let markerFilters=[];
 
-function initDiseaseFilters() {
-  const diseases=["All",...Object.keys(STATS.disease_clean_counts||{}).sort()];
-  document.getElementById("data-disease-filters").innerHTML=diseases.map(d=>
-    `<button class="pill ${d==="All"?"active":""}" onclick="setDiseaseFilter('${d}',this)">${d}</button>`
-  ).join("");
-}
-function setDiseaseFilter(v,btn) {
-  diseaseFilter=v;
-  document.querySelectorAll("#data-disease-filters .pill").forEach(p=>p.classList.remove("active"));
-  btn.classList.add("active"); renderDatasets();
+// Datasets tab is spatial-proteomics-only (see note at top of file) - every
+// count/filter below is computed against this SP-scoped subset, not the
+// full DATASETS array, so a pill's number always matches what the table
+// could actually show.
+function datasetsInScope() { return DATASETS.filter(d=>(d.spatial_data_category||"").toLowerCase().includes("proteomics")); }
+
+// Applies every currently-active filter (disease/platform/tissue/markers/
+// search box) to `items`. `exclude` skips one dimension's OWN filter
+// ("disease"/"platform"/"tissue"/"marker") while still applying every
+// other active one - this is what makes the pill/option counts faceted
+// (e.g. "how many results if I also pick MIBI-TOF, given the disease/
+// tissue/marker/search I already picked") instead of static global totals
+// that don't reflect the current combination. Fixes the 2026-09-23 bug
+// Marta found: static counts (e.g. "MIBI 22", "breast cancer 28") that
+// didn't update together, so a combination showing 0 real results gave no
+// warning from the pills themselves. Called with no `exclude` for the
+// final rendered table and the results counter.
+function applyDatasetFilters(items, exclude) {
+  const q=(document.getElementById("data-search").value||"").toLowerCase();
+  if(exclude!=="disease" && diseaseFilter!=="All") items=items.filter(d=>(d.disease_list||[]).includes(diseaseFilter));
+  if(exclude!=="platform" && platformFilter!=="All") items=items.filter(d=>(d.platform_list||[]).includes(platformFilter));
+  if(exclude!=="tissue" && tissueFilter!=="All") items=items.filter(d=>(d.tissue_list||[]).includes(tissueFilter));
+  if(exclude!=="marker" && markerFilters.length) items=items.filter(d=>markerFilters.every(m=>(d.markers_list||[]).includes(m)));
+  if(q) items=items.filter(d=>
+    (d.id||"").toLowerCase().includes(q)||
+    (d.internal_name||"").toLowerCase().includes(q)||
+    (d.tissue||"").toLowerCase().includes(q)||
+    (d.disease||"").toLowerCase().includes(q)||
+    (d.organism||"").toLowerCase().includes(q)||
+    (d.spatial_data_method||"").toLowerCase().includes(q)||
+    (d.tissue_list||[]).some(t=>t.toLowerCase().includes(q))||
+    (d.disease_list||[]).some(x=>x.toLowerCase().includes(q))||
+    (d.disease_specifics_list||[]).some(x=>x.toLowerCase().includes(q))||
+    (d.markers_list||[]).some(x=>x.toLowerCase().includes(q))
+  );
+  return items;
 }
 
-function initPlatformFilters() {
-  const entries=Object.entries(STATS.platform_counts||{}).sort((a,b)=>b[1]-a[1]);
-  document.getElementById("data-platform-filters").innerHTML=
-    `<button class="pill active" onclick="setPlatformFilter('All',this)">All</button>`+
-    entries.map(([p,n])=>
-      `<button class="pill" onclick="setPlatformFilter('${p}',this)">${p} (${n})</button>`
+function countBy(items, listField) {
+  const counts={};
+  items.forEach(d=>(d[listField]||[]).forEach(v=>counts[v]=(counts[v]||0)+1));
+  return counts;
+}
+
+function updateDiseaseFilters() {
+  const base=applyDatasetFilters(datasetsInScope(),"disease");
+  const counts=countBy(base,"disease_list");
+  const diseases=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  document.getElementById("data-disease-filters").innerHTML=
+    `<button class="pill ${diseaseFilter==="All"?"active":""}" onclick="setDiseaseFilter('All')">All (${base.length})</button>`+
+    diseases.map(d=>
+      `<button class="pill ${diseaseFilter===d?"active":""}" onclick="setDiseaseFilter('${d.replace(/'/g,"\\'")}')">${d} (${counts[d]})</button>`
     ).join("");
 }
-function setPlatformFilter(v,btn) {
-  platformFilter=v;
-  document.querySelectorAll("#data-platform-filters .pill").forEach(p=>p.classList.remove("active"));
-  btn.classList.add("active"); renderDatasets();
+function setDiseaseFilter(v) { diseaseFilter=v; renderDatasets(); }
+
+function updatePlatformFilters() {
+  const base=applyDatasetFilters(datasetsInScope(),"platform");
+  const counts=countBy(base,"platform_list");
+  const platforms=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  document.getElementById("data-platform-filters").innerHTML=
+    `<button class="pill ${platformFilter==="All"?"active":""}" onclick="setPlatformFilter('All')">All (${base.length})</button>`+
+    platforms.map(p=>
+      `<button class="pill ${platformFilter===p?"active":""}" onclick="setPlatformFilter('${p.replace(/'/g,"\\'")}')">${p} (${counts[p]})</button>`
+    ).join("");
 }
+function setPlatformFilter(v) { platformFilter=v; renderDatasets(); }
 
 // Both dropdowns are sorted by real usage frequency (most common tissue/
-// marker first), not alphabetically - matches how marker_counts/
-// tissue_counts were built specifically for this.
-function initTissueFilter() {
-  const entries=Object.entries(STATS.tissue_counts||{}).sort((a,b)=>b[1]-a[1]);
+// marker first), not alphabetically.
+function updateTissueFilter() {
+  const base=applyDatasetFilters(datasetsInScope(),"tissue");
+  const counts=countBy(base,"tissue_list");
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   const sel=document.getElementById("data-tissue-filter");
-  sel.innerHTML=`<option value="All">All tissues</option>`+
+  const prev=tissueFilter;
+  sel.innerHTML=`<option value="All">All tissues (${base.length})</option>`+
     entries.map(([t,n])=>`<option value="${t}">${t} (${n})</option>`).join("");
+  sel.value = counts[prev]!==undefined ? prev : "All";
+  if (sel.value==="All" && prev!=="All") { tissueFilter="All"; }
 }
 function setTissueFilter(v) { tissueFilter=v; renderDatasets(); }
 
-function initMarkerFilter() {
-  const entries=Object.entries(STATS.marker_counts||{}).sort((a,b)=>b[1]-a[1]);
+function updateMarkerFilter() {
+  const base=applyDatasetFilters(datasetsInScope(),"marker");
+  const counts=countBy(base,"markers_list");
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   const sel=document.getElementById("data-marker-filter");
-  sel.innerHTML=`<option value="All">Add a marker…</option>`+
+  sel.innerHTML=`<option value="All">Add a marker… (${base.length} datasets)</option>`+
     entries.map(([m,n])=>`<option value="${m}">${m} (${n})</option>`).join("");
+  sel.value="All";
   renderMarkerChips();
 }
 function addMarkerFilter(v) {
-  const sel=document.getElementById("data-marker-filter");
   if (v!=="All" && !markerFilters.includes(v)) markerFilters.push(v);
-  sel.value="All";
   renderMarkerChips(); renderDatasets();
 }
 function removeMarkerFilter(v) {
@@ -77,6 +124,14 @@ function renderMarkerChips() {
     `<span class="chip">${m}<span class="chip-x" onclick="removeMarkerFilter('${m}')">×</span></span>`
   ).join("");
 }
+
+// Kept as thin aliases - index.html's onload calls these names once to do
+// the first render; renderDatasets() itself calls the update* functions
+// above on every subsequent filter/search change so counts stay live.
+function initDiseaseFilters() { updateDiseaseFilters(); }
+function initPlatformFilters() { updatePlatformFilters(); }
+function initTissueFilter() { updateTissueFilter(); }
+function initMarkerFilter() { updateMarkerFilter(); }
 
 
 // ── Graph filters ──
@@ -169,28 +224,24 @@ function renderMethods() {
 
 // ── Datasets ──
 function renderDatasets() {
-  const q=(document.getElementById("data-search").value||"").toLowerCase();
-  let items=DATASETS.filter(d=>(d.spatial_data_category||"").toLowerCase().includes("proteomics"));
-  if(diseaseFilter!=="All") items=items.filter(d=>(d.disease_list||[]).includes(diseaseFilter));
-  if(platformFilter!=="All") items=items.filter(d=>(d.platform_list||[]).includes(platformFilter));
-  if(tissueFilter!=="All") items=items.filter(d=>(d.tissue_list||[]).includes(tissueFilter));
-  if(markerFilters.length) items=items.filter(d=>markerFilters.every(m=>(d.markers_list||[]).includes(m)));
-  if(q) items=items.filter(d=>
-    (d.id||"").toLowerCase().includes(q)||
-    (d.internal_name||"").toLowerCase().includes(q)||
-    (d.tissue||"").toLowerCase().includes(q)||
-    (d.disease||"").toLowerCase().includes(q)||
-    (d.organism||"").toLowerCase().includes(q)||
-    (d.spatial_data_method||"").toLowerCase().includes(q)||
-    // canonicalized fields - lets search reach through to normalized
-    // values/specifics even when the raw scalar text above doesn't
-    // literally contain the query (e.g. "TNBC" against a raw disease cell
-    // worded differently but captured in disease_specifics_list)
-    (d.tissue_list||[]).some(t=>t.toLowerCase().includes(q))||
-    (d.disease_list||[]).some(x=>x.toLowerCase().includes(q))||
-    (d.disease_specifics_list||[]).some(x=>x.toLowerCase().includes(q))||
-    (d.markers_list||[]).some(x=>x.toLowerCase().includes(q))
-  );
+  // Refresh every filter's own pill/option counts against whatever's
+  // currently active in every OTHER dimension - see applyDatasetFilters'
+  // comment. Must run before building `items` below since it also
+  // resets the marker <select>'s displayed value.
+  updateDiseaseFilters(); updatePlatformFilters(); updateTissueFilter(); updateMarkerFilter();
+
+  let items=applyDatasetFilters(datasetsInScope(), null);
+  const resultCount=document.getElementById("data-results-count");
+  if (resultCount) {
+    const parts=[];
+    if(diseaseFilter!=="All") parts.push(`disease: ${diseaseFilter}`);
+    if(platformFilter!=="All") parts.push(`platform: ${platformFilter}`);
+    if(tissueFilter!=="All") parts.push(`tissue: ${tissueFilter}`);
+    if(markerFilters.length) parts.push(`markers: ${markerFilters.join(", ")}`);
+    resultCount.textContent = parts.length
+      ? `${items.length} dataset${items.length===1?"":"s"} match all selected filters (${parts.join(" · ")})`
+      : `${items.length} dataset${items.length===1?"":"s"} total`;
+  }
   const col=dSort.col, dir=dSort.dir;
   items.sort((a,b)=>String(a[col]||"").localeCompare(String(b[col]||""))*dir);
   const tb=document.getElementById("datasets-tbody");

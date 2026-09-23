@@ -89,4 +89,51 @@ PLATFORM_MAP = {
     # en-dashes (U+2013), not hyphens - built via chr() rather than a typed
     # literal to guarantee an exact match against the raw CSV cell.
     f"spatial ATAC{chr(0x2013)}RNA-seq & Spatial CUT&Tag{chr(0x2013)}RNA-seq": None,
+
+    # Added 2026-09-23: new raw values surfaced by Phase 3 agent-created
+    # dataset rows (compared_methods_agent/data_fetch_agent free-text
+    # extraction), found via 03_export_json.py's unmapped-value warnings -
+    # Marta noticed these fragmenting the Datasets tab's platform filter
+    # (e.g. "IMC" and "Imaging Mass Cytometry (IMC)" showing as separate
+    # options for the same real platform).
+    # Casing/naming variants of already-canonical platforms - collapsed:
+    "Imaging Mass Cytometry":                   "IMC",
+    "Imaging Mass Cytometry (IMC)":             "IMC",
+    "cycif":                                    "t-CyCIF",  # only existing CyCIF-family canonical value - confirm this is the right merge, not a distinct non-tissue-based CyCIF variant
+    "multiplex immunofluorescence":             "mIF",
+    "VectraPolaris":                            "Vectra/Polaris",
+    "Vectra/Polaris":                           "Vectra/Polaris",
+    "Vectra Polaris":                           "Vectra/Polaris",
+    "Phenocycler":                              "CODEX",  # Akoya's rebrand of CODEX - same instrument
+    # Generic modality description, not a specific platform - same
+    # treatment as "10x Visium resolution??" above. This is the literal
+    # value Marta flagged as "spatial transcriptomics is appearing, and it
+    # shouldn't" - it isn't an acquisition platform, just a vague label.
+    "spatial transcriptomics":                  None,
+    # compound value mixing a real platform with the same generic noise
+    # term above - keep the real platform, drop the noise.
+    "spatial transcriptomics; multiplexed ion beam imaging": "MIBI-TOF",
+    # Genuinely new platforms not seen in the original 2026-08-29 snapshot -
+    # already-clean names, identity-mapped (same pattern as the original
+    # map's already-clean single values).
+    "scMEP":                                    "scMEP",
+    "MALDI-MSI":                                 "MALDI-MSI",
+    "LOPIT":                                    "LOPIT",
+    "SIMS":                                     "SIMS",
+    "MELC":                                     "MELC",
+    "4i":                                       "4i",
+    "LSFM":                                     "LSFM",
+    "SPOT":                                     "SPOT",
+    "EASI-FISH":                                "EASI-FISH",
+    "Slide-DNA-seq":                            "Slide-DNA-seq",
+    "Slide-TCR-seq":                            "Slide-TCR-seq",
+    "Spatial-CITE-seq":                         "Spatial-CITE-seq",
+    "spatial CUT&Tag-RNA-seq":                  "Spatial CUT&Tag-RNA-seq",
+    "Sequential Immunofluorescence":            "Sequential Immunofluorescence",  # Lunaphore-style seqIF - confirm this shouldn't just collapse into mIF
+    # Genuinely unclear acronyms / not actually an acquisition platform -
+    # left as needs_review rather than guessed, same as the "??"-flagged
+    # rows above.
+    "IST":                                      None,  # acronym meaning not confirmed
+    "IBT":                                      None,  # acronym meaning not confirmed
+    "SpaSim":                                   None,  # this looks like a spatial-data SIMULATION tool, not a real acquisition platform - confirm before mapping
 }

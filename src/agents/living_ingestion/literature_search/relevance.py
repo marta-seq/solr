@@ -172,6 +172,27 @@ on the list clearly applies, or you are not confident, return an empty list \
 rather than guessing. Leave this empty for "application" papers - the \
 taxonomy above doesn't apply to them.
 
+Two specific disambiguation rules, added after real mis-tagging was found in \
+review (2026-09-22):
+- If the paper is a REVIEW/SURVEY whose main contribution is summarizing or \
+comparing many existing methods across a field, rather than presenting ONE \
+specific new method the paper itself implements, return an EMPTY category \
+list even though it may discuss several categories below in passing - none \
+of them describe what this specific paper itself does.
+- "Cell type Deconvolution" applies ONLY to spot-based/multi-cell-resolution \
+technologies (e.g. Visium) where each measurement mixes multiple cells and \
+must be computationally split into per-cell-type proportions. Do NOT apply \
+it to single-cell/subcellular-resolution platforms (IMC, MIBI, CODEX, CyCIF, \
+Akoya PhenoCycler) where each measurement is already one cell - a paper \
+predicting or classifying cell types/states on those platforms is \
+"Phenotyping", not deconvolution. Separately: predicting/recovering missing \
+marker measurements from the SAME modality (e.g. low-plex protein imaging -> \
+higher-plex protein prediction) is "Data alignment / integration / \
+imputation", not "Virtual staining" - reserve "Virtual staining" for \
+generating a stain/channel from a DIFFERENT modality entirely (e.g. \
+predicting protein signal from a plain H&E/brightfield image with no \
+protein channels at all).
+
 Respond with ONLY a JSON object: {{"relevant": true/false, "paper_type": \
 "method" or "application" or null, "technical_application": true/false (only \
 meaningful for paper_type "application", see step 3), "categories": \
