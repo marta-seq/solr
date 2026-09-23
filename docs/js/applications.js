@@ -76,6 +76,30 @@ function renderApplications() {
 let appCy=null;
 let appShowData=true;
 
+// Node color bucket, added 2026-09-23 per Marta's ask: color by what KIND
+// of application paper this is (plain biological application / technical
+// application (introduces or validates a platform/protocol itself) /
+// review), not by spatial modality - modality is still visible via the
+// filter pills and the detail panel. Buckets off the `category` field
+// already set by the literature-search scanner's relevance.py
+// (paper_type=="application" rows get "Application", "Technical Methods;
+// Application", or "Application review" - see relevance.py's
+// technical_application flag for how these get assigned at scan time).
+const APP_CAT_COLORS = {technical:"#58a6ff", review:"#d29922", application:"#3fb950", other:"#8b949e"};
+function appCategoryBucket(m) {
+  const cat=(m.category||"").toLowerCase();
+  if (cat.includes("review")) return "review";
+  if (cat.includes("technical")) return "technical";
+  if (cat.includes("application")) return "application";
+  return "other";
+}
+function buildAppLegend() {
+  const labels={application:"Biological application", technical:"Technical application", review:"Review", other:"Other/unclassified"};
+  document.getElementById("appglegend").innerHTML = Object.entries(APP_CAT_COLORS).map(([k,color])=>
+    `<div class="gli"><div class="gldot" style="background:${color}"></div>${labels[k]}</div>`
+  ).join("") + `<div class="gli"><div class="glsq" style="background:transparent;border:2px dashed var(--c-data)"></div>Dataset</div>`;
+}
+
 function renderAppGraph() {
   const apps=METHODS.filter(m=>!m.is_placeholder&&isApp(m))
     .filter(m=>appModalityFilter==="All"||(m.spatial_modality_ap||[]).includes(appModalityFilter));
@@ -93,12 +117,9 @@ function renderAppGraph() {
     else     { px=(i%GRID_COLS)*GRID_STEP; py=Math.floor(i/GRID_COLS)*GRID_STEP; }
     appPos[m.id]={x:px,y:py};
 
-    const mods=m.spatial_modality_ap||[];
-    const isSP=mods.includes("spatial_proteomics"), isST=mods.includes("spatial_transcriptomics");
-    const color = isSP&&isST ? "#d29922" : isSP ? "#3fb950" : isST ? "#a371f7" : "#8b949e";
-    const label = m.title ? (m.title.length>40 ? m.title.slice(0,40)+"…" : m.title) : m.id;
+    const color = APP_CAT_COLORS[appCategoryBucket(m)];
     elements.push({
-      data:{id:m.id, label, color, type:"app", _a:JSON.stringify(m)},
+      data:{id:m.id, color, type:"app", _a:JSON.stringify(m)},
       position:{x:px,y:py}
     });
   });
@@ -135,9 +156,6 @@ function renderAppGraph() {
     style: [
       { selector: "node[type='app']", style: {
         "background-color":"data(color)", "width":12, "height":12,
-        "label":"data(label)", "color":"#e6edf3", "font-size":"8px", "font-family":"Inter,sans-serif",
-        "text-valign":"bottom", "text-margin-y":3,
-        "text-outline-width":1.2, "text-outline-color":"#0d1117",
         "border-width":1, "border-color":"#21262d",
       }},
       { selector: "node[type='dataset']", style: {

@@ -14,7 +14,7 @@ async function loadData() {
     METHODS=m; DATASETS=d; STATS=s; EMBEDDINGS=e;
     initStats(); initDiseaseFilters(); initPlatformFilters(); initTissueFilter(); initMarkerFilter();
     initGraphFilters(); initSourceFilters(); initAppFilters();
-    buildLegend(); renderMethods(); renderDatasets(); renderApplications();
+    buildLegend(); buildAppLegend(); renderMethods(); renderDatasets(); renderApplications();
   } catch(e) { console.error("Load failed:",e); alert("Data load failed: "+e.message); }
 }
 
