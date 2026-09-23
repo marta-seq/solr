@@ -14,6 +14,16 @@ function renderGraph() {
   const showSameCat = document.getElementById("tog-cat").checked;
 
   let methods = METHODS.filter(m => !m.is_placeholder && isComp(m));
+  // ST-only scope rule confirmed by Marta 2026-09-19 (see CLAUDE.md): hide a
+  // method only if its spatial_data_category label set is EXACTLY
+  // {spatial_transcriptomics} - nothing else. Spatial proteomics, non-
+  // spatial, multi-omics combos, and histopathology all still render, even
+  // though the Methods Graph is otherwise SP-focused - only a pure-ST
+  // method is out of scope.
+  methods = methods.filter(m => {
+    const cats = (m.spatial_data_category || "").split(";").map(s => s.trim().toLowerCase()).filter(Boolean);
+    return !(cats.length === 1 && cats[0] === "spatial_transcriptomics");
+  });
   if (gStageFilter !== "All") {
     methods = methods.filter(m =>
       (m.pipeline_category || "").toLowerCase().includes(gStageFilter.toLowerCase())
@@ -262,17 +272,31 @@ function showNodeDetail(m) {
   document.getElementById("d-id").textContent   = m.id;
   document.getElementById("d-name").textContent = m.name || m.title || m.id;
   document.getElementById("d-sub").textContent  = [m.first_author, m.journal, m.year].filter(Boolean).join(" · ");
+  // Tags as readable text, not just node color (color alone doesn't tell
+  // you WHICH category it is) - one chip per pipeline_category label, each
+  // still colored via catInfo so it stays visually consistent with the
+  // graph/table, but the label text is what actually answers "what tag is
+  // this". Falls back to splitting the ";"-joined string if the array
+  // field isn't present for some reason.
+  const tags = (m.pipeline_categories && m.pipeline_categories.length)
+    ? m.pipeline_categories
+    : (m.pipeline_category || "").split(";").map(s => s.trim()).filter(Boolean);
+  document.getElementById("d-tags").innerHTML = tags.length
+    ? tags.map(t => `<span class="cpill" style="border-left:3px solid ${catInfo(t).color};padding-left:0.4rem;">${t}</span>`).join("")
+    : `<span class="cpill">NA</span>`;
   document.getElementById("d-abs").textContent  = m.abstract || "";
   document.getElementById("d-doi").innerHTML    = m.doi ? `<a href="${m.doi}" target="_blank">${m.doi}</a>` : "";
-  let c = "";
-  if ((m.comparison_ids || []).length) {
-    c += `<strong>Compared against (${m.comparison_ids.length})</strong>`;
-    c += m.comparison_ids.map(id => { const o = METHODS.find(x => x.id === id); return `<div>· ${o ? (o.name || id) : id}</div>`; }).join("");
-  }
-  if ((m.data_ids || []).length) {
-    c += `<strong style="margin-top:0.4rem;display:block;">Datasets (${m.data_ids.length})</strong>`;
-    c += m.data_ids.map(id => { const ds = DATASETS.find(x => x.id === id); return `<div>· ${ds ? (ds.internal_name || id) : id}</div>`; }).join("");
-  }
+  // Always show both sections, even when empty - a missing "Datasets"
+  // heading used to look like the panel just didn't have one, rather than
+  // "this method genuinely has none linked yet".
+  let c = `<strong>Compared against (${(m.comparison_ids||[]).length})</strong>`;
+  c += (m.comparison_ids || []).length
+    ? m.comparison_ids.map(id => { const o = METHODS.find(x => x.id === id); return `<div>· ${o ? (o.name || id) : id}</div>`; }).join("")
+    : `<div>NA</div>`;
+  c += `<strong style="margin-top:0.4rem;display:block;">Datasets (${(m.data_ids||[]).length})</strong>`;
+  c += (m.data_ids || []).length
+    ? m.data_ids.map(id => { const ds = DATASETS.find(x => x.id === id); return `<div>· ${ds ? (ds.internal_name || id) : id}</div>`; }).join("")
+    : `<div>NA</div>`;
   document.getElementById("d-conns").innerHTML = c;
   p.classList.add("on");
 }
