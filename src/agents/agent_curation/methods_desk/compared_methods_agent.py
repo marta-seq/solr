@@ -37,6 +37,63 @@ from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ...common.paper_fetcher import fetch_paper, get_agent_text, was_truncated, is_probably_real_content
 from ...common.reference_list_parser import parse_reference_list
 from ...common.reference_resolver import resolve_citation, is_confident
+from ...common.db_loader import _normalize_method_name
+from . import category_audit_agent
+
+# Well-known, generic (non-spatial-omics-specific) technique names - checked
+# BEFORE citation resolution, added 2026-09-28 after real duplicates/
+# mis-tagging were found live: SVM, XGBoost, and a LightGBM-adjacent paper
+# were each independently created and mis-tagged spatial_proteomics, because
+# their real (classic/foundational) papers have no fetchable abstract on
+# Crossref - the independent modality classification below silently had
+# nothing to classify and fell back to inheriting the SEED paper's modality,
+# reproducing the exact bug that fallback was meant to avoid. A citation to
+# any of these well-known generic names now routes straight to the same
+# placeholder/auto-complete treatment as `is_baseline_group` - fast, free,
+# and doesn't depend on an abstract being fetchable at all. Deliberately a
+# denylist of specific, unambiguous, genuinely-generic names, not a broad
+# pattern - reuses Marta's own existing M_PH_* placeholder conventions
+# (Watershed, UNET, kmeans, Mask-R-CNN, ResNet, etc. were already being
+# placeholder'd by hand) plus the classical-ML/GNN baseline names she listed
+# in notes.md. Expect to keep growing this list as new cases surface.
+_GENERIC_TECHNIQUE_NAMES = {
+    _normalize_method_name(n) for n in [
+        "SVM", "Support Vector Machine", "Support Vector Machines",
+        "Random Forest", "RF",
+        "Logistic Regression",
+        "Decision Tree",
+        "Naive Bayes",
+        "Gradient Boosting", "Gradient Boosting Classifier",
+        "AdaBoost", "AdaBoost Classifier",
+        "XGBoost",
+        "LightGBM", "Light GBM",
+        "MLP", "Multi-layer Perceptron", "Multilayer Perceptron",
+        "kNN", "k-Nearest Neighbors",
+        "K-means", "kmeans",
+        "PCA", "Principal Component Analysis",
+        "UMAP", "t-SNE",
+        "GCN", "Graph Convolutional Network", "Graph Convolutional Networks",
+        "GAT", "Graph Attention Network", "Graph Attention Networks",
+        "GIN", "Graph Isomorphism Network",
+        "GraphSAGE", "SAGEConv", "GraphConv",
+        "U-Net", "UNET", "ResNet", "VGG", "AlexNet",
+        "Pix2Pix", "CycleGAN", "GAN",
+        "Mask R-CNN", "Mask-R-CNN", "MaskRCNN",
+        "Watershed", "Noise2Void",
+    ]
+}
+
+
+def _is_generic_technique(method_name: str) -> bool:
+    return _normalize_method_name(method_name) in _GENERIC_TECHNIQUE_NAMES
+
+
+def _today_stamp() -> int:
+    """Same YYYYMMDD-integer format scan.py already uses for
+    Date(added_to_dataset) - reused here since this agent never stamped it
+    at all before (found 2026-09-27: neither desk agent stamped a creation
+    date on new entries, unlike the scanner and manual entries)."""
+    return int(datetime.now(timezone.utc).strftime("%Y%m%d"))
 
 # Per-field review-provenance column added 2026-09-20 (see CLAUDE.md's
 # "Per-field review-provenance columns" design decision) - tracks whether
@@ -78,18 +135,49 @@ gives the compared method a proper name.
 - Do NOT include datasets, biological findings, or general background citations, even if phrased \
 similarly to a comparison.
 
+Two real failure modes to avoid, found during review of real extractions (2026-09-27) - both \
+directions matter equally, read carefully:
+1. FALSE POSITIVE - do NOT extract a tool the paper APPLIES as a step in its OWN analysis, even \
+if it's a well-known named tool with its own citation. Real examples that were wrongly extracted \
+as "comparisons": a paper using SHAP for model explainability, or NicheNet for cell-cell \
+communication scoring, as part of its OWN pipeline - these are components the paper's method is \
+BUILT FROM, not competing methods it benchmarks ITSELF against. Ask: "does this paper claim its \
+own method outperforms, matches, or differs from this other method on the same task" - not just \
+"is this tool mentioned or used somewhere in the paper."
+2. FALSE NEGATIVE - do NOT miss an explicit list of named baselines just because they're all named \
+in one sentence. Real example that was missed entirely (left blank) despite being this explicit: \
+"We compared TopKAT to existing approaches ... including SPOT, FunSpace, and SPF." Extract EVERY \
+named method in a list like that as a separate item, not just the first one.
+
+Generic baseline FAMILIES: sometimes a paper benchmarks against a broad set of standard, \
+off-the-shelf models rather than one specific named published method with its own paper - e.g. \
+several classical ML classifiers (random forest, SVM, logistic regression, AdaBoost, MLP, decision \
+tree, naive Bayes, gradient boosting) or several generic graph-neural-network variants (GCN, GAT, \
+GIN, GraphSAGE, GraphConv). These are real and worth recording, but do NOT create one item per \
+variant and do NOT try to find individual citations for them - instead return ONE item for the \
+whole family, with "is_baseline_group": true and "method_name" set to a short descriptive label \
+built from the actual names mentioned (e.g. "Classical ML baselines (RF, SVM, Logistic Regression, \
+AdaBoost)" or "Graph neural network baselines (GCN, GAT, GIN)"). Leave citation_marker and \
+citation_text empty for these - no per-baseline citation lookup is needed.
+
 Return ONLY a JSON array, nothing else, no markdown fences. Each element:
 {
   "method_name": "the name of the compared method/tool, as written in the paper - MUST be an \
-actual tool/algorithm proper name per the strict rules above, never an author-year citation",
+actual tool/algorithm proper name per the strict rules above, never an author-year citation. For \
+a generic baseline family (is_baseline_group=true), a short descriptive label instead (see above)",
+  "is_baseline_group": true/false (true ONLY for a generic baseline family as described above - \
+false for every genuinely named, individually-citable method; should be false for the vast \
+majority of items),
   "citation_marker": "ONLY digits, nothing else - e.g. '12' or '41'. Do NOT include the word \
 'ref', brackets, parentheses, periods, or any other character - digits only. If multiple numbers \
 are cited together (e.g. text shows '[12,13]'), return only the FIRST number. Leave this as a \
 genuinely empty string only if there is truly no number anywhere near the mention (the paper \
-uses author-year citations like 'Smith et al., 2020' instead of numbers).",
-  "citation_text": "ONLY fill this in if citation_marker is a genuinely empty string - the \
-author-year citation as written near the mention (e.g. 'Smith et al., 2020'). Leave this empty \
-if you filled citation_marker - never fill both."
+uses author-year citations like 'Smith et al., 2020' instead of numbers), or if is_baseline_group \
+is true.",
+  "citation_text": "ONLY fill this in if citation_marker is a genuinely empty string AND \
+is_baseline_group is false - the author-year citation as written near the mention (e.g. 'Smith \
+et al., 2020'). Leave this empty if you filled citation_marker, or if is_baseline_group is true - \
+never fill both."
 }
 If no comparison methods are mentioned, return an empty JSON array: []
 """
@@ -294,12 +382,62 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
     item_outcomes = []
 
     for item in extracted:
-        method_name = (item or {}).get("method_name", "").strip()
-        citation_marker = (item or {}).get("citation_marker", "").strip()
-        citation_text = (item or {}).get("citation_text", "").strip()
-        if not method_name or not (citation_marker or citation_text):
+        item = item or {}
+        method_name = (item.get("method_name") or "").strip()
+        is_baseline_group = bool(item.get("is_baseline_group"))
+        citation_marker = (item.get("citation_marker") or "").strip()
+        citation_text = (item.get("citation_text") or "").strip()
+
+        if not method_name:
+            item_outcomes.append({"outcome": "skipped", "reason": "no method_name in this item"})
+            continue
+
+        generic_hit = is_baseline_group or _is_generic_technique(method_name)
+        if generic_hit:
+            # Generic baseline family OR a well-known generic technique name
+            # (see _GENERIC_TECHNIQUE_NAMES above) - added 2026-09-27/28 after
+            # real batches were cluttered with one row per generic baseline
+            # variant (RF/SVM/GCN/GAT/...), AND after real mis-tagging was
+            # found where these got created as full entries anyway (when
+            # individually citable) and mis-tagged spatial_proteomics because
+            # their classic papers have no fetchable abstract for independent
+            # classification to work with. No DOI resolution is attempted
+            # even if a citation WAS given - created directly as a
+            # "Placeholder - method" entry (the SAME literal category value
+            # category_maps.py already treats as is_placeholder=True, so it's
+            # excluded from the frontend graph/table and from every triage
+            # pool exactly like any other placeholder stub, no new mechanism
+            # needed) with COMPLETE="NA" since there's nothing further to
+            # annotate on a generic/family placeholder.
+            new_id = db.id_allocator.next_id("M_AUTO")
+            reason = ("Generic baseline family grouped from a single comparison mention"
+                      if is_baseline_group else
+                      "Well-known generic technique (not spatial-omics-specific)")
+            staging.append_candidate(
+                action="create_entry", sheet="method_pub", entry_id=new_id,
+                fields={
+                    "category": "Placeholder - method",
+                    "name": method_name,
+                    "REVIEW_STATUS": config.REVIEW_STATUS_AUTO,
+                    "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
+                    "COMPLETE": "NA",
+                    "Date(added_to_dataset)": _today_stamp(),
+                    "Internal notes": f"{reason} in {entry_id} - not a specific citable spatial-"
+                                       f"omics method, no DOI resolution attempted.",
+                },
+                source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
+                curation_model=model_used, confidence=None,
+                notes=f"{reason} in {entry_id}: '{method_name}'.",
+            )
+            db.name_index.add(method_name, new_id)
+            comparison_ids_added.append(new_id)
+            item_outcomes.append({"outcome": "created_new", "entry_id": new_id,
+                                   "confidence": None, "review_status": config.REVIEW_STATUS_AUTO})
+            continue
+
+        if not (citation_marker or citation_text):
             item_outcomes.append({"outcome": "skipped",
-                                   "reason": "no method_name or citation info in this item"})
+                                   "reason": "no citation info in this item"})
             continue
 
         if not citation_marker and citation_text:
@@ -319,6 +457,25 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             item_outcomes.append({"outcome": "linked_existing", "entry_id": matched_id,
                                    "description": _describe_existing(db.methods, matched_id),
                                    "matched_by": "doi", "resolved_doi": resolved_doi})
+            continue
+
+        # Name-based dedup, added 2026-09-27: DOI-based matching above only
+        # catches a duplicate when both mentions share the exact same DOI -
+        # a well-known tool is often cited casually by name with no
+        # resolvable citation, or under a slightly different combined name
+        # ("Mesmer" vs the existing entry's "Mesmer/DeepCell"), so a
+        # DOI-only check let real duplicates through (confirmed live:
+        # Mesmer, CellProfiler, PhenoGraph, Mask R-CNN each created twice).
+        # Checked AFTER the DOI check (DOI stays the primary, more reliable
+        # signal) and BEFORE the "couldn't resolve a DOI" rejection below,
+        # so a name match can still short-circuit even when no DOI was
+        # resolved at all. See db_loader.NameIndex for the matching rules.
+        name_match_id = db.name_index.lookup(method_name)
+        if name_match_id:
+            comparison_ids_added.append(name_match_id)
+            item_outcomes.append({"outcome": "linked_existing", "entry_id": name_match_id,
+                                   "description": _describe_existing(db.methods, name_match_id),
+                                   "matched_by": "name"})
             continue
 
         if not resolved_doi:
@@ -352,12 +509,76 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             "name": method_name,
             "REVIEW_STATUS": review_status,
             "addition_method": config.ADDITION_METHOD_CITATION_CHASE,
+            "Date(added_to_dataset)": _today_stamp(),
         }
         modality_note = ""
-        if seed_spatial_modality:
-            new_fields["spatial_data_category"] = ";".join(seed_spatial_modality)
-            modality_note = (f" spatial_data_category inherited from {entry_id} "
-                              f"({';'.join(seed_spatial_modality)}) - not independently verified.")
+
+        # Independent modality classification, added 2026-09-27 - previously
+        # this new entry just inherited the SEED paper's spatial_data_category
+        # unconditionally, which is wrong whenever the compared method is
+        # itself a generic, non-spatial-specific tool (e.g. CellProfiler,
+        # PhenoGraph) cited by a spatial paper: Marta's real complaint was
+        # that citation-chasing "can grab papers that are only
+        # transcriptomics" or otherwise out-of-scope tools and clutter the
+        # agent desk with them. Reuses category_audit_agent's classification
+        # via a cheap, disk-cached abstract-only fetch of the NEW entry's own
+        # DOI - never blocks entry creation if this fails (network error, no
+        # abstract available, audit LLM call fails), just falls back to the
+        # old inherited-modality behavior below.
+        own_modality = None
+        try:
+            own_fetched = fetch_paper(resolved_doi)
+            own_abstract = (own_fetched.get("sections") or {}).get("abstract") or own_fetched.get("text", "")
+            if own_abstract:
+                own_audit = category_audit_agent.audit_entry(new_id, resolved["matched_title"], own_abstract)
+                if own_audit.get("audited"):
+                    own_modality = own_audit["spatial_modality"]
+        except Exception as e:
+            own_modality = None
+            modality_note = f" (own-paper modality classification failed: {e})"
+
+        if own_modality is not None:
+            if not own_modality:
+                # Confidently classified and NOT spatial-omics at all -
+                # auto-complete rather than clutter the review queue with a
+                # full-curation candidate for a generic, out-of-scope tool.
+                new_fields["spatial_data_category"] = "not_spatial_omics"
+                new_fields["COMPLETE"] = "NA"
+                modality_note = (" Independently classified as NOT spatial-omics-specific "
+                                  "- auto-completed (COMPLETE=NA).")
+            elif own_modality == ["spatial_transcriptomics"]:
+                new_fields["spatial_data_category"] = "spatial_transcriptomics"
+                new_fields["COMPLETE"] = "skipped for now, purely ST"
+                modality_note = (" Independently classified as spatial-transcriptomics-only "
+                                  "- out of scope for now (COMPLETE=ST skip).")
+            else:
+                new_fields["spatial_data_category"] = ";".join(own_modality)
+                modality_note = (f" Independently classified spatial_data_category: "
+                                  f"{';'.join(own_modality)}.")
+        else:
+            # own_modality is None - independent classification unavailable
+            # (most often: no fetchable abstract for this DOI at all) and
+            # neither the baseline-group nor generic-technique-name checks
+            # above caught it either. Changed 2026-09-28: this branch used to
+            # blindly inherit the SEED paper's own modality - found live to
+            # be actively wrong (SVM, XGBoost, Pix2Pix, and a LightGBM-
+            # adjacent paper were all mis-tagged spatial_proteomics this way,
+            # because classic/foundational papers frequently have no
+            # fetchable Crossref abstract, so this branch fired almost every
+            # time in practice - not the rare fallback it was designed to
+            # be). An honest "unknown, needs review" is safer than a
+            # confident wrong guess - leave spatial_data_category unset and
+            # force review rather than silently propagating the seed's
+            # modality onto a method that was never actually checked.
+            new_fields["REVIEW_STATUS"] = config.REVIEW_STATUS_NEEDS_REVIEW
+            seed_note = (f" ({entry_id}'s own modality is "
+                         f"{';'.join(seed_spatial_modality)}, NOT applied here since it was "
+                         f"never independently verified for this method)" if seed_spatial_modality
+                         else "")
+            modality_note = (modality_note +
+                              f" Could not independently verify spatial_data_category (no "
+                              f"fetchable abstract available) - left unset rather than "
+                              f"guessing{seed_note}.")
 
         staging.append_candidate(
             action="create_entry", sheet="method_pub", entry_id=new_id,
@@ -370,6 +591,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
 
         # so later papers this same run see it and don't duplicate-create it
         db.doi_index.add(resolved_doi, new_id)
+        db.name_index.add(method_name, new_id)
         comparison_ids_added.append(new_id)
         item_outcomes.append({"outcome": "created_new", "entry_id": new_id,
                                "confidence": resolved["confidence"], "review_status": review_status})

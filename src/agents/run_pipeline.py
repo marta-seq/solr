@@ -24,14 +24,24 @@ import argparse
 import sys
 import time
 
+# Force UTF-8 stdout/stderr - Windows' console defaults to a narrow codepage
+# (cp1252), which can't encode plenty of characters that legitimately show up
+# in real paper titles/abstracts (e.g. a non-breaking hyphen, U+2011). Without
+# this, print() raises UnicodeEncodeError and kills the whole run the moment
+# such a character appears in a log message - caught live 2026-09-21, crashed
+# mid-run at paper 44/301 on PASTA's title. No effect on Linux/gaia, which
+# already defaults to UTF-8.
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 # Bump this string every time this file changes. Printed as the very first
 # line of every run, specifically so stale-file/bytecode-cache issues (which
 # have happened more than once) are immediately visible in the log itself,
 # rather than needing a separate manual grep check to confirm which version
 # is actually running.
-CODE_VERSION = "2026-08-08-r18-stop-early-on-llm-exhaustion"
+CODE_VERSION = "2026-09-21-r19-force-utf8-stdout"
 
-from .common import config, db_loader
+from .common import config, db_loader, staging
 from .living_ingestion.mailroom import triage
 from .agent_curation.methods_desk import compared_methods_agent, category_audit_agent
 from .agent_curation.data_desk import data_fetch_agent, intern_agent
@@ -49,6 +59,18 @@ def run_paper_queue(db, budget: int) -> tuple:
     build_seed_queue(), recursing into newly-discovered method papers up to
     MAX_HOPS, and stopping when `budget` (a share of MAX_PAPERS_PER_RUN) runs
     out - see main() for how the total budget is split across phases.
+
+    `budget` tracks entries genuinely WORKED ON, not every queue entry popped
+    (fixed 2026-09-27, per Marta's explicit ask: "max papers should be
+    entries that are not complete", after a real 15-paper test run spent its
+    entire budget on already-known ST-only skips and zero-cost had already
+    hit its floor before any desk agent ever ran). Specifically: the
+    zero-cost "already known ST-only" skip (a DataFrame lookup, no network
+    call at all) does NOT consume budget - it also now stamps COMPLETE so
+    the SAME row doesn't keep re-appearing here on every future run either.
+    Every other branch (flagged, freshly-discovered ST-only, or a full
+    fetch+desks attempt) DOES consume budget - real cost (at least one LLM
+    call) was spent either way.
 
     Returns (summary_dict, papers_actually_used).
     """
@@ -89,9 +111,26 @@ def run_paper_queue(db, budget: int) -> tuple:
         row_match = db.methods.loc[db.methods["entry_id"] == entry_id]
         if not row_match.empty and category_audit_agent.is_known_st_only(row_match.iloc[0]):
             _log(f"  category audit: SKIPPED (zero LLM cost) - spatial_data_category already "
-                 f"known to be ST-only from a prior pass")
+                 f"known to be ST-only from a prior pass - stamping COMPLETE so this row is "
+                 f"excluded from all future queues instead of being rediscovered every run")
+            staging.append_candidate(
+                action="update_field", sheet=sheet, entry_id=entry_id,
+                fields={"COMPLETE": "skipped for now, purely ST"},
+                source_paper_entry_id=entry_id, curation_agent="run_pipeline",
+                curation_model="none", confidence=None,
+                notes="Auto-marked COMPLETE=ST-skip: spatial_data_category was already known "
+                      "ST-only from a prior pass, but COMPLETE had never been stamped for it.",
+            )
             summary["processed"].append(entry_id)
-            processed += 1
+            # Deliberately NOT incrementing `processed` (the --max-papers budget)
+            # here - added 2026-09-27 per Marta's explicit ask: this is a
+            # genuinely free, zero-network-call skip (a DataFrame lookup), not
+            # "real work attempted on an incomplete entry" - the budget should
+            # track entries actually worked on, not ones recognized as
+            # permanently out of scope in zero time. Without the COMPLETE
+            # stamp above, this same row would otherwise re-hit this exact
+            # zero-cost skip on every single future run forever, since nothing
+            # previously persisted the "already decided" state anywhere.
             continue
 
         audit_result = category_audit_agent.process_entry(db, entry_id, sheet)
@@ -125,8 +164,21 @@ def run_paper_queue(db, budget: int) -> tuple:
         if audit_result.get("is_st_only"):
             _log(f"  SKIPPED (out of scope): spatial_transcriptomics-only "
                  f"({audit_result['spatial_modality']}) - not processing methods/data desks "
-                 f"for this paper (first-version scope limit, see CLAUDE.md)")
+                 f"for this paper (first-version scope limit, see CLAUDE.md) - stamping "
+                 f"COMPLETE so future runs hit the zero-cost skip above instead of "
+                 f"re-auditing")
+            staging.append_candidate(
+                action="update_field", sheet=sheet, entry_id=entry_id,
+                fields={"COMPLETE": "skipped for now, purely ST"},
+                source_paper_entry_id=entry_id, curation_agent="run_pipeline",
+                curation_model="none", confidence=None,
+                notes="Auto-marked COMPLETE=ST-skip: category_audit_agent freshly "
+                      "classified this paper as spatial-transcriptomics-only this run.",
+            )
             summary["processed"].append(entry_id)
+            # This DOES count against budget (unlike the zero-cost skip above) -
+            # a real audit LLM call was made this iteration to discover this,
+            # genuine work/cost was spent, even though the desks don't run.
             processed += 1
             continue
 

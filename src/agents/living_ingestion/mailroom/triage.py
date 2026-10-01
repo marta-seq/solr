@@ -33,6 +33,17 @@ def _is_already_reviewed(review_status: str) -> bool:
     return status == config.REVIEW_STATUS_MANUAL or config.parse_auto_level(status) is not None
 
 
+def _is_complete(complete_val) -> bool:
+    """True if the COMPLETE column already marks this row as done (fully
+    curated, or deliberately out-of-scope/not-applicable) - added 2026-09-27
+    after Marta started using this column directly in the Excel. A blank or
+    unrecognized value (e.g. free text accidentally typed into the wrong
+    cell - two real examples found live) is NOT treated as complete - fails
+    safe by leaving the row in the queue rather than silently skipping
+    something that was never actually marked done."""
+    return str(complete_val).strip().lower() in config.COMPLETE_DONE_VALUES
+
+
 _DESK_DONE_STATUSES = ("auto", "manual")
 
 
@@ -118,6 +129,8 @@ def build_category_audit_pool(methods_df) -> list:
             continue
         if str(row.get("REVIEW_STATUS", "")).strip().lower() == config.REVIEW_STATUS_MANUAL:
             continue
+        if _is_complete(row.get("COMPLETE")):
+            continue
         if row["entry_id"] in already_attempted:
             continue
         entry_id = row["entry_id"]
@@ -151,6 +164,11 @@ def build_seed_queue(methods_df) -> list:
         config.METHOD_CATEGORY_KEYWORDS)
       - already manually reviewed (REVIEW_STATUS == "manual") - don't
         re-touch curated work
+      - COMPLETE already marks this row as done (added 2026-09-27, see
+        _is_complete()) - a manually-curated row can be COMPLETE with a
+        REVIEW_STATUS other than "manual" (e.g. a citation-chased row that
+        was later reviewed and confirmed), so this is checked independently
+        of the REVIEW_STATUS=="manual" check above, not folded into it
       - BOTH desks have already completed a pass, per the per-field
         METHOD_COMPARISON_REVIEW_STATUS/DATASET_REVIEW_STATUS columns (added
         2026-09-20) - see _still_needs_a_desk_pass()'s own docstring for why
@@ -174,6 +192,8 @@ def build_seed_queue(methods_df) -> list:
         if not _is_method_category(row.get("category")):
             continue
         if str(row.get("REVIEW_STATUS", "")).strip().lower() == config.REVIEW_STATUS_MANUAL:
+            continue
+        if _is_complete(row.get("COMPLETE")):
             continue
         if not _still_needs_a_desk_pass(row):
             continue

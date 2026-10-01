@@ -118,7 +118,19 @@ def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_pro
     if not choices:
         raise LLMError(f"{model} returned no choices: {data}")
     actual_model = data.get("model") or model
-    return choices[0]["message"]["content"], actual_model
+    content = choices[0].get("message", {}).get("content")
+    # Found live 2026-09-30: some providers return HTTP 200 with a genuinely
+    # null/missing message content (e.g. a content-filtered or tool-call-only
+    # response with no text) - this crashed the whole run_pipeline.py process
+    # with an unhandled AttributeError deep in _extract_json()'s raw.strip(),
+    # since nothing upstream expected content to ever be anything but a
+    # string. Raising LLMError here instead routes it through the exact same
+    # retry/fallback machinery as every other failure mode (HTTP error, empty
+    # choices, bad JSON) - a single malformed response from one provider/model
+    # should never be able to take down a whole multi-hour batch run.
+    if content is None:
+        raise LLMError(f"{model} returned HTTP 200 but null/missing message content: {data}")
+    return content, actual_model
 
 
 def _build_provider_chain(skip_openrouter: bool = False, only_provider=None):

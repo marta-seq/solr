@@ -266,3 +266,22 @@ def parse_auto_level(status) -> int:
 ADDITION_METHOD_MANUAL = "manual"
 ADDITION_METHOD_SCRAPED = "scraped"
 ADDITION_METHOD_CITATION_CHASE = "citation_chase"
+
+
+# ── COMPLETE (added by Marta directly in the Excel, 2026-09-24) ──────────────
+# Tracks CURATION completeness (category assignment / dataset links /
+# comparisons reviewed) - independent of REVIEW_STATUS above, which tracks how
+# a row entered the DB and whether an agent or a human touched it last. A row
+# already marked done here should never be re-annotated by any future
+# automated pass, regardless of its REVIEW_STATUS. Values found live in the
+# Excel (2026-09-27): "COMPLETE", two different ST-skip spellings (typed
+# inconsistently over time - both tolerated rather than asking Marta to
+# normalize the column by hand), and "NA" (not applicable - e.g. a
+# placeholder/generic-baseline-group entry that will never need full
+# curation). Compare case-insensitively via triage._is_complete().
+COMPLETE_DONE_VALUES = {
+    "complete",
+    "skipped for now, purely st",
+    "st skipped for now",
+    "na",
+}
