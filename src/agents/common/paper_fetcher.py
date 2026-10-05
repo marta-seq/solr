@@ -141,6 +141,32 @@ def _strip_chrome(soup: BeautifulSoup) -> None:
 
 
 
+def _merge_stray_short_lines(text: str) -> str:
+    """get_text(separator="\\n") inserts a newline between EVERY distinct DOM
+    text node, not just at real paragraph/block boundaries - an inline
+    citation superscript (<sup>47</sup>) or a figure-panel label ("a", "b")
+    sitting inside a sentence becomes its own one-token "line". Found
+    2026-10-04 on a real Europe PMC fetch (M_NI_70/CytoCommunity): a 60k-char
+    window of genuine article prose ended up >75% single-digit "lines" this
+    way, which tripped is_probably_real_content()'s short-line structural
+    heuristic (correctly identifying it as boilerplate-shaped, just wrongly -
+    the heuristic itself is fine, the input text is what was wrong) and
+    caused data_fetch_agent to skip real, present data-availability text on
+    every run for over a month. Merges any line of <=3 characters into the
+    end of the previous line with a space instead of a newline - keeps real
+    paragraph/heading breaks intact (needed by _split_into_sections()'s
+    regex fallback) while removing the artifact that fakes a boilerplate
+    shape out of ordinary numbered-citation prose."""
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    merged = []
+    for l in lines:
+        if merged and len(l) <= 3:
+            merged[-1] = merged[-1] + " " + l
+        else:
+            merged.append(l)
+    return "\n".join(merged)
+
+
 def _collect_text_between(start_tag, stop_tag) -> str:
     """Collects the actual leaf text between two tags in document order,
     using BeautifulSoup's .next_elements (a flat, document-order iterator
@@ -205,6 +231,7 @@ def _parse_html_sections(html: str) -> tuple:
 
     flattened = scope.get_text(separator="\n", strip=True)
     flattened = re.sub(r"\n{3,}", "\n\n", flattened)
+    flattened = _merge_stray_short_lines(flattened)
 
     if not matched:
         return flattened, {}
@@ -264,6 +291,9 @@ def _parse_europepmc_xml(xml_text: str) -> tuple:
 
     flattened = soup.get_text(separator="\n", strip=True)
     flattened = re.sub(r"\n{3,}", "\n\n", flattened)
+    # See _merge_stray_short_lines()'s docstring - same artifact, same real
+    # example (M_NI_70/CytoCommunity), same fix.
+    flattened = _merge_stray_short_lines(flattened)
     return flattened, sections
 
 
@@ -595,10 +625,26 @@ def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
 
     result["doi"] = doi
     result["fetched_at"] = _now()
-    if structured_sections:
-        result["sections"] = structured_sections
-    else:
-        result["sections"] = _split_into_sections(result["text"]) if result["is_full_text"] else {}
+    sections = dict(structured_sections) if structured_sections else {}
+    if result["is_full_text"]:
+        # Fill GAPS in the structured (JATS/HTML) sections with the regex
+        # heading-search, rather than only using it as an all-or-nothing
+        # fallback when structured parsing found nothing at all. Found
+        # 2026-10-04 on real papers (CytoCommunity/M_NI_70, Giotto/M_GF_77,
+        # Kasumi/M_NI_105): Europe PMC's JATS parser correctly found
+        # 'methods'/'results' but NOT 'data_availability', because that
+        # statement lives in back matter outside any <sec> tag its
+        # heuristics recognize - even though the statement is genuinely
+        # present in the full text, and even on its own clearly-headed line.
+        # Previously this meant get_agent_text() fell back to the full
+        # document truncated to MAX_SECTION_CHARS from the START - but a
+        # data-availability statement sits near the END (after Results/
+        # Methods, just before References), so it was truncated away even
+        # when present. Only fills keys the structured parser didn't find -
+        # never overwrites a structured-parser hit, which is more reliable.
+        for key, val in _split_into_sections(result["text"]).items():
+            sections.setdefault(key, val)
+    result["sections"] = sections
 
     cache_file.write_text(json.dumps(result, indent=2))
     return result

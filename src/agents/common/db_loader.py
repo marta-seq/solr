@@ -24,6 +24,27 @@ def _normalize_method_name(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", str(name or "").lower())
 
 
+_VERSION_SUFFIX_RE = re.compile(r"^(.+?[a-z])v?\d+$")
+
+
+def _strip_version_suffix(s: str) -> str:
+    """Strips a trailing version marker (an optional literal 'v' followed by
+    digits) from an already-fully-normalized (lowercase alnum only) name -
+    e.g. 'cellpose20' (from 'Cellpose2.0') -> 'cellpose', 'maskrcnnv2' ->
+    'maskrcnn'. Only strips if what's left is still >=4 characters (same
+    length guard used everywhere else here) - a string that's entirely a
+    version number has nothing meaningful to strip down to, so it's
+    returned unchanged. Added 2026-10-04 after a real case: a citation to
+    'Cellpose2.0' didn't match the already-well-represented 'Cellpose'
+    entry, nearly creating a duplicate - versioned tool names (Cellpose,
+    StarDist, segment-anything releases, etc.) are common enough in this
+    domain to handle generically rather than name by name."""
+    m = _VERSION_SUFFIX_RE.match(s)
+    if m and len(m.group(1)) >= 4:
+        return m.group(1)
+    return s
+
+
 def _name_candidates(name: str) -> set:
     """Every normalized form worth INDEXING for a given existing name: its
     own full normalized form (separators stripped, not split - e.g.
@@ -41,7 +62,9 @@ def _name_candidates(name: str) -> set:
     whole = _normalize_method_name(name)
     subtokens = {re.sub(r"[^a-z0-9]", "", t.lower())
                  for t in _NAME_SEPARATORS_RE.split(str(name or "")) if t.strip()}
-    return {c for c in ({whole} | subtokens) if len(c) >= 4}
+    forms = {whole} | subtokens
+    forms.add(_strip_version_suffix(whole))
+    return {c for c in forms if len(c) >= 4}
 
 
 class NameIndex:
@@ -90,12 +113,21 @@ class NameIndex:
             self._form_to_id.setdefault(form, entry_id)
 
     def lookup(self, name: str):
-        """Returns an existing entry_id if `name`'s full normalized form
-        matches any indexed candidate form, else None."""
+        """Returns an existing entry_id if `name`'s full normalized form (or
+        its version-stripped form, e.g. 'Cellpose2.0' -> 'cellpose') matches
+        any indexed candidate form, else None. Checking the stripped form
+        here too (not just when indexing) makes version matching symmetric -
+        it works whether the versioned name was the EXISTING entry or the
+        NEW query, whichever order they're encountered in."""
         full = _normalize_method_name(name)
         if len(full) < 4:
             return None
-        return self._form_to_id.get(full)
+        if full in self._form_to_id:
+            return self._form_to_id[full]
+        stripped = _strip_version_suffix(full)
+        if len(stripped) >= 4 and stripped in self._form_to_id:
+            return self._form_to_id[stripped]
+        return None
 
 
 def _latest(pattern: str) -> Path:

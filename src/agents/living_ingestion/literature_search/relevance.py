@@ -172,8 +172,8 @@ on the list clearly applies, or you are not confident, return an empty list \
 rather than guessing. Leave this empty for "application" papers - the \
 taxonomy above doesn't apply to them.
 
-Two specific disambiguation rules, added after real mis-tagging was found in \
-review (2026-09-22):
+Three specific disambiguation rules, added after real mis-tagging was found in \
+review (2026-09-22, 2026-10-04):
 - If the paper is a REVIEW/SURVEY whose main contribution is summarizing or \
 comparing many existing methods across a field, rather than presenting ONE \
 specific new method the paper itself implements, return an EMPTY category \
@@ -192,6 +192,19 @@ imputation", not "Virtual staining" - reserve "Virtual staining" for \
 generating a stain/channel from a DIFFERENT modality entirely (e.g. \
 predicting protein signal from a plain H&E/brightfield image with no \
 protein channels at all).
+- "Cell segmentation" (any variant) is ONLY for finding cell BOUNDARIES/outlines in an image - \
+it is NOT the same as classifying/assigning cell TYPES to already-identified cells, which is \
+"Phenotyping". A real paper was wrongly tagged "Cell segmentation - Imaging based" when its \
+abstract literally says "the task of identifying the TYPE of individual cells" (a classification \
+task, not a boundary-finding task) - that is Phenotyping. Ask: does this paper draw outlines \
+around cells, or does it assign a label/type/class to cells that are already delineated? Only \
+the former is segmentation.
+
+5. If paper_type is "method": does the paper itself give its OWN method a specific, proper \
+name (not a generic description)? If so, extract it exactly as written (e.g. "CellSighter", \
+"InterSTELLAR", "Giotto") - do NOT invent a name if the title/abstract never actually gives one, \
+leave it as an empty string instead. This has been a real, recurring gap - scraped method papers \
+often end up with no name at all even when the title/abstract state it plainly.
 
 Respond with ONLY a JSON object: {{"relevant": true/false, "paper_type": \
 "method" or "application" or null, "technical_application": true/false (only \
@@ -199,6 +212,8 @@ meaningful for paper_type "application", see step 3), "categories": \
 ["<exact label>", ...] (only for paper_type "method", else []), \
 "category_confidence": <0.0-1.0, your confidence that every label in \
 "categories" is correct - irrelevant/unused if "categories" is empty>, \
+"method_name": "the method's own proper name if paper_type is \\"method\\" and one is clearly \
+given, else empty string", \
 "reason": "one short sentence"}}"""
 
 
@@ -232,6 +247,11 @@ def llm_relevance_pass(title: str, abstract: str) -> dict:
         "technical_application": bool(parsed.get("technical_application")),
         "categories": valid_categories,
         "category_confidence": float(parsed.get("category_confidence") or 0.0),
+        # Added 2026-10-04 - closes a real, recurring gap: scraped method
+        # papers previously never got a `name` at all, even when the
+        # title/abstract stated one plainly (CellSighter, InterSTELLAR,
+        # Giotto were all found live with no name populated).
+        "method_name": (parsed.get("method_name") or "").strip(),
         "reason": parsed.get("reason", ""),
         "model_used": model_used,
     }

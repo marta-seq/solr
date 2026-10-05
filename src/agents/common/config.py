@@ -176,6 +176,43 @@ FALLBACK_PROVIDERS = [
                                           # last in the chain until that's checked.
     },
     {
+        # Added 2026-10-05, per Marta's explicit ask after real staged data
+        # showed gemini-3.5-flash-lite (the "gemini" provider's built-in
+        # fallback model, tried whenever plain gemini-3.5-flash fails) returns
+        # "nothing found" more than twice as often as gemini-3.5-flash itself
+        # (41% vs 18% empty-result rate, checked directly against real staged
+        # compared_methods_agent/data_fetch_agent output) - a real, material
+        # quality gap for the two highest-stakes extraction tasks (false
+        # negatives here silently under-populate the DB). Used ONLY by
+        # compared_methods_agent.py/data_fetch_agent.py via
+        # only_provider="gemini_flash_only" - no flash-lite fallback at all,
+        # so if plain flash is exhausted/down, LLMExhaustedError fires and the
+        # run stops cleanly rather than silently accepting lower-quality
+        # output. Same API key/endpoint as "gemini" above, just a narrower
+        # model list - not a separate credential.
+        "name": "gemini_flash_only",
+        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "api_key_env": "GEMINI_API_KEY",
+        "models": ["gemini-3.5-flash"],
+    },
+    {
+        # Added 2026-10-05, per Marta's explicit ask: flash-lite's lower
+        # empty-result rate (see gemini_flash_only's comment above) is a
+        # worse fit for the methods/data desks, but application_review_agent.py's
+        # task (paper-level metadata + a narrower, stricter self-generated-data
+        # check) is simpler and lower-stakes - worth actually TESTING flash-lite
+        # as the PRIMARY model there (not just a fallback after flash fails),
+        # rather than assuming it's unusable everywhere. Falls back to full
+        # gemini-3.5-flash if lite genuinely fails, so this doesn't lose
+        # robustness - it's an ordering experiment, not a quality cut. Revisit
+        # once a real batch's output can be spot-checked against this specific
+        # agent's needs.
+        "name": "gemini_lite_first",
+        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "api_key_env": "GEMINI_API_KEY",
+        "models": ["gemini-3.5-flash-lite", "gemini-3.5-flash"],
+    },
+    {
         "name": "zhipu",
         # Z.ai (formerly Zhipu AI) - verified 2026-07-13: GLM-4.7-Flash and
         # GLM-4.5-Flash are genuinely free (not trial-limited) to all

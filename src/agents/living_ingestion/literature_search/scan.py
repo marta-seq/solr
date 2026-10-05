@@ -145,6 +145,14 @@ def _stage_candidate(db: Database, record: dict, doi: str, verdict: dict) -> str
         # is lost.
         fields["preprint_doi"] = record["doi"]
 
+    # Added 2026-10-04 - closes a real, recurring gap: scraped method papers
+    # (CellSighter, InterSTELLAR, Giotto, all found live) previously got NO
+    # `name` at all, even when the title/abstract stated one plainly, so the
+    # frontend fell back straight to the raw entry_id. Only set for method
+    # papers where the LLM actually extracted a real name - never invented.
+    if verdict["paper_type"] == "method" and verdict.get("method_name"):
+        fields["name"] = verdict["method_name"]
+
     notes = verdict["reason"]
     if category_caveat:
         notes += f" | NOTE: {category_caveat}"

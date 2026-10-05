@@ -39,12 +39,13 @@ sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 # have happened more than once) are immediately visible in the log itself,
 # rather than needing a separate manual grep check to confirm which version
 # is actually running.
-CODE_VERSION = "2026-09-21-r19-force-utf8-stdout"
+CODE_VERSION = "2026-10-04-r20-application-desk"
 
 from .common import config, db_loader, staging
 from .living_ingestion.mailroom import triage
 from .agent_curation.methods_desk import compared_methods_agent, category_audit_agent
 from .agent_curation.data_desk import data_fetch_agent, intern_agent
+from .agent_curation.application_desk import application_review_agent
 from .common.paper_fetcher import fetch_paper, get_agent_text
 from .common.reference_list_parser import parse_reference_list
 
@@ -297,6 +298,85 @@ def run_paper_queue(db, budget: int) -> tuple:
     return summary, processed
 
 
+def run_application_queue(db, budget: int) -> tuple:
+    """
+    Added 2026-10-04: the AP_pub mirror of run_paper_queue(), using
+    application_review_agent.py. Not recursive (no new-entries-feed-back-
+    into-the-queue behavior like the method_pub track) and independent of
+    MAX_HOPS, same shape as run_data_pool() below - shares the overall
+    MAX_PAPERS_PER_RUN budget, see main() for the split across phases.
+
+    Tracks metadata/dataset sub-task exhaustion SEPARATELY (added
+    2026-10-05, see application_review_agent.process_paper()'s own
+    docstring for why): the two sub-tasks use different provider chains
+    with independent quotas (gemini_lite_first vs gemini_flash_only) - once
+    ONE is found exhausted, it's disabled for the REST of this run (via
+    attempt_metadata/attempt_dataset) while the other keeps going, rather
+    than stopping the whole queue the moment either one runs dry. Only
+    stops early once BOTH are exhausted (nothing left any paper could do).
+
+    Returns (summary_dict, papers_actually_used).
+    """
+    queue = triage.build_application_queue(db.methods)
+    _log(f"Application queue: {len(queue)} AP_pub papers")
+
+    summary = {"processed": [], "data_entries_linked": [], "llm_exhausted": False}
+    used = 0
+    metadata_exhausted = False
+    dataset_exhausted = False
+
+    for paper_entry in queue:
+        if used >= budget:
+            _log(f"Stopped application queue at its remaining budget ({budget}) - "
+                 f"{len(queue) - used} papers remain.")
+            break
+        if metadata_exhausted and dataset_exhausted:
+            _log(f"Stopped application queue - BOTH sub-task provider chains are exhausted, "
+                 f"nothing left to attempt on the {len(queue) - used} remaining paper(s).")
+            summary["llm_exhausted"] = True
+            break
+
+        entry_id = paper_entry["entry_id"]
+        _log(f"[{used + 1}/{budget}] {entry_id} (application desk)")
+
+        try:
+            result = application_review_agent.process_paper(
+                db, paper_entry,
+                attempt_metadata=not metadata_exhausted, attempt_dataset=not dataset_exhausted,
+            )
+        except Exception as e:
+            _log(f"  application desk CRASHED on {entry_id}: {e}")
+            result = {"metadata_filled": [], "linked_ids": [], "total_encountered": 0,
+                      "total_resolved": 0, "skip_reason": f"crashed: {e}",
+                      "metadata_exhausted": False, "dataset_exhausted": False}
+
+        if result["skip_reason"] is not None:
+            _log(f"  SKIPPED - LLM was NOT called ({result['skip_reason']})")
+        else:
+            _log(f"  OK - metadata filled: {result['metadata_filled'] or 'none'}, "
+                 f"dataset(s) linked/created: {result['linked_ids'] or 'none'}")
+            summary["data_entries_linked"].extend(result["linked_ids"])
+
+        summary["processed"].append(entry_id)
+        used += 1
+
+        if result.get("metadata_exhausted") and not metadata_exhausted:
+            _log(f"  metadata sub-task's provider chain (gemini_lite_first) is now EXHAUSTED - "
+                 f"disabling metadata extraction for the rest of this run (dataset detection "
+                 f"continues independently).")
+            metadata_exhausted = True
+        if result.get("dataset_exhausted") and not dataset_exhausted:
+            _log(f"  dataset sub-task's provider chain (gemini_flash_only) is now EXHAUSTED - "
+                 f"disabling dataset detection for the rest of this run (metadata extraction "
+                 f"continues independently).")
+            dataset_exhausted = True
+
+    if metadata_exhausted or dataset_exhausted:
+        summary["llm_exhausted"] = metadata_exhausted and dataset_exhausted
+
+    return summary, used
+
+
 def run_data_pool(db, budget: int) -> tuple:
     """Independent track: sweeps every Data_* entry with a metadata gap and
     tries to fill it from the associated paper's abstract. Not affected by
@@ -378,22 +458,31 @@ def main():
          f"{len(paper_summary['data_entries_linked'])} dataset entries linked/created.")
 
     if paper_summary.get("llm_exhausted"):
-        _log("Skipping the data pool this run too - it would hit the exact same exhausted "
-             "LLM chain and fail identically on every entry there as well.")
+        _log("Skipping the application queue and data pool this run too - they'd hit the exact "
+             "same exhausted LLM chain and fail identically on every entry there as well.")
+        app_summary, app_used = {"processed": [], "data_entries_linked": [], "llm_exhausted": True}, 0
         data_summary, entries_used = {"filled": [], "skipped": [], "llm_exhausted": True}, 0
     else:
-        remaining_budget = total_budget - papers_used
-        data_summary, entries_used = run_data_pool(db, budget=remaining_budget)
+        app_summary, app_used = run_application_queue(db, budget=total_budget - papers_used)
+        _log(f"Application queue done: {len(app_summary['processed'])} AP_pub papers processed, "
+             f"{len(app_summary['data_entries_linked'])} dataset entries linked/created.")
+
+        if app_summary.get("llm_exhausted"):
+            _log("Skipping the data pool this run too - same exhausted-chain reasoning as above.")
+            data_summary, entries_used = {"filled": [], "skipped": [], "llm_exhausted": True}, 0
+        else:
+            remaining_budget = total_budget - papers_used - app_used
+            data_summary, entries_used = run_data_pool(db, budget=remaining_budget)
     _log(f"Data pool done: {len(data_summary['filled'])} entries filled, "
          f"{len(data_summary['skipped'])} skipped.")
-    if paper_summary.get("llm_exhausted") or data_summary.get("llm_exhausted"):
+    if paper_summary.get("llm_exhausted") or app_summary.get("llm_exhausted") or data_summary.get("llm_exhausted"):
         _log("NOTE: this run ended early because the LLM fallback chain was fully exhausted, "
              "not because it ran out of papers/budget - there's likely still queued work left. "
              "Re-run once you expect the outage/quota to have cleared.")
 
     elapsed = time.time() - start
     _log(f"Total time: {elapsed:.1f}s "
-         f"({papers_used + entries_used}/{total_budget} of shared budget used).")
+         f"({papers_used + app_used + entries_used}/{total_budget} of shared budget used).")
     _log(f"Review staged candidates in data/agent_review/staging.xlsx before merging.")
 
 

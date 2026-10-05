@@ -63,6 +63,21 @@ others): "spatial_transcriptomics", "spatial_proteomics", "spatial_metabolomics"
 usually fits exactly one; some genuinely fit more than one (multi-omics). If you cannot tell \
 from the title/abstract, return an empty list rather than guessing.
 
+IMPORTANT, found live 2026-10-04 - do NOT default to "spatial_transcriptomics" just because a \
+paper uses generic, platform-agnostic wording like "spatial omics" or "spatially resolved omics \
+data" without naming a specific technology. Two real papers were wrongly tagged \
+spatial_transcriptomics-ONLY this way and incorrectly skipped entirely as a result (this flag \
+causes the methods/data desks to skip the paper outright - a false positive here silently drops \
+a real, relevant method from ever being curated): one explicitly described itself as working on \
+"atlas-scale spatial omics data" with no transcript/gene-specific framing, another analyzed \
+"different experimental platforms" generically. Both are platform-agnostic methods that apply \
+broadly, not ST-specific. Only tag spatial_transcriptomics when the paper explicitly focuses on \
+transcript/gene-expression-based platforms or data (e.g. names Visium, MERFISH, seqFISH, Xenium, \
+Slide-seq, or says "gene expression"/"transcriptome" as its actual subject) - generic "spatial \
+omics"/"spatially resolved data" wording alone is NOT sufficient evidence for ST-only, and should \
+instead return an empty list (or both proteomics and transcriptomics, if the paper genuinely \
+names both) rather than guessing ST-only from vague wording.
+
 Respond with ONLY a JSON object: {"correctly_categorized": true/false, "confidence": <0.0-1.0>, \
 "reason": "one short sentence explaining your verdict", "spatial_modality": ["<exact label>", ...]}"""
 

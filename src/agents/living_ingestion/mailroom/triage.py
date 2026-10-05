@@ -206,6 +206,49 @@ def build_seed_queue(methods_df) -> list:
 
 
 
+def build_application_queue(methods_df) -> list:
+    """
+    Candidate pool for application_review_agent.py - the AP_pub mirror of
+    build_seed_queue(), added 2026-10-04. AP_pub rows were previously
+    excluded from EVERY desk pass (build_seed_queue() explicitly excludes
+    paper_type=="application" - methods_desk is method_pub-only, and until
+    this agent existed there was no desk for application papers at all).
+
+    Excluded from the pool, same spirit as build_seed_queue():
+      - anything that ISN'T paper_type == "application" (this queue is
+        AP_pub-only, the mirror image of build_seed_queue()'s exclusion)
+      - already manually reviewed (REVIEW_STATUS == "manual")
+      - COMPLETE already marks this row as done
+      - BOTH APPLICATION_METADATA_STATUS and DATASET_REVIEW_STATUS already
+        "auto"/"manual" (2026-10-05 - changed from checking just
+        DATASET_REVIEW_STATUS alone, after application_review_agent.py was
+        split into two independent sub-tasks/calls - mirrors
+        _still_needs_a_desk_pass()'s identical OR-logic for the method_pub
+        queue: a row where EITHER sub-task still needs a pass stays in the
+        queue, not excluded until BOTH are done)
+      - no DOI to fetch text with in the first place
+      - already attempted this session (staged something in staging.xlsx)
+    """
+    already_attempted = _get_already_attempted_paper_ids(agents=("application_review_agent",))
+    queue = []
+    for _, row in methods_df.iterrows():
+        if str(row.get("paper_type", "")).strip().lower() != "application":
+            continue
+        if str(row.get("REVIEW_STATUS", "")).strip().lower() == config.REVIEW_STATUS_MANUAL:
+            continue
+        if _is_complete(row.get("COMPLETE")):
+            continue
+        if (_desk_field_done(row, "APPLICATION_METADATA_STATUS")
+                and _desk_field_done(row, "DATASET_REVIEW_STATUS")):
+            continue
+        if not _has_doi(row.get("DOI")):
+            continue
+        if row["entry_id"] in already_attempted:
+            continue
+        queue.append({"entry_id": row["entry_id"], "doi": row["DOI"]})
+    return queue
+
+
 # Common fields every modality should have; modality-specific fields only
 # apply to their own kind (a proteomics entry shouldn't be flagged for a
 # missing "N genes" - it doesn't have genes to begin with).

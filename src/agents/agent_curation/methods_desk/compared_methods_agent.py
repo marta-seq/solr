@@ -78,7 +78,7 @@ _GENERIC_TECHNIQUE_NAMES = {
         "GraphSAGE", "SAGEConv", "GraphConv",
         "U-Net", "UNET", "ResNet", "VGG", "AlexNet",
         "Pix2Pix", "CycleGAN", "GAN",
-        "Mask R-CNN", "Mask-R-CNN", "MaskRCNN",
+        "Mask R-CNN", "Mask-R-CNN", "MaskRCNN", "MRCNN", "M-RCNN",
         "Watershed", "Noise2Void",
     ]
 }
@@ -86,6 +86,77 @@ _GENERIC_TECHNIQUE_NAMES = {
 
 def _is_generic_technique(method_name: str) -> bool:
     return _normalize_method_name(method_name) in _GENERIC_TECHNIQUE_NAMES
+
+
+def _extract_generic_technique_term(method_name: str):
+    """Finds a denylist term EMBEDDED as a whole token inside a longer,
+    free-text label - e.g. 'PCA baseline' (a descriptive label an
+    is_baseline_group=true item gets, see SYSTEM_PROMPT's "Generic baseline
+    FAMILIES" section) contains the token 'PCA', which IS in
+    _GENERIC_TECHNIQUE_NAMES even though the whole label 'PCA baseline'
+    isn't. Found 2026-10-05 after a real duplicate: an existing bare 'PCA'
+    placeholder (created via the _is_generic_technique() exact-match path)
+    didn't get matched by a LATER 'PCA baseline' mention (created via the
+    is_baseline_group path) in a separate paper, because the two paths
+    produce differently-shaped names for the same underlying technique.
+    Reuses db_loader's own separator-splitting convention (same characters
+    NameIndex's _name_candidates() splits on) rather than inventing a new
+    tokenization rule. Deliberately NOT used to change what counts as
+    "generic" in the first place (_is_generic_technique() stays whole-name-
+    only, a deliberately conservative routing decision) - only used here, to
+    make the DEDUP lookup smarter once we're already committed to treating
+    an item as generic."""
+    from ...common.db_loader import _NAME_SEPARATORS_RE
+    for token in _NAME_SEPARATORS_RE.split(str(method_name or "")):
+        if _normalize_method_name(token) in _GENERIC_TECHNIQUE_NAMES:
+            return token
+    return None
+
+
+def _find_existing_generic_placeholder(db, method_name: str):
+    """Exact-match dedup lookup, bypassing db.name_index.lookup()'s 4-char
+    length floor - found 2026-10-05 after a real duplicate: 'SVM' normalizes
+    to exactly 3 characters ('svm'), so NameIndex never even INDEXES it
+    (_name_candidates() filters out forms shorter than 4 chars BEFORE they
+    ever reach the index, not just at lookup time) - NameIndex's length
+    guard exists to avoid false-positive matching on short, AMBIGUOUS
+    real-world tokens like bare 'R'. That's not a concern here: every name
+    reaching this function already passed _is_generic_technique() against
+    the curated, unambiguous _GENERIC_TECHNIQUE_NAMES denylist, several of
+    which are equally short and equally affected (PCA, GAN, GCN, GAT, GIN,
+    RF, MLP, VGG all normalize to <=3 characters too) - this is a general
+    fix for the whole generic-technique dedup path, not a one-off patch for
+    SVM specifically.
+
+    Two-tier check, since a name can be a duplicate of either:
+    1. An already-MERGED placeholder (cross-run) - direct exact-normalized-
+       string scan of db.methods' own "name" column (cheap - this branch
+       only fires a handful of times per run).
+    2. A placeholder STAGED earlier in this SAME run but not yet merged -
+       db.methods never reflects staged-only creates (only db.name_index/
+       db.doi_index do, via their own .add() calls, but those are length-
+       guarded too) - tracked here via a small dedicated cache attached to
+       db itself (created on first use), updated by the caller right after
+       creating a new generic placeholder.
+    """
+    target = _normalize_method_name(method_name)
+    if not target:
+        return None
+
+    cache = getattr(db, "_generic_name_cache", None)
+    if cache is None:
+        cache = {}
+        db._generic_name_cache = cache
+    if target in cache:
+        return cache[target]
+
+    if "name" in db.methods.columns:
+        match = db.methods[db.methods["name"].apply(
+            lambda n: _normalize_method_name(n) == target if isinstance(n, str) else False
+        )]
+        if not match.empty:
+            return match.iloc[0]["entry_id"]
+    return None
 
 
 def _today_stamp() -> int:
@@ -135,19 +206,42 @@ gives the compared method a proper name.
 - Do NOT include datasets, biological findings, or general background citations, even if phrased \
 similarly to a comparison.
 
-Two real failure modes to avoid, found during review of real extractions (2026-09-27) - both \
-directions matter equally, read carefully:
+Several real failure modes to avoid, found during review of real extractions (2026-09-27 and \
+2026-10-04) - directions 1 and 2 matter equally, read carefully:
 1. FALSE POSITIVE - do NOT extract a tool the paper APPLIES as a step in its OWN analysis, even \
 if it's a well-known named tool with its own citation. Real examples that were wrongly extracted \
 as "comparisons": a paper using SHAP for model explainability, or NicheNet for cell-cell \
 communication scoring, as part of its OWN pipeline - these are components the paper's method is \
 BUILT FROM, not competing methods it benchmarks ITSELF against. Ask: "does this paper claim its \
 own method outperforms, matches, or differs from this other method on the same task" - not just \
-"is this tool mentioned or used somewhere in the paper."
+"is this tool mentioned or used somewhere in the paper." This is ESPECIALLY common for toolbox/\
+platform papers (tagged "General Framework") - a real example: Giotto (a spatial-analysis toolbox) \
+had SpatialDE and other algorithms wrongly extracted as "comparisons", when the paper actually \
+INCORPORATES/re-implements them as part of its own toolbox, never benchmarks against them as \
+competitors. A toolbox paper listing the algorithms it wraps or makes available is NOT the same \
+as a benchmark comparison - only extract an item from such a paper if it explicitly says ITS OWN \
+method/pipeline was compared against or outperformed something else.
+IMPORTANT clarification (added 2026-10-04 after a real under-extraction found the opposite way): \
+this exclusion is about what the SEED PAPER you are reading says about its OWN relationship to the \
+other method - it is NOT about whether the compared method's name happens to itself be a general-\
+purpose toolbox/framework. If THIS paper explicitly says it benchmarked its own results against \
+Giotto, Squidpy, scimap, or any other toolbox as a baseline on the same task, extract it as a \
+genuine comparison - the fact that the baseline is itself a toolbox does not make it a "component \
+this paper incorporates". Real example: a paper benchmarking several cellular-neighborhood methods \
+explicitly named Giotto, Squidpy, and scimap as baselines it compared results against - all three \
+should be extracted, same as any other named baseline.
 2. FALSE NEGATIVE - do NOT miss an explicit list of named baselines just because they're all named \
 in one sentence. Real example that was missed entirely (left blank) despite being this explicit: \
 "We compared TopKAT to existing approaches ... including SPOT, FunSpace, and SPF." Extract EVERY \
 named method in a list like that as a separate item, not just the first one.
+3. REVIEW/SURVEY/CHALLENGE papers - if the paper's own main contribution is summarizing, \
+reviewing, or reporting results from a competition/challenge across MANY existing methods (rather \
+than presenting and benchmarking ONE specific new method of its own), return an EMPTY array, even \
+if specific tool names appear throughout the text. A real example: a data-science-challenge report \
+paper had a single named tool wrongly extracted as its "comparison", which made no sense - a \
+challenge/review paper doesn't benchmark ONE baseline, it either discusses many on equal footing or \
+none in the comparison sense at all. Mirrors the same rule already used for pipeline_category \
+tagging at scrape time (relevance.py) - apply it here too.
 
 Generic baseline FAMILIES: sometimes a paper benchmarks against a broad set of standard, \
 off-the-shelf models rather than one specific named published method with its own paper - e.g. \
@@ -344,24 +438,23 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         reference_map = parse_reference_list(references_text) if references_text else {}
 
     try:
-        # only_provider=["gemini", "groq", "cloudflare"] (Gemini added
-        # 2026-09-21, superseding the earlier skip_openrouter=True choice;
-        # Groq + Cloudflare added same day after Gemini's real quota turned
-        # out genuinely exhausted - both confirmed genuinely free, no card,
-        # not trials): real testing that day (the PENGUIN paper, denser text
-        # than the earlier MAPS validation) showed qwen2.5:14b can ignore the
-        # "return ONLY a JSON array" instruction on harder input, and
-        # qwen2.5:32b is too slow to be viable (300s+/call) - neither
-        # reliable enough to be primary. Gemini was reliable and fast (~13s)
-        # on every real test. Still deliberately bounded, no OpenRouter,
-        # no OpenAI/Grok/DeepSeek/Cerebras (all confirmed to require payment
-        # now, not genuinely free - see CLAUDE.md) - see
-        # _build_provider_chain()'s docstring: once every listed provider is
-        # exhausted, LLMExhaustedError fires so run_pipeline.py stops the run
-        # rather than silently degrading further or looping.
+        # only_provider="gemini_flash_only" (changed 2026-10-04, then narrowed
+        # 2026-10-05): Groq/Cloudflare were added 2026-09-21 as fallbacks
+        # behind Gemini, but Marta reviewed a real batch that mixed providers
+        # and wants this annotation pass pinned to ONLY the model that's been
+        # consistently validated, rather than silently degrading to a
+        # fallback mid-run. Narrowed again 2026-10-05: the plain "gemini"
+        # provider's own built-in flash-lite fallback turned out to have a
+        # real quality gap for this task (41% vs 18% empty-result rate,
+        # checked against real staged output - see config.py's own comment
+        # on "gemini_flash_only") - flash-lite is excluded entirely here now,
+        # not just Groq/Cloudflare. Deliberately no OpenRouter either (see
+        # _build_provider_chain()'s docstring): once gemini-3.5-flash itself
+        # is exhausted, LLMExhaustedError fires so run_pipeline.py stops the
+        # run rather than degrading further.
         extracted, model_used = call_llm_json(
             SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text),
-            only_provider=["gemini", "groq", "cloudflare"]
+            only_provider="gemini_flash_only"
         )
     except LLMError as e:
         staging.append_candidate(
@@ -409,6 +502,33 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
             # pool exactly like any other placeholder stub, no new mechanism
             # needed) with COMPLETE="NA" since there's nothing further to
             # annotate on a generic/family placeholder.
+            # Name-dedup check added 2026-10-04 - this branch used to create
+            # a new placeholder UNCONDITIONALLY, never checking db.name_index
+            # first. Real consequence found live: 3 separate "XGBoost"
+            # placeholders, 2 "SVM" placeholders, a duplicate "Watershed"
+            # placeholder when M_PH_5 already covers it, and 4 different
+            # kmeans/K-means/k-means spellings all creating new rows instead
+            # of matching the existing M_PH_85 - this check is the fix for
+            # all of those at once (see db_loader.NameIndex for the matching
+            # rules, including version-aware matching like "Cellpose2.0" vs
+            # "Cellpose").
+            existing_generic_id = db.name_index.lookup(method_name) or _find_existing_generic_placeholder(db, method_name)
+            if not existing_generic_id:
+                # Whole-name match failed - try a denylist term EMBEDDED in a
+                # free-text label (e.g. "PCA baseline" -> "PCA") - see
+                # _extract_generic_technique_term()'s own docstring for the
+                # real case this closes.
+                embedded_term = _extract_generic_technique_term(method_name)
+                if embedded_term:
+                    existing_generic_id = (db.name_index.lookup(embedded_term)
+                                            or _find_existing_generic_placeholder(db, embedded_term))
+            if existing_generic_id:
+                comparison_ids_added.append(existing_generic_id)
+                item_outcomes.append({"outcome": "linked_existing", "entry_id": existing_generic_id,
+                                       "description": _describe_existing(db.methods, existing_generic_id),
+                                       "matched_by": "name"})
+                continue
+
             new_id = db.id_allocator.next_id("M_AUTO")
             reason = ("Generic baseline family grouped from a single comparison mention"
                       if is_baseline_group else
@@ -430,6 +550,17 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 notes=f"{reason} in {entry_id}: '{method_name}'.",
             )
             db.name_index.add(method_name, new_id)
+            db._generic_name_cache[_normalize_method_name(method_name)] = new_id  # see
+            # _find_existing_generic_placeholder()'s docstring - covers same-run
+            # duplicates of a name too short for NameIndex to index at all.
+            embedded_term = _extract_generic_technique_term(method_name)
+            if embedded_term:
+                # Also register under the embedded denylist term alone (e.g.
+                # "PCA baseline" -> also caches "pca") so a LATER mention of
+                # the bare term in a different paper this same run still
+                # finds this entry - see _extract_generic_technique_term()'s
+                # docstring for the real case this symmetry closes.
+                db._generic_name_cache[_normalize_method_name(embedded_term)] = new_id
             comparison_ids_added.append(new_id)
             item_outcomes.append({"outcome": "created_new", "entry_id": new_id,
                                    "confidence": None, "review_status": config.REVIEW_STATUS_AUTO})
