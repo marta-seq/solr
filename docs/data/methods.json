@@ -3282,8 +3282,30 @@
     "abstract": "Deciphering cellular microenvironments at atlas scale remains challenging because molecular identity, spatial context, and platform heterogeneity are tightly coupled. Here we present CellNiche, a scalable contrastive-learning framework that identifies and characterizes cellular microenvironments from spatial omics data using cell-centric spatial-proximity subgraphs. CellNiche combines spatial co-localization and molecular co-expression cues to learn microenvironment-aware embeddings. Across spatial omics datasets from multiple platforms (>10 million cells in total), scaling experiments show improved representations with more training data and competitive clustering and embedding-quality performance with efficient computation. In a multi-sample human non-small-cell lung cancer (NSCLC) cohort, CellNiche identifies conserved and sample-specific tumor and immune microenvironments and captures localized spatial transitions. In four independent mouse brain atlases, CellNiche integrates 293 slices into a unified virtual brain map for cross-atlas annotation transfer and spatial refinement.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
+    "data_ids": [
+      "D_ST_ISH1",
+      "D_ST_STEREOSEQ_1",
+      "D_SP_AUTO_CODEX_5",
+      "D_ST_ISS18",
+      "D_SP_CODEX_4",
+      "D_ST_COSM16",
+      "D_ST_20261009",
+      "D_ST_ISH19",
+      "D_ST_ISH20"
+    ],
+    "comparison_ids": [
+      "M_NI_38",
+      "M_NI_37",
+      "M_NI_70",
+      "M_NI_69",
+      "M_NI_39",
+      "M_20260926666",
+      "M_20261009607",
+      "M_20261009608",
+      "M_20261009609",
+      "M_20261009610",
+      "M_20261009611"
+    ],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -5618,7 +5640,7 @@
     "authors": "Wubing Zhang; Erin L. Brown; Abul Usmani; Noah Earland; Minji Kang; Chibuzor Olelewe; Anushka Viswanathan; Pradeep S. Chauhan; Chloé B. Steen; Hyun Soo Jeon; Susanna Avagyan; Irfan Alahi; Nicholas P. Semenkovich; Janella C. Schwab; Chloe M. Sachs; Faridi Qaium; Peter K. Harris; Qingyuan Cai; Andrew J. Gentles; James Knight; Rondell P. Graham; Antonietta Bacchiocchi; Peter C. Lucas; Ryan C. Fields; Mario Sznol; Ruth Halaban; David Y. Chen; Aadel A. Chaudhuri; Aaron M. Newman",
     "year": "2026",
     "journal": "Nature",
-    "citations": "22",
+    "citations": "23",
     "abstract": "Multicellular programs in the tumour microenvironment (TME) drive cancer pathogenesis and response to therapy but remain challenging to identify and profile clinically(1-3). Here, we present a machine-learning framework for multi-analyte profiling of spatially dependent cell states and multicellular ecosystems, termed spatial ecotypes (SEs). By integrating over 10 million single-cell and spot-level spatial transcriptomes from diverse human carcinomas and melanomas, we identified nine SEs with broad conservation, each of which has unique biology, geospatial features and clinical outcome associations, including several linked to immunotherapy response. Notably, SEs were distinguishable by DNA methylation profiling and were recoverable from plasma cell-free DNA (cfDNA) using deep learning. In cfDNA from nearly 100 patients with melanoma, SE levels exhibited striking associations with immunotherapy response. Our data reveal fundamental units of TME organization and demonstrate a multimodal platform for profiling solid and liquid TMEs, with implications for improved risk stratification and therapy personalization.",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -5663,7 +5685,7 @@
     "data_ids": [],
     "comparison_ids": [
       "M_NI_68",
-      "M_AUTO_20260925445"
+      "M_AUTO_20260925445 (PCA)"
     ],
     "associated_data": "",
     "associated_data_ids": [],
@@ -5931,7 +5953,7 @@
     "category": "computational analysis - method",
     "paper_type": "method",
     "pipeline_category": "General Framework",
-    "spatial_data_category": "spatial_transcriptomics",
+    "spatial_data_category": "spatial_transcriptomics; spatial_proteomics; spatial metabolomics",
     "categories": [
       "computational analysis - method"
     ],
@@ -6192,7 +6214,7 @@
     "authors": "Nicolas Pielawski; Axel Andersson; Christophe Avenel; Andrea Behanova; Eduard Chelebian; Anna Klemm; Fredrik Nysjö; Leslie Solorzano; Carolina Wählby",
     "year": "2023",
     "journal": "Heliyon",
-    "citations": "50",
+    "citations": "51",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -6385,8 +6407,8 @@
       "Integration of modalities",
       "Other"
     ],
-    "review_status": "needs_review",
-    "addition_method": "",
+    "review_status": "manual",
+    "addition_method": "manual",
     "is_placeholder": false,
     "date_added": "20250705",
     "title": "Integration of spatial and single-cell data across modalities with weakly linked features",
@@ -6397,14 +6419,20 @@
     "abstract": "Although single-cell and spatial sequencing methods enable simultaneous measurement of more than one biological modality, no technology can capture all modalities within the same cell. For current data integration methods, the feasibility of cross-modal integration relies on the existence of highly correlated, a priori 'linked' features. We describe matching X-modality via fuzzy smoothed embedding (MaxFuse), a cross-modal data integration method that, through iterative coembedding, data smoothing and cell matching, uses all information in each modality to obtain high-quality integration even when features are weakly linked. MaxFuse is modality-agnostic and demonstrates high robustness and accuracy in the weak linkage scenario, achieving 20~70% relative improvement over existing methods under key evaluation metrics on benchmarking datasets. A prototypical example of weak linkage is the integration of spatial proteomic data with single-cell sequencing data. On two example analyses of this type, MaxFuse enabled the spatial consolidation of proteomic, transcriptomic and epigenomic information at single-cell resolution on the same tissue section.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [],
+    "data_ids": [
+      "D_SP_20260859",
+      "D_SP_AUTO_CODEX_7"
+    ],
     "comparison_ids": [
       "M_AUTO_20260925446",
       "M_AUTO_20260925447",
-      "M_AUTO_20260925448",
+      "M_20261009611",
       "M_AUTO_20260925449",
       "M_AUTO_67",
-      "M_AUTO_66"
+      "M_AUTO_66",
+      "M_20261009613",
+      "M_20261009614",
+      "M_20261009615"
     ],
     "associated_data": "",
     "associated_data_ids": [],
@@ -7731,11 +7759,13 @@
     "doi": "https://doi.org/10.1038/s41592-026-03142-6",
     "name": "",
     "source_type": "peer-reviewed",
-    "category": "",
+    "category": "computational analysis - method",
     "paper_type": "method",
     "pipeline_category": "",
     "spatial_data_category": "",
-    "categories": [],
+    "categories": [
+      "computational analysis - method"
+    ],
     "pipeline_categories": [],
     "review_status": "",
     "addition_method": "",
@@ -10765,17 +10795,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_20260926667",
-      "M_AUTO_20260925448",
-      "M_AUTO_20260925450",
-      "M_AUTO_20260925446",
-      "M_AUTO_20260925451",
-      "M_AUTO_67",
-      "M_AUTO_66",
-      "M_AUTO_20260925452",
-      "M_AUTO_20260925453"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -10860,7 +10880,7 @@
     "year": "2026",
     "journal": "bioRxiv : the preprint server for biology",
     "citations": "0",
-    "abstract": "The spatial organization of the tumor microenvironment shapes immune function and disease progression, yet existing methods for cell-type interaction networks from multiplexed tissue images operate in two dimensions and ignore spatial auto-correlation. We introduce ISPat-3D (Informed Spatially Aware Patterns in 3D), a hierarchical Bayesian framework that recovers spatially varying, zone-specific interaction networks from 3D multiplexed cancer imaging data. The method partitions the tissue volume into tumor intensity zones, fits an anisotropic Gaussian process per cell type and zone with separate lengthscales for the tissue plane and axial direction, decomposes the residuals via multi-study factor analysis, and extracts partial correlation networks from the resulting precision matrices. Simulations demonstrate accurate recovery of shared and zone-specific structure with high power and controlled FDR. We apply ISPat-3D to two 3D datasets: the colorectal cancer atlas (CRC1) 3D CyCIF specimen and a HER2-positive ductal breast carcinoma (BC) specimen from a 3D IMC. In CRC1, zone-specific networks reveal a T cell module intensifying with tumor burden, with the dominant regulatory association shifting from CD4+{leftrightarrow}Treg at intermediate density to CD8+{leftrightarrow}Treg at maximal density, consistent with cytotoxic suppression at the tumor core. In BC, the shared network shows near-perfect conditional coupling between cancer-associated fibroblasts and the myoepithelial layer, while zone-specific networks reveal CAF{leftrightarrow}endothelial co-localisation at intermediate and high burden, consistent with angiogenic remodeling, and a B cell{leftrightarrow}CAF association confined to high-density zones, consistent with tertiary lymphoid structure formation. Across both tumors, ISPat-3D identifies volumetric spatial conditional interactions not recoverable from 2D sections.",
+    "abstract": "Registered serial-section imaging preserves a depth coordinate that a single planar image cannot represent. We introduce ISPat-3D (Informed Spatially Aware Patterns in Three Dimensions), a framework that combines anisotropic Gaussian-process adjustment with multi-study factor analysis to separate smooth spatial variation from covariance shared across tumor-density zones and covariance specific to individual zones. Precision matrices summarize the adjusted structure as signed partial correlations, interpreted as conditional co-location or exclusion rather than physical contact, signaling, or causation. We analyze conditional associations among cell-type neighborhood-density variables across five relative tumor-burden strata in one colorectal-cancer CyCIF specimen and one HER2-positive breast-carcinoma IMC specimen. The workflow adjusts modeled smooth spatial variation with an anisotropic three-coordinate Gaussian process, fits shared and zone-specific factor covariance to the residuals, and converts each full zone covariance to signed partial correlations. To make the reported cell budgets feasible, the analysis uses a 15-neighbor Vecchia GP likelihood on spatially balanced anchors and a Gaussian-likelihood fit of the same factor covariance form from full residual covariance summaries. Controlled simulations, a matched section-wise planar comparison, and direct graphical-lasso sensitivity check the estimator. In CRC, positive T-cell and macrophage -- stroma density associations show relatively high agreement across three sampling budgets. Breast pair signs are much less stable across budgets and remain exploratory, even though graphical lasso agrees on the same GP-adjusted residuals. A GP separates patterns by assumed spatial scale; a smooth field may contain meaningful biology and residual associations may contain noise or unmeasured effects. The two single-specimen analyses identify biologically plausible, zone-resolved conditional associations for replication, without establishing cellular contact, mechanism, or cohort-level reproducibility. Code release: https://github.com/sagnikbhadury/ISPAT-3D.",
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [
@@ -10907,11 +10927,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_SE_7.1",
-      "M_AUTO_201",
-      "M_20260926664"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -10994,10 +11010,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925454",
-      "M_AUTO_20260925455"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -11037,11 +11050,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_SE_7.3",
-      "M_SE_7.2",
-      "M_AUTO_393"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -11618,9 +11627,7 @@
       "Tumor immune microenvironment"
     ],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925456"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -11658,12 +11665,8 @@
     "abstract": "Immunophenotyping is fundamental to characterizing tissue cellular composition, pathogenic processes, and immune infiltration, yet its accuracy and reproducibility remain constrained by heuristic antibody panel design and manual gating. Here, we present ImmunoPheno, an open-source computational platform that repurposes large-scale single-cell proteo-transcriptomic data to guide immunophenotyping experimental design and analysis. ImmunoPheno integrates existing datasets to automate the design of optimal antibody panels, gating strategies, and cell identity annotation. We used ImmunoPheno to construct a harmonized reference (HICAR) comprising 390 monoclonal antibodies and 93 human immune cell populations. Leveraging this resource, we algorithmically designed minimal panels to isolate rare populations, such as MAIT cells and pDCs, which we validated experimentally. We further demonstrate accurate cell identity annotation across publicly available and newly generated cytometry datasets spanning diverse technologies, including spatial platforms like CODEX. ImmunoPheno complements expert curation and supports continual expansion, providing a scalable framework to enhance the accuracy, reproducibility, and resolution of immunophenotyping.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_CODEX_29"
-    ],
-    "comparison_ids": [
-      "M_AUTO_20260925457"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -12120,12 +12123,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925458",
-      "M_AUTO_217",
-      "M_AUTO_20260925459",
-      "M_AUTO_20260925460"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -12162,10 +12160,7 @@
     "abstract": "Accurate cell type annotation in imaging mass cytometry (IMC) and related technologies critically depends on preprocessing steps such as normalization, segmentation, and marker aggregation. More distinct separation between negative and positive signals enables more precise cell boundary inference and more robust marker assignment to single cells. However, inherent limitations in spatial resolution and uncertain cell boundaries can lead to spillover, where signal leaks from one cell to a neighboring cell, distorting marker intensities and leading to incorrect cell type annotation. To address these challenges, we first systematically investigated the impact of spatial resolution and segmentation variability on per-cell marker aggregation using simulated IMC datasets, establishing upper limits for reliable marker separation in cell type annotation. We further analyzed technical biases in large scale studies, demonstrating that appropriate normalization approaches can significantly reduce batch effects without compromising biological variability. Finally, we benchmarked multiple spillover correction strategies across both (semi-)simulated and real IMC datasets. Our results revealed two simple methods: spatial smoothing of intensity images followed by mean marker aggregation, or resampling of cell masks followed by mean marker aggregation and median calculation, both of which improved annotation performance. Other methods often performed worse than the baseline of simple mean aggregation. Together, these findings underscore the central importance of spatial resolution, normalization, and marker aggregation in IMC data preprocessing for accurate single-cell annotation.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_IMC_3",
-      "D_MULTI_NEW_20260925279"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -12246,10 +12241,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925461",
-      "M_202608263"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -12287,10 +12279,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_SE_26",
-      "M_SE_7.1"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -12369,11 +12358,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_SE_9",
-      "M_SE_7.1",
-      "M_AUTO_20260925462"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -12450,9 +12435,7 @@
     "abstract": "Identifying spatially resolved proteomes has advanced markedly, yet integrating definitive protein identification with precise spatial localization in a single workflow remains challenging. Matrix-assisted laser desorption/ionization mass spectrometry imaging (MALDI-MSI) enables antibody-free mapping of proteins in tissue sections, but its capacity for unambiguous identification is limited. Here, we present a combined MALDI-MSI and liquid chromatography-tandem mass spectrometry (LC-MS/MS) approach to map protein localization and track spatial changes in murine thymus during chemotherapy-induced involution and regeneration. Our workflow incorporates a scoring algorithm (pepBridge) that aligns MALDI-MSI molecular signals with LC-MS/MS identifications, enabling confident assignment of proteins, critical to thymic function. Using this pipeline, we reveal spatiotemporal changes in proteins involved in cell migration, cytoskeletal remodeling, and thymic regeneration. Notably, we identify distinct spatial shifts in nucleoprotein TPR and tubulin-associated chaperone A (TBCA), corresponding to chemotherapy-driven architectural remodeling. Translationally, these findings highlight pathways and targets to promote immune recovery in pediatric cancer patients undergoing cytoreductive therapy. Analytically, this framework advances spatial proteomics by enabling high-confidence protein identification in lymphoid tissues, broadening the potential of translational proteomic research.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_MALDIMSI_1"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -12601,11 +12584,7 @@
       "medical imaging",
       "spatial proteomics"
     ],
-    "data_ids": [
-      "D_SP_NEW_16",
-      "D_SP_NEW_17",
-      "D_SP_NEW_18"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -13006,19 +12985,8 @@
       "spatial statistics",
       "tissue microenvironment"
     ],
-    "data_ids": [
-      "D_ST_XENIUM_1"
-    ],
-    "comparison_ids": [
-      "M_AUTO_20260925463",
-      "M_AUTO_20260925464",
-      "M_AUTO_323",
-      "M_AUTO_20260925465",
-      "M_PR_4",
-      "M_AUTO_263",
-      "M_GF_75",
-      "M_NI_94"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -13179,22 +13147,8 @@
     "abstract": "There is a growing demand for methods that can effectively align and compare spatial data in the absence of obvious visual correspondence. To address this challenge, we developed an interpretable cell mapping strategy based on solving a Linear Assignment Problem (LAP) where the total cost is computed by considering cells and their niches. We demonstrate that our approach outperforms other methods at capturing the spatial context of cells in synthetic and real data sets. The flexibility of our implementation enhances the interpretability of mapping and allows for accurate cell mapping across samples, technologies, resolutions, developmental and regenerative time. We show spatiotemporal decoupling of cells during development and patient level sub-populations in In Situ Mass Cytometry (IMC) cancer data sets. Our interpretable mapping approach facilitates systemic comparison and analysis of heterogeneous spatial data. We provide a flexible framework for researchers to tailor their analysis to the specific biological and research context.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_SIMULATION_1",
-      "D_ST_CAP15",
-      "D_ST_SEQFISH_3",
-      "D_ST_STEREOSEQ_3",
-      "D_ST_VISIUM_156",
-      "D_ST_VISIUMHD_1",
-      "D_ST_STEREOSEQ_2"
-    ],
-    "comparison_ids": [
-      "M_AUTO_20260925466",
-      "M_202608195",
-      "M_AUTO_20260925467",
-      "M_AUTO_20260925468",
-      "M_AUTO_20260925450"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -13332,11 +13286,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925446",
-      "M_AUTO_20260925451",
-      "M_AUTO_20260925469"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -13374,13 +13324,8 @@
     "abstract": "High-throughput single-cell and spatial omics technologies have transformed biological research. Despite these advances, reliably identifying the molecular drivers and their interplays across biological levels and scales remains a significant challenge. Current experimental methods are limited by batch effects, the lack of simultaneous multi-modal measurements in individual cells, limited coverage of measured proteins, poor generalization to unseen conditions, and insufficient spatial context at a single-cell resolution. To overcome these challenges, we introduce scProSpatial, a unified, multi-modal, multi-scale deep learning framework designed to infer and impute high fidelity single-cell spatial proteomics from scRNA-seqs. Through comprehensive evaluations, scProSpatial accurately predicts spatial abundances of proteins in the absence of shared transcriptomics features, expands protein coverages by 50 times, and generalizes robustly to out-of-distribution scenarios. A case study in metastatic breast cancer further illustrates its utility, demonstrating scProSpatial's potential to drive cross-level, cross-scale multi-omics integration and analysis and reveal deeper insights into complex biological systems. FAU - Wu, You",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_CODEX_30",
-      "D_MULTI_NEW_20260925280"
-    ],
-    "comparison_ids": [
-      "M_72"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -13549,10 +13494,7 @@
     "abstract": "MOTIVATION: As research advances in spatially resolving the biological archetype of various diseases, technologies that capture the spatial relationships between cells are demonstrating increasing value. Whilst there are an increasing number of analytical methods being developed to identify the complex web of interactions between cells, the downstream impacts of these cell-cell relationships are under explored. RESULTS: We present SpatioMark, a statistical framework that simplifies the assessment of gene or protein expression changes within a cell type that are associated with the spatial proximity to other cell types. We demonstrate its performance across spatial proteomics and transcriptomics datasets. We link identified relationships with differences in patient survival. We highlight key challenges in identifying changes in molecular markers associated with the localization of cells. We propose correction strategies that reduce artefact-induced relationships. AVAILABILITY AND IMPLEMENTATION: SpatioMark is implemented in the Statial R package on Bioconductor: https://bioconductor.org/packages/release/bioc/html/Statial.html.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_CODEX_31",
-      "D_SP_MIBITOF_1"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -13628,9 +13570,7 @@
     "abstract": "Spatial proteomics (highly multiplexed tissue imaging) provides unprecedented insight into the types, states, and spatial organization of cells within preserved tissue environments. To enable single-cell analysis, high-plex images are typically segmented using algorithms that assign marker signals to individual cells. However, conventional segmentation is often imprecise and susceptible to signal spillover between adjacent cells, interfering with accurate cell type identification. Segmentation-based methods also fail to capture the morphological detail that histopathologists rely on for disease diagnosis and staging. Here, we present a method that combines unsupervised, pixel-level machine learning using autoencoders with traditional segmentation to generate single-cell data that captures information on protein abundance, morphology, and local neighborhood in a manner analogous to human experts while overcoming signal spillover. We demonstrate the generality of this approach by applying it to CyCIF, Lunaphore COMET, and CODEX data, and show that it can learn histological features across multiple spatial scales.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_IMC_3"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -13945,13 +13885,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_63_20260924242",
-      "M_SE_9",
-      "M_SE_11",
-      "M_AUTO_455",
-      "M_AUTO_20260925401"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -14033,9 +13967,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925470"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -14244,9 +14176,7 @@
       "Single cell proteomics",
       "Spatial biology"
     ],
-    "data_ids": [
-      "AP_735"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14284,10 +14214,7 @@
     "abstract": "Mammalian organs and tissues are composed of heterogeneously distributed cells, which interact with each other and the extracellular matrix surrounding them in a spatially defined way. Therefore, spatially resolved gene expression profiling is crucial for determining the function and phenotypes of these cells. While genome mutations and transcriptome alterations act as drivers of diseases, the proteins that they encode regulate essentially all biological functions and constitute the majority of biomarkers and drug targets for disease diagnostics and treatment. However, unlike transcriptomics, which has a recent explosion in high-throughput spatial technologies with deep coverage, spatial proteomics capable of reaching bulk tissue-level coverage is still rare in the field, due to the non-amplifiable nature of proteins and sensitivity limitation of mass spectrometry (MS). More importantly, due to the limited multiplexing capability of the current proteomics methods, whole-tissue slice mapping with high spatial resolution requires a formidable amount of MS matching time. To achieve spatially resolved, deeply covered proteome mapping for centimeter-sized samples, we developed a sparse sampling strategy for spatial proteomics (S4P) using computationally assisted image reconstruction methods, which is potentially capable of reducing the number of samples by tens to thousands of times depending on the spatial resolution. In this way, we generated the largest spatial proteome to date, mapping more than 9000 proteins in the mouse brain, and discovered potential new regional or cell type markers. Considering its advantage in sensitivity and throughput, we expect that the S4P strategy will be applicable to a wide range of tissues in future studies.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_LCMS_1",
-      "D_ST_NEW_13"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14409,10 +14336,7 @@
     "abstract": "Cancer progression can be slowed down or halted via the activation of either endogenous or engineered T cells and their infiltration of the tumour microenvironment. Here we describe a deep-learning model that uses large-scale spatial proteomic profiles of tumours to generate minimal tumour perturbations that boost T-cell infiltration. The model integrates a counterfactual optimization strategy for the generation of the perturbations with the prediction of T-cell infiltration as a self-supervised machine learning problem. We applied the model to 368 samples of metastatic melanoma and colorectal cancer assayed using 40-plex imaging mass cytometry, and discovered cohort-dependent combinatorial perturbations (CXCL9, CXCL10, CCL22 and CCL18 for melanoma, and CXCR4, PD-1, PD-L1 and CYR61 for colorectal cancer) that support T-cell infiltration across patient cohorts, as confirmed via in vitro experiments. Leveraging counterfactual-based predictions of spatial omics data may aid the design of cancer therapeutics.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925281",
-      "D_SP_20260855"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14533,9 +14457,7 @@
     "abstract": "Immune checkpoint inhibition (ICI) has fundamentally changed cancer treatment. However, only a minority of patients with metastatic triple negative breast cancer (TNBC) benefit from ICI, and the determinants of response remain largely unknown. To better understand the factors influencing patient outcome, we assembled a longitudinal cohort with tissue from multiple timepoints, including primary tumor, pre-treatment metastatic tumor, and on-treatment metastatic tumor from 117 patients treated with ICI (nivolumab) in the phase II TONIC trial. We used highly multiplexed imaging to quantify the subcellular localization of 37 proteins in each tumor. To extract meaningful information from the imaging data, we developed SpaceCat, a computational pipeline that quantifies features from imaging data such as cell density, cell diversity, spatial structure, and functional marker expression. We applied SpaceCat to 678 images from 294 tumors, generating more than 800 distinct features per tumor. Spatial features were more predictive of patient outcome, including features like the degree of mixing between cancer and immune cells, the diversity of the neighboring immune cells surrounding cancer cells, and the degree of T cell infiltration at the tumor border. Non-spatial features, including the ratio between T cell subsets and cancer cells and PD-L1 levels on myeloid cells, were also associated with patient outcome. Surprisingly, we did not identify robust predictors of response in the primary tumors. In contrast, the metastatic tumors had numerous features which predicted response. Some of these features, such as the cellular diversity at the tumor border, were shared across timepoints, but many of the features, such as T cell infiltration at the tumor border, were predictive of response at only a single timepoint. We trained multivariate models on all of the features in the dataset, finding that we could accurately predict patient outcome from the pre-treatment metastatic tumors, with improved performance using the on-treatment tumors. We validated our findings in matched bulk RNA-seq data, finding the most informative features from the on-treatment samples. Our study highlights the importance of profiling sequential tumor biopsies to understand the evolution of the tumor microenvironment, elucidating the temporal and spatial dynamics underlying patient responses and underscoring the need for further research on the prognostic role of metastatic tissue and its utility in stratifying patients for ICI.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_MIBI_20261002112"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14580,12 +14502,7 @@
       "peptide imaging",
       "spatial proteomics"
     ],
-    "data_ids": [
-      "D_SP_MASSSPECTR_1",
-      "D_SP_MASSSPECTR_2",
-      "D_SP_MASSSPECTR_3",
-      "D_SP_MASSSPECTR_4"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14751,10 +14668,7 @@
     "abstract": "Novel multiplexed spatial proteomics imaging platforms expose the spatial architecture of cells in the tumor microenvironment (TME). The diverse cell population in the TME, including its spatial context, has been shown to have important clinical implications, correlating with disease prognosis and treatment response. The accelerating implementation of spatial proteomic technologies motivates new statistical models to test if cell-level images associate with patient-level endpoints. Few existing methods can robustly characterize the geometry of the spatial arrangement of cells and also yield both a valid and powerful test for association with patient-level outcomes. We propose a topology-based approach that combines persistent homology with kernel testing to determine if topological structures created by cells predict continuous, binary, or survival clinical endpoints. We term our method TopKAT (Topological Kernel Association Test) and show that it can be more powerful than statistical tests grounded in the spatial point process model, particularly when cells arise along the boundary of a ring. We demonstrate the properties of TopKAT through simulation studies and apply it to two studies of triple negative breast cancer where we show that TopKAT recovers clinically relevant topological structures in the spatial distribution of immune and tumor cells.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_AUTO_MIBI_3",
-      "D_SP_IMC_3"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14792,13 +14706,8 @@
     "abstract": "We present DeepCell Types, a novel approach to cell phenotyping for spatial proteomics that addresses the challenge of generalization across diverse datasets with varying marker panels collected across different platforms. Our approach utilizes a transformer with channel-wise attention to create a language-informed vision model; this models semantic understanding of the underlying marker panel enables it to learn from and adapt to heterogeneous datasets. Leveraging a curated, diverse dataset named Expanded TissueNet with cell type labels spanning the literature and the NIH Human BioMolecular Atlas Program (HuBMAP) consortium, our model demonstrates robust performance across various cell types, tissues, and imaging modalities. Comprehensive benchmarking shows that our method outperforms existing approaches on cell-type prediction and, from the same model, predicts marker positivity competitively with a dedicated specialist; it further matches manual expert gating and adapts to new data with modest fine-tuning, well past what baselines reach when trained from scratch. This work equips the spatial proteomics community with a single, continuously improvable phenotyping model that generalizes to new marker panels and can be fine-tuned efficiently when needed. We release both DeepCell Types and Expanded TissueNet as open-source resources.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925282"
-    ],
-    "comparison_ids": [
-      "M_AUTO_PH_20260925431",
-      "M_202608249"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -14923,9 +14832,7 @@
       "image analysis",
       "multiplex staining"
     ],
-    "data_ids": [
-      "D_SP_CODEX_32"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -14969,11 +14876,7 @@
       "single-cell data",
       "spatial point process"
     ],
-    "data_ids": [
-      "D_MULTI_NEW_20260925283",
-      "D_MULTI_NEW_20260925284",
-      "D_SP_IMC_3"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -15126,9 +15029,7 @@
     "abstract": "The tumor microenvironment (TME) and the cellular interactions within it can be critical to tumor progression and treatment response. Although technologies to generate multiplex images of the TME are advancing, the many ways in which TME imaging data can be mined to elucidate cellular interactions are only beginning to be realized. Here, we present a novel approach for multipronged computational immune synapse analysis (CISA) that reveals T-cell synaptic interactions from multiplex images. CISA enables automated discovery and quantification of immune synapse interactions based on the localization of proteins on cell membranes. We first demonstrate the ability of CISA to detect T-cell:APC (antigen presenting cell) synaptic interactions in two independent human melanoma imaging mass cytometry (IMC) tissue microarray datasets. We then verify CISA's applicability across data modalities with melanoma histocytometry whole slide images, revealing that T-cell:macrophage synapse formation correlates with T-cell proliferation. We next show the generality of CISA by extending it to breast cancer IMC images, finding that CISA quantifications of T-cell:B-cell synapses are predictive of improved patient survival. Our work demonstrates the biological and clinical significance of spatially resolving cell-cell synaptic interactions in the TME and provides a robust method to do so across imaging modalities and cancer types.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_IMC_3"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -15169,11 +15070,7 @@
       "Cancer imaging",
       "Machine learning"
     ],
-    "data_ids": [
-      "D_MULTI_NEW_20260925285",
-      "D_MULTI_NEW_20260925286",
-      "D_MULTI_NEW_20260925287"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -15249,12 +15146,8 @@
     "abstract": "The spatial arrangement of immune cells within the tumor microenvironment (TME) and their interactions play critical roles in the initiation and development of cancer. Several advanced technologies such as imaging mass cytometry (IMC) providing the immunological landscape of the TME with single-cell resolution. In this study, we develop a new method to quantify the spatial proximity between different cell types based on single-cell spatial data. Using this method on IMC data from 416 lung adenocarcinoma patients, we show that the proximity between different cell types is more correlated with patient prognosis compared to the traditional features such immune cell density and fractions. Consistent with previous reports, our results validate that proximity of T helper (Th) and B cells to cancer cells is associated with survival benefits. More importantly, we discover that the proximity of M2 macrophages to multiple immune cells is associated with poor prognosis. When Th/B cells are stratified into M2-distal and M2-proximal, the abundance of the former but not the latter category of Th/B cells is correlated with enhanced patient survival. Additionally, the abundance of M2-distal and M2-proximal cytotoxic T cells (Tc) is respectively associated with good and poor prognosis. Our results indicate that the prognostic effect of Th, Tc, and B cells in the tumor microenvironment is modulated by the nearby M2 macrophages. The proposed new method proposed can be readily applied to all single-cell spatial data for revealing functional impact of immune cell interactions.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925288"
-    ],
-    "comparison_ids": [
-      "M_AUTO_20260925471"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -15292,10 +15185,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_SE_7.1",
-      "M_SE_9"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -15371,10 +15261,7 @@
     "abstract": "Recent studies show that cellular neighborhoods play an important role in evolving biological events such as cancer and diabetes. Therefore, it is critical to accurately and efficiently identify cellular neighborhoods from spatially-resolved single-cell transcriptomic data or single-cell resolution tissue imaging data. In this work, we develop CNTools, a computational toolbox for end-to-end cellular neighborhood analysis on annotated cell images, comprising both the identification and analysis steps. It includes state-of-the-art cellular neighborhood identification methods and post-identification smoothing techniques, with our newly proposed Cellular Neighbor Embedding (CNE) method and Naive Smoothing technique, as well as several established downstream analysis approaches. We applied CNTools on three real-world CODEX datasets and evaluated identification methods with smoothing techniques quantitatively and qualitatively. It shows that CNE with Naive Smoothing overall outperformed other methods and revealed more convincing biological insights. We also provided suggestions on how to choose proper identification methods and smoothing techniques according to input data.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "M_NI_30",
-      "D_SP_CODEX_33"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -15636,10 +15523,7 @@
       "laser capture microdissection",
       "spatial proteomics"
     ],
-    "data_ids": [
-      "D_SP_NEW_19",
-      "D_ST_NEW_14"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -15773,9 +15657,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_274_20260926463"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -15812,9 +15694,7 @@
     "abstract": "Multiplexed imaging offers a powerful approach to characterize the spatial topography of tissues in both health and disease. To analyze such data, the specific combination of markers that are present in each cell must be enumerated to enable accurate phenotyping, a process that often relies on unsupervised clustering. We constructed the Pan-Multiplex (Pan-M) dataset containing 197 million distinct annotations of marker expression across 15 different cell types. We used Pan-M to create Nimbus, a deep learning model to predict marker positivity from multiplexed image data. Nimbus is a pre-trained model that uses the underlying images to classify marker expression across distinct cell types, from different tissues, acquired using different microscope platforms, without requiring any retraining. We demonstrate that Nimbus predictions capture the underlying staining patterns of the full diversity of markers present in Pan-M. We then show how Nimbus predictions can be integrated with downstream clustering algorithms to robustly identify cell subtypes in image data. We have open-sourced Nimbus and Pan-M to enable community use at https://github.com/angelolab/Nimbus-Inference.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_SP_MIBI_7"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -15898,14 +15778,8 @@
     "abstract": "Spatial omics data allow in-depth analysis of tissue architectures, opening new opportunities for biological discovery. In particular, imaging techniques offer single-cell resolutions, providing essential insights into cellular organizations and dynamics. Yet, the complexity of such data presents analytical challenges and demands substantial computing resources. Moreover, the proliferation of diverse spatial omics technologies, such as Xenium, MERSCOPE, CosMX in spatial-transcriptomics, and MACSima and PhenoCycler in multiplex imaging, hinders the generality of existing tools. We introduce Sopa ( https://github.com/gustaveroussy/sopa ), a technology-invariant, memory-efficient pipeline with a unified visualizer for all image-based spatial omics. Built upon the universal SpatialData framework, Sopa optimizes tasks like segmentation, transcript/channel aggregation, annotation, and geometric/spatial analysis. Its output includes user-friendly web reports and visualizer files, as well as comprehensive data files for in-depth analysis. Overall, Sopa represents a significant step toward unifying spatial data analysis, enabling a more comprehensive understanding of cellular interactions and tissue organization in biological systems.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_ST_MERSCOPE_4",
-      "D_ST_XENIUM_2",
-      "D_SP_PHENOCYCLE_2"
-    ],
-    "comparison_ids": [
-      "M_SE_16"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -15982,9 +15856,7 @@
     "publication_type": "peer-reviewed",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_66"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -16060,18 +15932,8 @@
     "abstract": "Cellular composition and anatomical organization influence normal and aberrant organ functions. Emerging spatial single-cell proteomic assays such as Image Mass Cytometry (IMC) and Co-Detection by Indexing (CODEX) have facilitated the study of cellular composition and organization by enabling high-throughput measurement of cells and their localization directly in intact tissues. However, annotation of cell types and quantification of their relative localization in tissues remain challenging. To address these unmet needs for atlas-scale datasets like Human Pancreas Analysis Program (HPAP), we develop AnnoSpat (Annotator and Spatial Pattern Finder) that uses neural network and point process algorithms to automatically identify cell types and quantify cell-cell proximity relationships. Our study of data from IMC and CODEX shows the higher performance of AnnoSpat in rapid and accurate annotation of cell types compared to alternative approaches. Moreover, the application of AnnoSpat to type 1 diabetic, non-diabetic autoantibody-positive, and non-diabetic organ donor cohorts recapitulates known islet pathobiology and shows differential dynamics of pancreatic polypeptide (PP) cell abundance and CD8(+) T cells infiltration in islets during type 1 diabetes progression.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_IMC_62",
-      "D_SP_CODEX_34"
-    ],
-    "comparison_ids": [
-      "M_AUTO_20260925472",
-      "M_AUTO_20260925473",
-      "M_AUTO_66",
-      "M_AUTO_20260925446",
-      "M_PHE_26",
-      "M_PHE_27"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -16501,10 +16363,7 @@
     "abstract": "MOTIVATION: Multiplexed protein imaging methods use a chosen set of markers and provide valuable information about complex tissue structure and cellular heterogeneity. However, the number of markers that can be measured in the same tissue sample is inherently limited. RESULTS: In this paper, we present an efficient method to choose a minimal predictive subset of markers that for the first time allows the prediction of full images for a much larger set of markers. We demonstrate that our approach also outperforms previous methods for predicting cell-level protein composition. Most importantly, we demonstrate that our approach can be used to select a marker set that enables prediction of a much larger set than could be measured concurrently. AVAILABILITY AND IMPLEMENTATION: All code and intermediate results are available in a Reproducible Research Archive at https://github.com/murphygroup/CODEXPanelOptimization.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_CODEX_16",
-      "D_SP_CODEX_35"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -16544,9 +16403,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_342"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -16586,14 +16443,7 @@
     "publication_type": "preprint",
     "keywords": [],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925474",
-      "M_AUTO_20260925475",
-      "M_AUTO_20260925476",
-      "M_AUTO_20260925477",
-      "M_AUTO_20260925478",
-      "M_AUTO_20260925479"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -16964,9 +16814,7 @@
       "point process",
       "spatial statistics"
     ],
-    "data_ids": [
-      "D_MULTI_NEW_20260925289"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -17004,10 +16852,7 @@
     "abstract": "MOTIVATION: Cell type identification plays an important role in the analysis and interpretation of single-cell data and can be carried out via supervised or unsupervised clustering approaches. Supervised methods are best suited where we can list all cell types and their respective marker genes a priori, while unsupervised clustering algorithms look for groups of cells with similar expression properties. This property permits the identification of both known and unknown cell populations, making unsupervised methods suitable for discovery. Success is dependent on the relative strength of the expression signature of each group as well as the number of cells. Rare cell types therefore present a particular challenge that is magnified when they are defined by differentially expressing a small number of genes. RESULTS: Typical unsupervised approaches fail to identify such rare subpopulations, and these cells tend to be absorbed into more prevalent cell types. In order to balance these competing demands, we have developed a novel statistical framework for unsupervised clustering, named Rarity, that enables the discovery process for rare cell types to be more robust, consistent, and interpretable. We achieve this by devising a novel clustering method based on a Bayesian latent variable model in which we assign cells to inferred latent binary on/off expression profiles. This lets us achieve increased sensitivity to rare cell populations while also allowing us to control and interpret potential false positive discoveries. We systematically study the challenges associated with rare cell type identification and demonstrate the utility of Rarity on various IMC datasets. AVAILABILITY AND IMPLEMENTATION: Implementation of Rarity together with examples is available from the Github repository (https://github.com/kasparmartens/rarity).",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925290",
-      "D_MULTI_NEW_20260925291"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -17046,12 +16891,8 @@
     "abstract": "Highly multiplexed tissue imaging and in situ spatial profiling aim to extract single-cell data from specimens containing closely packed cells of diverse morphology. This is challenging due to the difficulty of accurately assigning boundaries between cells (segmentation) and then generating per-cell staining intensities. Existing methods use gating to convert per-cell intensity data to positive and negative scores; this is a common approach in flow cytometry, but one that is problematic in imaging. In contrast, human experts identify cells in crowded environments using morphological, neighborhood, and intensity information. Here we describe a computational approach (Cell Spotter or CSPOT) that uses supervised machine learning in combination with classical segmentation to perform automated cell type calling. CSPOT is robust to artifacts that commonly afflict tissue imaging and can replace conventional gating. The end-to-end Python implementation of CSPOT can be integrated into cloud-based image processing pipelines to substantially improve the speed, accuracy, and reproducibility of single-cell spatial data.",
     "publication_type": "preprint",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925292"
-    ],
-    "comparison_ids": [
-      "M_AUTO_67"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -17256,10 +17097,7 @@
       "tissue segmentation"
     ],
     "data_ids": [],
-    "comparison_ids": [
-      "M_NI_29",
-      "M_AUTO_20260925480"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -17431,11 +17269,7 @@
       "Self-supervised learning"
     ],
     "data_ids": [],
-    "comparison_ids": [
-      "M_AUTO_20260925481",
-      "M_AUTO_20260925482",
-      "M_AUTO_20260925483"
-    ],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -17652,9 +17486,7 @@
     "abstract": "MOTIVATION: Spatial proteomics data have been used to map cell states and improve our understanding of tissue organization. More recently, these methods have been extended to study the impact of such organization on disease progression and patient survival. However, to date, the majority of supervised learning methods utilizing these data types did not take full advantage of the spatial information, impacting their performance and utilization. RESULTS: Taking inspiration from ecology and epidemiology, we developed novel spatial feature extraction methods for use with spatial proteomics data. We used these features to learn prediction models for cancer patient survival. As we show, using the spatial features led to consistent improvement over prior methods that used the spatial proteomics data for the same task. In addition, feature importance analysis revealed new insights about the cell interactions that contribute to patient survival. AVAILABILITY AND IMPLEMENTATION: The code for this work can be found at gitlab.com/enable-medicine-public/spatsurv.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925293"
-    ],
+    "data_ids": [],
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
@@ -17692,13 +17524,8 @@
     "abstract": "MOTIVATION: Recent advances in spatial proteomics technologies have enabled the profiling of dozens of proteins in thousands of single cells in situ. This has created the opportunity to move beyond quantifying the composition of cell types in tissue, and instead probe the spatial relationships between cells. However, most current methods for clustering data from these assays only consider the expression values of cells and ignore the spatial context. Furthermore, existing approaches do not account for prior information about the expected cell populations in a sample. RESULTS: To address these shortcomings, we developed SpatialSort, a spatially aware Bayesian clustering approach that allows for the incorporation of prior biological knowledge. Our method is able to account for the affinities of cells of different types to neighbour in space, and by incorporating prior information about expected cell populations, it is able to simultaneously improve clustering accuracy and perform automated annotation of clusters. Using synthetic and real data, we show that by using spatial and prior information SpatialSort improves clustering accuracy. We also demonstrate how SpatialSort can perform label transfer between spatial and nonspatial modalities through the analysis of a real world diffuse large B-cell lymphoma dataset. AVAILABILITY AND IMPLEMENTATION: Source code is available on Github at: https://github.com/Roth-Lab/SpatialSort.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_MULTI_NEW_20260925294"
-    ],
-    "comparison_ids": [
-      "M_AUTO_20260925484",
-      "M_PHE_26"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -17899,12 +17726,8 @@
     "abstract": "Highly multiplexed imaging holds enormous promise for understanding how spatial context shapes the activity of the genome and its products at multiple length scales. Here, we introduce a deep learning framework called CAMPA (Conditional Autoencoder for Multiplexed Pixel Analysis), which uses a conditional variational autoencoder to learn representations of molecular pixel profiles that are consistent across heterogeneous cell populations and experimental perturbations. Clustering these pixel-level representations identifies consistent subcellular landmarks, which can be quantitatively compared in terms of their size, shape, molecular composition and relative spatial organization. Using high-resolution multiplexed immunofluorescence, this reveals how subcellular organization changes upon perturbation of RNA synthesis, RNA processing or cell size, and uncovers links between the molecular composition of membraneless organelles and cell-to-cell variability in bulk RNA synthesis rates. By capturing interpretable cellular phenotypes, we anticipate that CAMPA will greatly accelerate the systematic mapping of multiscale atlases of biological organization to identify the rules by which context shapes physiology and disease.",
     "publication_type": "peer-reviewed",
     "keywords": [],
-    "data_ids": [
-      "D_SP_4I_1"
-    ],
-    "comparison_ids": [
-      "M_SE_27.1"
-    ],
+    "data_ids": [],
+    "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
@@ -21086,7 +20909,7 @@
     "authors": "Zhenqin Wu; Alexandro E. Trevino; Eric Wu; Kyle Swanson; Honesty J. Kim; H. Blaize D’Angio; Ryan Preska; Gregory W. Charville; Piero D. Dalerba; Ann Marie Egloff; Ravindra Uppaluri; Umamaheswar Duvvuri; Aaron T. Mayer; James Zou",
     "year": "2022",
     "journal": "Nature Biomedical Engineering",
-    "citations": "154",
+    "citations": "155",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -21122,7 +20945,7 @@
     "authors": "Fabian Hörst; Moritz Rempe; Lukas Heine; Constantin Seibold; Julius Keyl; Giulia Baldini; Selma Ugurel; Jens Siveke; Barbara Grünwald; Jan Egger; Jens Kleesiek",
     "year": "2024",
     "journal": "Medical Image Analysis",
-    "citations": "351",
+    "citations": "352",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -21230,7 +21053,7 @@
     "authors": "Ryan Conrad; Kedar Narayan",
     "year": "2023",
     "journal": "Cell Systems",
-    "citations": "126",
+    "citations": "127",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -21266,7 +21089,7 @@
     "authors": "Hengshuang Zhao; Jianping Shi; Xiaojuan Qi; Xiaogang Wang; Jiaya Jia",
     "year": "2017",
     "journal": "2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
-    "citations": "13028",
+    "citations": "13050",
     "abstract": "",
     "publication_type": "proceedings-article",
     "keywords": [],
@@ -21284,7 +21107,7 @@
   {
     "id": "M_AUTO_389",
     "doi": "https://doi.org/10.1038/s41592-025-02969-9",
-    "name": "SpatialZ",
+    "name": "",
     "source_type": "peer-reviewed",
     "category": "computational analysis - method",
     "paper_type": "method",
@@ -21379,7 +21202,7 @@
     "authors": "Matthias Arzt; Joran Deschamps; Christopher Schmied; Tobias Pietzsch; Deborah Schmidt; Pavel Tomancak; Robert Haase; Florian Jug",
     "year": "2022",
     "journal": "Frontiers in Computer Science",
-    "citations": "389",
+    "citations": "390",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -21418,7 +21241,7 @@
     "authors": "Peter Bankhead; Maurice B. Loughrey; José A. Fernández; Yvonne Dombrowski; Darragh G. McArt; Philip D. Dunne; Stephen McQuaid; Ronan T. Gray; Liam J. Murray; Helen G. Coleman; Jacqueline A. James; Manuel Salto-Tellez; Peter W. Hamilton",
     "year": "2017",
     "journal": "Scientific Reports",
-    "citations": "8871",
+    "citations": "8910",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -21457,7 +21280,7 @@
     "authors": "Wenhui Wang; Hangbo Bao; Li Dong; Johan Bjorck; Zhiliang Peng; Qiang Liu; Kriti Aggarwal; Owais Khan Mohammed; Saksham Singhal; Subhojit Som; Furu Wei",
     "year": "2023",
     "journal": "2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
-    "citations": "555",
+    "citations": "557",
     "abstract": "",
     "publication_type": "proceedings-article",
     "keywords": [],
@@ -21875,7 +21698,7 @@
     "authors": "Phillip Isola; Jun-Yan Zhu; Tinghui Zhou; Alexei A. Efros",
     "year": "2017",
     "journal": "2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
-    "citations": "16310",
+    "citations": "16341",
     "abstract": "",
     "publication_type": "proceedings-article",
     "keywords": [],
@@ -21913,7 +21736,7 @@
     "authors": "Jun-Yan Zhu; Taesung Park; Phillip Isola; Alexei A. Efros",
     "year": "2017",
     "journal": "2017 IEEE International Conference on Computer Vision (ICCV)",
-    "citations": "17553",
+    "citations": "17594",
     "abstract": "",
     "publication_type": "proceedings-article",
     "keywords": [],
@@ -21952,7 +21775,7 @@
     "authors": "Caroline A Schneider; Wayne S Rasband; Kevin W Eliceiri",
     "year": "2012",
     "journal": "Nature Methods",
-    "citations": "62503",
+    "citations": "62747",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -21986,7 +21809,7 @@
     "authors": "Zhiyuan Yuan; Fangyuan Zhao; Senlin Lin; Yu Zhao; Jianhua Yao; Yan Cui; Xiao-Yong Zhang; Yi Zhao",
     "year": "2024",
     "journal": "Nature Methods",
-    "citations": "205",
+    "citations": "206",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22020,7 +21843,7 @@
     "authors": "Bin Li; Wen Zhang; Chuang Guo; Hao Xu; Longfei Li; Minghao Fang; Yinlei Hu; Xinye Zhang; Xinfeng Yao; Meifang Tang; Ke Liu; Xuetong Zhao; Jun Lin; Linzhao Cheng; Falai Chen; Tian Xue; Kun Qu",
     "year": "2022",
     "journal": "Nature Methods",
-    "citations": "463",
+    "citations": "468",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22054,7 +21877,7 @@
     "authors": "Hao Xu; Shuyan Wang; Minghao Fang; Songwen Luo; Chunpeng Chen; Siyuan Wan; Rirui Wang; Meifang Tang; Tian Xue; Bin Li; Jun Lin; Kun Qu",
     "year": "2023",
     "journal": "Nature Communications",
-    "citations": "129",
+    "citations": "130",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22088,7 +21911,7 @@
     "authors": "Xinyu Bao; Xiaosheng Bai; Xiaoping Liu; Qianqian Shi; Chuanchao Zhang",
     "year": "2025",
     "journal": "Communications Biology",
-    "citations": "19",
+    "citations": "21",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22196,7 +22019,7 @@
     "authors": "Chi-Li Chiu; Nathan Clack;",
     "year": "2022",
     "journal": "Microscopy and Microanalysis",
-    "citations": "216",
+    "citations": "218",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22268,7 +22091,7 @@
     "authors": "Markus Marks; Uriah Israel; Rohit Dilip; Qilin Li; Changhua Yu; Emily Laubscher; Ahamed Iqbal; Elora Pradhan; Ada Ates; Martin Abt; Caitlin Brown; Edward Pao; Shenyi Li; Alexander Pearson-Goulart; Pietro Perona; Georgia Gkioxari; Ross Barnowski; Yisong Yue; David Van Valen",
     "year": "2025",
     "journal": "Nature Methods",
-    "citations": "57",
+    "citations": "60",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22380,7 +22203,7 @@
     "authors": "Hanwen Xu; Naoto Usuyama; Jaspreet Bagga; Sheng Zhang; Rajesh Rao; Tristan Naumann; Cliff Wong; Zelalem Gero; Javier González; Yu Gu; Yanbo Xu; Mu Wei; Wenhui Wang; Shuming Ma; Furu Wei; Jianwei Yang; Chunyuan Li; Jianfeng Gao; Jaylen Rosemon; Tucker Bower; Soohee Lee; Roshanthi Weerasinghe; Bill J. Wright; Ari Robicsek; Brian Piening; Carlo Bifulco; Sheng Wang; Hoifung Poon",
     "year": "2024",
     "journal": "Nature",
-    "citations": "912",
+    "citations": "928",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22419,7 +22242,7 @@
     "authors": "Tong Ding; Sophia J. Wagner; Andrew H. Song; Richard J. Chen; Ming Y. Lu; Andrew Zhang; Anurag J. Vaidya; Guillaume Jaume; Muhammad Shaban; Ahrong Kim; Drew F. K. Williamson; Harry Robertson; Bowen Chen; Cristina Almagro-Pérez; Paul Doucet; Sharifa Sahai; Chengkuan Chen; Christina S. Chen; Daisuke Komura; Akihiro Kawabe; Mieko Ochi; Shinya Sato; Tomoyuki Yokose; Yohei Miyagi; Shumpei Ishikawa; Georg Gerber; Tingying Peng; Long Phi Le; Faisal Mahmood",
     "year": "2025",
     "journal": "Nature Medicine",
-    "citations": "167",
+    "citations": "175",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22458,7 +22281,7 @@
     "authors": "Richard J. Chen; Tong Ding; Ming Y. Lu; Drew F. K. Williamson; Guillaume Jaume; Andrew H. Song; Bowen Chen; Andrew Zhang; Daniel Shao; Muhammad Shaban; Mane Williams; Lukas Oldenburg; Luca L. Weishaupt; Judy J. Wang; Anurag Vaidya; Long Phi Le; Georg Gerber; Sharifa Sahai; Walt Williams; Faisal Mahmood",
     "year": "2024",
     "journal": "Nature Medicine",
-    "citations": "1603",
+    "citations": "1629",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22496,7 +22319,7 @@
     "authors": "Christina V. Theodoris; Ling Xiao; Anant Chopra; Mark D. Chaffin; Zeina R. Al Sayed; Matthew C. Hill; Helene Mantineo; Elizabeth M. Brydon; Zexian Zeng; X. Shirley Liu; Patrick T. Ellinor",
     "year": "2023",
     "journal": "Nature",
-    "citations": "1281",
+    "citations": "1294",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22534,7 +22357,7 @@
     "authors": "Haotian Cui; Chloe Wang; Hassaan Maan; Kuan Pang; Fengning Luo; Nan Duan; Bo Wang",
     "year": "2024",
     "journal": "Nature Methods",
-    "citations": "1333",
+    "citations": "1355",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22648,7 +22471,7 @@
     "authors": "Gökcen Eraslan; Lukas M. Simon; Maria Mircea; Nikola S. Mueller; Fabian J. Theis",
     "year": "2019",
     "journal": "Nature Communications",
-    "citations": "1066",
+    "citations": "1069",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22686,7 +22509,7 @@
     "authors": "Brendan F. Miller; Dhananjay Bambah-Mukku; Catherine Dulac; Xiaowei Zhuang; Jean Fan",
     "year": "2021",
     "journal": "Genome Research",
-    "citations": "199",
+    "citations": "200",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -22839,7 +22662,7 @@
     "authors": "Bokai Zhu; Yunhao Bai; Yao Yu Yeo; Xiaowei Lu; Xavier Rovira-Clavé; Han Chen; Jason Yeung; Dingani Nkosi; Jonathan Glickman; Antonio Delgado-Gonzalez; Georg K. Gerber; Mike Angelo; Alex K. Shalek; Garry P. Nolan; Sizun Jiang",
     "year": "2025",
     "journal": "Nature Communications",
-    "citations": "44",
+    "citations": "45",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -23208,7 +23031,7 @@
     "authors": "Juan C. Caicedo; Allen Goodman; Kyle W. Karhohs; Beth A. Cimini; Jeanelle Ackerman; Marzieh Haghighi; CherKeng Heng; Tim Becker; Minh Doan; Claire McQuin; Mohammad Rohban; Shantanu Singh; Anne E. Carpenter",
     "year": "2019",
     "journal": "Nature Methods",
-    "citations": "802",
+    "citations": "805",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -23265,22 +23088,20 @@
     "disease": ""
   },
   {
-    "id": "M_AUTO_20260925445",
+    "id": "M_AUTO_20260925446.1",
     "doi": "",
-    "name": "PCA baseline",
+    "name": "Seurat (V1)",
     "source_type": "",
-    "category": "Placeholder - method",
+    "category": "",
     "paper_type": "method",
     "pipeline_category": "",
     "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
+    "categories": [],
     "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
+    "review_status": "",
+    "addition_method": "",
+    "is_placeholder": false,
+    "date_added": "",
     "title": "",
     "authors": "",
     "year": "",
@@ -23301,7 +23122,7 @@
     "disease": ""
   },
   {
-    "id": "M_AUTO_20260925446",
+    "id": "M_AUTO_20260925446.3",
     "doi": "https://doi.org/10.1016/j.cell.2019.05.031",
     "name": "Seurat (V3)",
     "source_type": "peer-reviewed",
@@ -23321,7 +23142,7 @@
     "authors": "Tim Stuart; Andrew Butler; Paul Hoffman; Christoph Hafemeister; Efthymia Papalexi; William M. Mauck; Yuhan Hao; Marlon Stoeckius; Peter Smibert; Rahul Satija",
     "year": "2019",
     "journal": "Cell",
-    "citations": "15908",
+    "citations": "15962",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -23344,7 +23165,7 @@
     "category": "computational analysis - method",
     "paper_type": "method",
     "pipeline_category": "",
-    "spatial_data_category": "",
+    "spatial_data_category": "not_spatial_omics",
     "categories": [
       "computational analysis - method"
     ],
@@ -23357,43 +23178,7 @@
     "authors": "Joshua D. Welch; Velina Kozareva; Ashley Ferreira; Charles Vanderburg; Carly Martin; Evan Z. Macosko",
     "year": "2019",
     "journal": "Cell",
-    "citations": "1312",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925448",
-    "doi": "https://doi.org/10.1073/pnas.2303647120",
-    "name": "Harmony",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "not_spatial_omics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Quantifying common and distinct information in single-cell multimodal data with Tilted Canonical Correlation Analysis",
-    "authors": "Kevin Z. Lin; Nancy R. Zhang",
-    "year": "2023",
-    "journal": "Proceedings of the National Academy of Sciences",
-    "citations": "15",
+    "citations": "1316",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -23429,1269 +23214,9 @@
     "authors": "Zhi-Jie Cao; Ge Gao",
     "year": "2022",
     "journal": "Nature Biotechnology",
-    "citations": "621",
+    "citations": "625",
     "abstract": "",
     "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925450",
-    "doi": "https://doi.org/10.1038/s41587-019-0113-3",
-    "name": "Scanorama",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Efficient integration of heterogeneous single-cell transcriptomes using Scanorama",
-    "authors": "Brian Hie; Bryan Bryson; Bonnie Berger",
-    "year": "2019",
-    "journal": "Nature Biotechnology",
-    "citations": "953",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925451",
-    "doi": "https://doi.org/10.1038/nbt.4091",
-    "name": "FastMNN",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Batch effects in single-cell RNA-sequencing data are corrected by matching mutual nearest neighbors",
-    "authors": "Laleh Haghverdi; Aaron T L Lun; Michael D Morgan; John C Marioni",
-    "year": "2018",
-    "journal": "Nature Biotechnology",
-    "citations": "2540",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925452",
-    "doi": "https://doi.org/10.1093/nar/gkad1023",
-    "name": "SpatialAnno",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "spatial_transcriptomics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Probabilistic cell/domain-type assignment of spatial transcriptomics data with SpatialAnno",
-    "authors": "Xingjie Shi; Yi Yang; Xiaohui Ma; Yong Zhou; Zhenxing Guo; Chaolong Wang; Jin Liu",
-    "year": "2023",
-    "journal": "Nucleic Acids Research",
-    "citations": "8",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925453",
-    "doi": "",
-    "name": "Support Vector Machine",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925454",
-    "doi": "https://doi.org/10.1016/j.urology.2007.12.013",
-    "name": "Graphical Lasso",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Re: Sofer M, Beri A, Friedman A, et al: Extending the Application of Tubeless Percutaneous Nephrolithotomy. Urology 70: 412–416, 2007",
-    "authors": "Mario Sofer",
-    "year": "2008",
-    "journal": "Urology",
-    "citations": "0",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925455",
-    "doi": "https://doi.org/10.1214/009053606000000281",
-    "name": "Nodewise Lasso",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "High-dimensional graphs and variable selection with the Lasso",
-    "authors": "Nicolai Meinshausen; Peter Bühlmann",
-    "year": "2006",
-    "journal": "The Annals of Statistics",
-    "citations": "2415",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925456",
-    "doi": "",
-    "name": "multivariate Cox regression, survival support vector machines (SSVM), survival decision tree (SDT), random survival forest (RSF), and CoxBoost",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925457",
-    "doi": "https://doi.org/10.5962/bhl.title.5385",
-    "name": "NRN",
-    "source_type": "",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Prodromus florae Novo-Granatensis / par José Triana et J.E. Planchon.",
-    "authors": "José Jerónimo Triana Silva; J. E. Planchon",
-    "year": "1862",
-    "journal": "",
-    "citations": "4",
-    "abstract": "",
-    "publication_type": "monograph",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925458",
-    "doi": "https://doi.org/10.1038/s42256-022-00471-x",
-    "name": "DeepLIIF",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Deep learning-inferred multiplex immunofluorescence for immunohistochemical image quantification",
-    "authors": "Parmida Ghahremani; Yanyun Li; Arie Kaufman; Rami Vanguri; Noah Greenwald; Michael Angelo; Travis J. Hollmann; Saad Nadeem",
-    "year": "2022",
-    "journal": "Nature Machine Intelligence",
-    "citations": "140",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925459",
-    "doi": "https://doi.org/10.1109/isbi52829.2022.9761661",
-    "name": "AbMIL",
-    "source_type": "",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Attention-Based Deep Multiple Instance Learning with Adaptive Instance Sampling",
-    "authors": "Aliasghar Tarkhan; Trung Kien Nguyen; Noah Simon; Thomas Bengtsson; Paolo Ocampo; Jian Dai",
-    "year": "2022",
-    "journal": "2022 IEEE 19th International Symposium on Biomedical Imaging (ISBI)",
-    "citations": "6",
-    "abstract": "",
-    "publication_type": "proceedings-article",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925460",
-    "doi": "https://doi.org/10.1016/j.ccell.2022.07.004",
-    "name": "PORPOISE",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Pan-cancer integrative histology-genomic analysis via multimodal deep learning",
-    "authors": "Richard J. Chen; Ming Y. Lu; Drew F.K. Williamson; Tiffany Y. Chen; Jana Lipkova; Zahra Noor; Muhammad Shaban; Maha Shady; Mane Williams; Bumjin Joo; Faisal Mahmood",
-    "year": "2022",
-    "journal": "Cancer Cell",
-    "citations": "657",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925461",
-    "doi": "https://doi.org/10.20944/preprints202411.2377.v1",
-    "name": "Pix2Pix-Turbo",
-    "source_type": "preprint",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "not_spatial_omics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Comment on the Paper Titled ’The Origin of Quantum Mechanical Statistics: Insights from Research on Human Language’ (arXiv preprint arXiv:2407.14924, 2024)",
-    "authors": "Krzysztof Sienicki",
-    "year": "2024",
-    "journal": "",
-    "citations": "29",
-    "abstract": "",
-    "publication_type": "preprint",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925462",
-    "doi": "https://doi.org/10.1137/1.9781611973440.96",
-    "name": "HDBSCAN",
-    "source_type": "",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Density-Based Clustering Validation",
-    "authors": "Davoud Moulavi; Pablo A. Jaskowiak; Ricardo J. G. B. Campello; Arthur Zimek; Jörg Sander",
-    "year": "2014",
-    "journal": "Proceedings of the 2014 SIAM International Conference on Data Mining",
-    "citations": "236",
-    "abstract": "",
-    "publication_type": "proceedings-article",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925463",
-    "doi": "https://doi.org/10.1111/j.2517-6161.1977.tb01616.x",
-    "name": "L-function",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Discussion on Dr Ripley's Paper",
-    "authors": "",
-    "year": "1977",
-    "journal": "Journal of the Royal Statistical Society Series B: Statistical Methodology",
-    "citations": "35",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925464",
-    "doi": "https://doi.org/10.1111/1467-9574.00144",
-    "name": "inhomogeneous L-function",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "not_spatial_omics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Non‐ and semi‐parametric estimation of interaction in inhomogeneous point patterns",
-    "authors": "A. J. Baddeley; J. Møller; R. Waagepetersen",
-    "year": "2000",
-    "journal": "Statistica Neerlandica",
-    "citations": "470",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925465",
-    "doi": "",
-    "name": "kNN",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925466",
-    "doi": "https://doi.org/10.1007/bf02278710",
-    "name": "CytoSpace",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "A shortest augmenting path algorithm for dense and sparse linear assignment problems",
-    "authors": "R. Jonker; A. Volgenant",
-    "year": "1987",
-    "journal": "Computing",
-    "citations": "958",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925467",
-    "doi": "https://doi.org/10.1038/s41592-023-01972-2",
-    "name": "GPSA",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "spatial_transcriptomics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Alignment of spatial genomics data using deep Gaussian processes",
-    "authors": "Andrew Jones; F. William Townes; Didong Li; Barbara E. Engelhardt",
-    "year": "2023",
-    "journal": "Nature Methods",
-    "citations": "90",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925468",
-    "doi": "https://doi.org/10.1038/s41467-023-43105-5",
-    "name": "SLAT",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "spatial_transcriptomics;spatial_proteomics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Spatial-linked alignment tool (SLAT) for aligning heterogenous slices",
-    "authors": "Chen-Rui Xia; Zhi-Jie Cao; Xin-Ming Tu; Ge Gao",
-    "year": "2023",
-    "journal": "Nature Communications",
-    "citations": "100",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925469",
-    "doi": "",
-    "name": "SVM",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925470",
-    "doi": "",
-    "name": "LightGBM",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925471",
-    "doi": "https://doi.org/10.1016/j.lungcan.2018.01.022",
-    "name": "G-cross function",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "Spatial interaction of tumor cells and regulatory T cells correlates with survival in non-small cell lung cancer",
-    "authors": "Souptik Barua; Penny Fang; Amrish Sharma; Junya Fujimoto; Ignacio Wistuba; Arvind U.K. Rao; Steven H. Lin",
-    "year": "2018",
-    "journal": "Lung Cancer",
-    "citations": "202",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925472",
-    "doi": "https://doi.org/10.3390/genes10070531",
-    "name": "SCINA",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "not_spatial_omics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "SCINA: A Semi-Supervised Subtyping Algorithm of Single Cells and Bulk Samples",
-    "authors": "Ze Zhang; Danni Luo; Xue Zhong; Jin Huk Choi; Yuanqing Ma; Stacy Wang; Elena Mahrt; Wei Guo; Eric W Stawiski; Zora Modrusan; Somasekar Seshagiri; Payal Kapur; Gary C. Hon; James Brugarolas; Tao Wang",
-    "year": "2019",
-    "journal": "Genes",
-    "citations": "301",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925473",
-    "doi": "https://doi.org/10.1038/nmeth.4463",
-    "name": "AUCell",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "not_spatial_omics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "SCENIC: single-cell regulatory network inference and clustering",
-    "authors": "Sara Aibar; Carmen Bravo González-Blas; Thomas Moerman; Vân Anh Huynh-Thu; Hana Imrichova; Gert Hulselmans; Florian Rambow; Jean-Christophe Marine; Pierre Geurts; Jan Aerts; Joost van den Oord; Zeynep Kalender Atak; Jasper Wouters; Stein Aerts",
-    "year": "2017",
-    "journal": "Nature Methods",
-    "citations": "6569",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925474",
-    "doi": "",
-    "name": "GCN",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925475",
-    "doi": "",
-    "name": "GAT",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925476",
-    "doi": "https://doi.org/10.52202/068431-0345",
-    "name": "GINConv",
-    "source_type": "",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261004",
-    "title": "How Powerful Are K-Hop Message Passing Graph Neural Networks",
-    "authors": "Jiarui Feng; Yixin Chen; Fuhai Li; Anindya Sarkar; Muhan Zhang",
-    "year": "2022",
-    "journal": "Advances in Neural Information Processing Systems 35",
-    "citations": "26",
-    "abstract": "",
-    "publication_type": "proceedings-article",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925477",
-    "doi": "",
-    "name": "GraphConv",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925478",
-    "doi": "",
-    "name": "SAGEConv",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925479",
-    "doi": "",
-    "name": "Classical machine learning classifiers (Naïve Bayes, Random Forest, AdaBoost, Decision Tree, SVM, Gradient Boosting)",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261004",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925480",
-    "doi": "https://doi.org/10.1109/tvcg.2019.2931299",
-    "name": "ImaCytE",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "spatial_proteomics",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261005",
-    "title": "ImaCytE: Visual Exploration of Cellular Micro-Environments for Imaging Mass Cytometry Data",
-    "authors": "Antonios Somarakis; Vincent Van Unen; Frits Koning; Boudewijn Lelieveldt; Thomas Hollt",
-    "year": "2021",
-    "journal": "IEEE Transactions on Visualization and Computer Graphics",
-    "citations": "91",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925481",
-    "doi": "https://doi.org/10.1167/jov.24.10.771",
-    "name": "SimCLR",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261005",
-    "title": "A biologically inspired framework for contrastive learning of visual representations: BioCLR",
-    "authors": "Zhixian Han; Vlada Volyanskaya; Anne B. Sereno",
-    "year": "2024",
-    "journal": "Journal of Vision",
-    "citations": "0",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925482",
-    "doi": "https://doi.org/10.1109/CVPR42600.2020.00975",
-    "name": "MoCo",
-    "source_type": "",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261005",
-    "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
-    "authors": "Kaiming He; Haoqi Fan; Yuxin Wu; Saining Xie; Ross Girshick",
-    "year": "2020",
-    "journal": "2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
-    "citations": "10401",
-    "abstract": "",
-    "publication_type": "proceedings-article",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925483",
-    "doi": "https://doi.org/10.1016/j.neucom.2025.132523",
-    "name": "Debiased contrastive learning",
-    "source_type": "peer-reviewed",
-    "category": "computational analysis - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "computational analysis - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "needs_review",
-    "addition_method": "citation_chase",
-    "is_placeholder": false,
-    "date_added": "20261005",
-    "title": "Topic-guided debiased contrastive learning for neural topic modeling",
-    "authors": "Yanyan Liu; Zhiguo Gong",
-    "year": "2026",
-    "journal": "Neurocomputing",
-    "citations": "0",
-    "abstract": "",
-    "publication_type": "peer-reviewed",
-    "keywords": [],
-    "data_ids": [],
-    "comparison_ids": [],
-    "associated_data": "",
-    "associated_data_ids": [],
-    "spatial_data_type_ap": "",
-    "spatial_modality_ap": [],
-    "animal": "",
-    "tissue_disease": "",
-    "tissue": "",
-    "disease": ""
-  },
-  {
-    "id": "M_AUTO_20260925484",
-    "doi": "",
-    "name": "Gaussian Mixture Model (GMM)",
-    "source_type": "",
-    "category": "Placeholder - method",
-    "paper_type": "method",
-    "pipeline_category": "",
-    "spatial_data_category": "",
-    "categories": [
-      "Placeholder - method"
-    ],
-    "pipeline_categories": [],
-    "review_status": "auto-1",
-    "addition_method": "citation_chase",
-    "is_placeholder": true,
-    "date_added": "20261005",
-    "title": "",
-    "authors": "",
-    "year": "",
-    "journal": "",
-    "citations": "",
-    "abstract": "",
-    "publication_type": "",
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
@@ -24777,6 +23302,278 @@
     "disease": ""
   },
   {
+    "id": "M_20261009607",
+    "doi": "https://doi.org/10.1038/s41467-025-63140-8",
+    "name": "DECIPHER",
+    "source_type": "peer-reviewed",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "DECIPHER for learning disentangled cellular embeddings in large-scale heterogeneous spatial omics data",
+    "authors": "Chen-Rui Xia; Zhi-Jie Cao; Ge Gao",
+    "year": "2025",
+    "journal": "Nature Communications",
+    "citations": "10",
+    "abstract": "",
+    "publication_type": "peer-reviewed",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009608",
+    "doi": "https://doi.org/10.1101/2025.02.05.636714",
+    "name": "scGPT-spatial",
+    "source_type": "bioRxiv",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "scGPT-spatial: Continual Pretraining of Single-Cell Foundation Model for Spatial Transcriptomics",
+    "authors": "",
+    "year": "",
+    "journal": "",
+    "citations": "",
+    "abstract": "",
+    "publication_type": "bioRxiv",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009609",
+    "doi": "arXiv:2312.11109",
+    "name": "LargeGT",
+    "source_type": "arXiv",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "Graph Transformers for Large Graphs",
+    "authors": "",
+    "year": "",
+    "journal": "",
+    "citations": "",
+    "abstract": "",
+    "publication_type": "arXiv",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009610",
+    "doi": "https://doi.org/10.1101/2024.05.27.594872",
+    "name": "FuseMap",
+    "source_type": "bioRxiv",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "spatial_transcriptomics",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "Towards a universal spatial molecular atlas of the mouse brain",
+    "authors": "Yichun He; Hao Sheng; Hailing Shi; Wendy Xueyi Wang; Zefang Tang; Jia Liu; Xiao Wang",
+    "year": "2024",
+    "journal": "",
+    "citations": "10",
+    "abstract": "Spatially mapping a comprehensive brain at the single-cell level with molecular resolution is crucial for understanding its biological structure, mechanisms, and functions. Recent scalable spatial transcriptomics technologies1-7 have revolutionized our ability to examine millions of cells within the complex brain network, allowing for the generation of multiple mouse brain atlases that illuminate diverse transcriptomic and spatial cell types. However, despite enormous efforts, these spatial transcriptomics atlases still face challenges in providing a comprehensive brain representation: each atlas only captures a fraction of the vast cellular population of the brain and is limited in one or more aspects of spatial resolution, gene detection sensitivity, and gene throughput8. Here, we introduce FuseMap, a deep-learning-based framework for spatial transcriptomics that bridges single-cell or single-spot gene expression with spatial contexts and consolidates various gene panels across spatial transcriptomics atlases. By training on an extensive spatial transcriptomics atlas corpus of the mouse brain1-7, comprising over 18.6 million cells or spots and 26,665 genes from 434 tissue sections across seven datasets in a self-supervised way, FuseMap gains a fundamental understanding of cell identities and gene characteristics. We thus create a comprehensive molecular spatial reference atlas of the whole mouse brain with transcriptome-wide information, achieving multiple tasks including nomenclature harmonization of molecular cell types and tissue regions, identification of novel molecular brain regions, spatial gene imputation, targeted gene-panel selection, and region-specific cell-type interactions inference. Furthermore, the pretrained brain FuseMap model enables mapping new query data to the molecular spatial reference brain through transfer learning, allowing for automated cell and tissue annotations and replacing laborious and suboptimal manual annotations. Overall, we offer FuseMap as a novel computational framework for integration across various spatial transcriptomics platforms and provide a molecular common coordinate framework (molCCF) with pretrained FuseMap brain model for exploration of the brain molecular and cellular landscape with harmonized annotations and coordinates.",
+    "publication_type": "preprint",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009611",
+    "doi": "https://doi.org/10.1038/s41592-019-0619-0",
+    "name": "Harmony",
+    "source_type": "peer-reviewed",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "not_spatial_omics",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "Fast, sensitive and accurate integration of single-cell data with Harmony",
+    "authors": "Ilya Korsunsky; Nghia Millard; Jean Fan; Kamil Slowikowski; Fan Zhang; Kevin Wei; Yuriy Baglaenko; Michael Brenner; Po-ru Loh; Soumya Raychaudhuri",
+    "year": "2019",
+    "journal": "Nature Methods",
+    "citations": "10796",
+    "abstract": "",
+    "publication_type": "peer-reviewed",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009613",
+    "doi": "https://doi.org/10.1186/s13059-020-02116-x",
+    "name": "MAESTRO",
+    "source_type": "peer-reviewed",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "not_spatial_omics",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "Integrative analyses of single-cell transcriptome and regulome using MAESTRO",
+    "authors": "Chenfei Wang; Dongqing Sun; Xin Huang; Changxin Wan; Ziyi Li; Ya Han; Qian Qin; Jingyu Fan; Xintao Qiu; Yingtian Xie; Clifford A. Meyer; Myles Brown; Ming Tang; Henry Long; Tao Liu; X. Shirley Liu",
+    "year": "2020",
+    "journal": "Genome Biology",
+    "citations": "202",
+    "abstract": "",
+    "publication_type": "peer-reviewed",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009614",
+    "doi": "https://doi.org/10.1038/s41587-021-01161-6",
+    "name": "scJoint",
+    "source_type": "peer-reviewed",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "not_spatial_omics",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "scJoint integrates atlas-scale single-cell RNA-seq and ATAC-seq data with transfer learning",
+    "authors": "Yingxin Lin; Tung-Yu Wu; Sheng Wan; Jean Y. H. Yang; Wing H. Wong; Y. X. Rachel Wang",
+    "year": "2022",
+    "journal": "Nature Biotechnology",
+    "citations": "180",
+    "abstract": "",
+    "publication_type": "peer-reviewed",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
+    "id": "M_20261009615",
+    "doi": "https://doi.org/10.1186/s13059-022-02679-x",
+    "name": "Bi-CCA",
+    "source_type": "peer-reviewed",
+    "category": "",
+    "paper_type": "method",
+    "pipeline_category": "",
+    "spatial_data_category": "not_spatial_omics",
+    "categories": [],
+    "pipeline_categories": [],
+    "review_status": "",
+    "addition_method": "manual",
+    "is_placeholder": false,
+    "date_added": "20261009",
+    "title": "Bi-order multimodal integration of single-cell data",
+    "authors": "Jinzhuang Dou; Shaoheng Liang; Vakul Mohanty; Qi Miao; Yuefan Huang; Qingnan Liang; Xuesen Cheng; Sangbae Kim; Jongsu Choi; Yumei Li; Li Li; May Daher; Rafet Basar; Katayoun Rezvani; Rui Chen; Ken Chen",
+    "year": "2022",
+    "journal": "Genome Biology",
+    "citations": "69",
+    "abstract": "",
+    "publication_type": "peer-reviewed",
+    "keywords": [],
+    "data_ids": [],
+    "comparison_ids": [],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
+    "tissue": "",
+    "disease": ""
+  },
+  {
     "id": "AP_1",
     "doi": "https://doi.org/10.1038/s41586-019-1876-x",
     "name": "",
@@ -24811,10 +23608,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_2",
@@ -24863,10 +23660,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "type 1 diabetes"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_3_osmfish",
@@ -24903,9 +23700,9 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -24943,10 +23740,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "hypothalamic preoptic region",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_5",
@@ -24983,10 +23780,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_6",
@@ -25023,10 +23820,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain cortex, subventricular zone and olfactory bulb",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_7",
@@ -25063,10 +23860,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "embryo",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_8",
@@ -25103,10 +23900,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "hippocampus and neocortex",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_9",
@@ -25145,8 +23942,8 @@
     ],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "nonsmall cell lung and breast",
-    "disease": "cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_10",
@@ -25184,10 +23981,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_11",
@@ -25224,10 +24021,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain and spinal cord",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_12",
@@ -25264,10 +24061,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_13",
@@ -25304,9 +24101,9 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "mouse and human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -25343,18 +24140,14 @@
     ],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_MULTI_1.1",
-    "associated_data_ids": [
-      "D_MULTI_1.1"
-    ],
-    "spatial_data_type_ap": "IMC",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "mouse",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "glioma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_15",
@@ -25398,14 +24191,12 @@
     "associated_data_ids": [
       "D_SP_AUTO_MIBI_3"
     ],
-    "spatial_data_type_ap": "MIBI-TOF",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "triple-negative breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_16",
@@ -25443,14 +24234,12 @@
       "D_MULTI_SP_IMC_8.1",
       "D_MULTI_SP_IMC_8.2"
     ],
-    "spatial_data_type_ap": "GeoMx, imaging mass cytometry",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "colorectal",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_17",
@@ -25489,14 +24278,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "CODEX",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "small cell lung cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_18",
@@ -25527,14 +24314,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "prostate",
-    "disease": "prostate cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_19",
@@ -25565,14 +24350,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "prostate",
-    "disease": "prostate cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_20",
@@ -25603,14 +24386,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "multiplexed IHC",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "pancreas",
-    "disease": "pancreatic ductal adenocarcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_21",
@@ -25683,18 +24464,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_VISIUMHD_2",
-    "associated_data_ids": [
-      "D_ST_VISIUMHD_2"
-    ],
-    "spatial_data_type_ap": "Visium HD",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "colorectal",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_23",
@@ -25725,14 +24502,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Visium, CosMx single molecule imaging",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "ovary",
-    "disease": "high-grade serous ovarian carcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_24",
@@ -25763,14 +24538,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "CosMx Spatial Molecular Imaging",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "intestine",
-    "disease": "ulcerative colitis and Crohn's disease"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_26",
@@ -25806,14 +24579,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Xenium",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "hippocampus",
-    "disease": "temporal lobe epilepsy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_27",
@@ -25847,13 +24618,11 @@
     "associated_data_ids": [
       "D_SP_IMC_34"
     ],
-    "spatial_data_type_ap": "IMC",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -25933,23 +24702,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_VISIUM_157; D_SP_MALDIMSI_2; D_ST_INSITUSEQU_1; D_ST_VISIUM_158; D_ST_VISIUM_159",
-    "associated_data_ids": [
-      "D_ST_VISIUM_157",
-      "D_SP_MALDIMSI_2",
-      "D_ST_INSITUSEQU_1",
-      "D_ST_VISIUM_158",
-      "D_ST_VISIUM_159"
-    ],
-    "spatial_data_type_ap": "Visium, mass spectrometry imaging, spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_metabolomics"
-    ],
-    "animal": "mouse and human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "Parkinson's disease"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_30",
@@ -25981,14 +24741,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "CODEX",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tonsil",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_31",
@@ -26022,14 +24780,12 @@
     "associated_data_ids": [
       "D_ST_SLIDESEQ_2"
     ],
-    "spatial_data_type_ap": "Slide-seq",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "cerebellum, hippocampus, brain",
-    "disease": "traumatic brain injury"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_32",
@@ -26077,9 +24833,9 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -26109,18 +24865,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_IMC_9",
-    "associated_data_ids": [
-      "D_SP_IMC_9"
-    ],
-    "spatial_data_type_ap": "imaging mass cytometry",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_34",
@@ -26163,10 +24915,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "axial skeleton",
-    "disease": "chordoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_35",
@@ -26209,10 +24961,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "soft tissue",
-    "disease": "undifferentiated pleomorphic sarcoma and myxofibrosarcoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_36",
@@ -26252,10 +25004,10 @@
       "spatial_proteomics",
       "spatial_transcriptomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "COVID-19"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_37",
@@ -26305,10 +25057,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tumor",
-    "disease": "melanoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_38",
@@ -26337,19 +25089,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_NEW_15; D_ST_STARMAPPLU_1",
-    "associated_data_ids": [
-      "D_ST_NEW_15",
-      "D_ST_STARMAPPLU_1"
-    ],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tumor",
-    "disease": "cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_40",
@@ -26378,18 +25125,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_IMC_3",
-    "associated_data_ids": [
-      "D_SP_IMC_3"
-    ],
-    "spatial_data_type_ap": "ISS",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "liver",
-    "disease": "colorectal cancer liver metastasis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_41",
@@ -26418,19 +25161,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_STEREOSEQ_1",
-    "associated_data_ids": [
-      "D_ST_STEREOSEQ_1"
-    ],
-    "spatial_data_type_ap": "spatial multi-omic",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "glioblastoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_42",
@@ -26459,19 +25197,18 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_SEQUENTIAL_1; D_SP_DEEPVISUAL_1",
+    "associated_data": "D_SP_SEQUENTIAL_1",
     "associated_data_ids": [
-      "D_SP_SEQUENTIAL_1",
-      "D_SP_DEEPVISUAL_1"
+      "D_SP_SEQUENTIAL_1"
     ],
     "spatial_data_type_ap": "spatial proteomics",
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "heart",
-    "disease": "myocardial infarction"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_43",
@@ -26513,14 +25250,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomic",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "colorectal",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_44",
@@ -26551,18 +25286,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_SLIDESEQ_4",
-    "associated_data_ids": [
-      "D_ST_SLIDESEQ_4"
-    ],
-    "spatial_data_type_ap": "MERFISH, smFISH, BaristaSeq, ExSeq",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "primary visual cortex (VISp) brain region",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_45",
@@ -26591,19 +25322,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_NEW_3",
-    "associated_data_ids": [
-      "D_ST_NEW_3"
-    ],
-    "spatial_data_type_ap": "spatial transcriptomics, proteomics, CosMx SMI, 10x Xenium, RNAscope, GeoMx DSP",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "gastrointestinal and immune tissues",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_46",
@@ -26632,27 +25358,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_HE_1; D_ST_COSMXSMI_2; D_ST_COSMXSMI_3; D_ST_COSMXSMI_4; D_ST_COSMXSMI_5; D_ST_COSMXSMI_6; D_ST_COSMXSMI_7; D_ST_COSMXSMI_8; D_ST_COSMXSMI_9; D_ST_COSMXSMI_10",
-    "associated_data_ids": [
-      "D_SP_HE_1",
-      "D_ST_COSMXSMI_2",
-      "D_ST_COSMXSMI_3",
-      "D_ST_COSMXSMI_4",
-      "D_ST_COSMXSMI_5",
-      "D_ST_COSMXSMI_6",
-      "D_ST_COSMXSMI_7",
-      "D_ST_COSMXSMI_8",
-      "D_ST_COSMXSMI_9",
-      "D_ST_COSMXSMI_10"
-    ],
-    "spatial_data_type_ap": "CosMx SMI, snPATHO-seq",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "colon",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_47",
@@ -26683,13 +25396,11 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "in situ hybridization chain reaction",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -26721,14 +25432,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "STARmap PLUS",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "Alzheimer's disease"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_2",
@@ -26771,10 +25480,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "isocortex and hippocampal formation",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_3",
@@ -26821,10 +25530,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "spleen",
-    "disease": "systemic lupus erythematosus"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_4",
@@ -26868,14 +25577,12 @@
     "associated_data_ids": [
       "D_ST_STEREOSEQ_1"
     ],
-    "spatial_data_type_ap": "Stereo-seq",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "embryo",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_5",
@@ -26904,24 +25611,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_SLIDETAGS_1; D_ST_SLIDETAGS_2; D_ST_SLIDETAGS_3; D_ST_SLIDETAGS_4; D_ST_SLIDETAGS_5; D_MULTI_SLIDETAGS_1; D_ST_SLIDETAGS_6",
-    "associated_data_ids": [
-      "D_ST_SLIDETAGS_1",
-      "D_ST_SLIDETAGS_2",
-      "D_ST_SLIDETAGS_3",
-      "D_ST_SLIDETAGS_4",
-      "D_ST_SLIDETAGS_5",
-      "D_MULTI_SLIDETAGS_1",
-      "D_ST_SLIDETAGS_6"
-    ],
-    "spatial_data_type_ap": "Slide-tags",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse and human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "hippocampus, brain, tonsil, melanoma",
-    "disease": "melanoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_RV_1",
@@ -26954,15 +25651,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial genomic, transcriptomic and proteomic technologies",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_RV_2",
@@ -27000,7 +25694,7 @@
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_RV_3",
@@ -27033,14 +25727,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatially resolved transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_RV_4",
@@ -27117,8 +25809,8 @@
     "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "synovial tissue, kidneys, salivary glands",
-    "disease": "rheumatoid arthritis, systemic lupus erythematosus, Sjogren's syndrome"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_RV_6",
@@ -27151,11 +25843,9 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
     "tissue": "",
     "disease": ""
@@ -27196,14 +25886,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "CODEX",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_RV_8",
@@ -27272,19 +25960,14 @@
     ],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_SLIDESEQV2_2; D_ST_SLIDESEQ_4",
-    "associated_data_ids": [
-      "D_ST_SLIDESEQV2_2",
-      "D_ST_SLIDESEQ_4"
-    ],
-    "spatial_data_type_ap": "Slide-seqV2",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse and human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "kidney",
-    "disease": "diabetic kidney disease, toxic proteinopathy, and healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_8",
@@ -27328,10 +26011,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "major mouse organs",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_9",
@@ -27379,7 +26062,7 @@
     "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "liver",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -27422,15 +26105,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomics and spatial proteomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
-    "animal": "human and murine",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "liver",
-    "disease": "obese / steatotic / healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_11",
@@ -27465,14 +26145,10 @@
     ],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_MERFISH_2",
-    "associated_data_ids": [
-      "D_ST_MERFISH_2"
-    ],
-    "spatial_data_type_ap": "MERFISH",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
@@ -27521,10 +26197,10 @@
     "spatial_modality_ap": [
       "spatial_proteomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lymphoid tissues (tonsils, spleen, lymph node)",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_13",
@@ -27566,10 +26242,10 @@
     ],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "cortex",
-    "disease": "autism spectrum disorder"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_AUTO_14",
@@ -27639,19 +26315,16 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_VISIUM_160; D_ST_23",
+    "associated_data": "D_ST_23",
     "associated_data_ids": [
-      "D_ST_VISIUM_160",
       "D_ST_23"
     ],
-    "spatial_data_type_ap": "Visium",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "heart",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_49",
@@ -27732,14 +26405,12 @@
     "associated_data_ids": [
       "D_MULTI_SP_IMC_8.1"
     ],
-    "spatial_data_type_ap": "imaging mass cytometry",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_51",
@@ -27772,14 +26443,12 @@
     "associated_data_ids": [
       "D_SP_MIBI_4"
     ],
-    "spatial_data_type_ap": "MIBI-TOF",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "Tuberculosis"
+    "disease": ""
   },
   {
     "id": "AP_52",
@@ -27853,14 +26522,12 @@
     "associated_data_ids": [
       "D_SP_MIBI_6"
     ],
-    "spatial_data_type_ap": "multiplexed ion beam imaging by time-of-flight",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "decidua / maternal-fetal interface",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_54",
@@ -27927,18 +26594,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_VISIUM_3",
-    "associated_data_ids": [
-      "D_ST_VISIUM_3"
-    ],
-    "spatial_data_type_ap": "cyclic immunofluorescence",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_56",
@@ -27971,14 +26634,12 @@
     "associated_data_ids": [
       "D_SP_IMC_30"
     ],
-    "spatial_data_type_ap": "Imaging Mass Cytometry",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "upper tract urothelial carcinoma",
-    "disease": "upper tract urothelial carcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_57",
@@ -28011,14 +26672,12 @@
     "associated_data_ids": [
       "D_SP_tCyCIF31"
     ],
-    "spatial_data_type_ap": "t-CyCIF",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tonsil and lung",
-    "disease": "lung cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_58",
@@ -28093,8 +26752,8 @@
     "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "tumor-draining lymph nodes and tumor microenvironments",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_61",
@@ -28136,9 +26795,9 @@
     ],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "heart",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -28168,18 +26827,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_IMC_63",
-    "associated_data_ids": [
-      "D_SP_IMC_63"
-    ],
-    "spatial_data_type_ap": "IMC",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "pancreas",
-    "disease": "Type 1 diabetes"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_64",
@@ -28250,14 +26905,10 @@
     ],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_VISIUM_3",
-    "associated_data_ids": [
-      "D_ST_VISIUM_3"
-    ],
-    "spatial_data_type_ap": "mass cytometry imaging",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
@@ -28294,14 +26945,12 @@
     "associated_data_ids": [
       "D_ST_24"
     ],
-    "spatial_data_type_ap": "spatially resolved transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_67",
@@ -28334,14 +26983,12 @@
     "associated_data_ids": [
       "D_ST_VISIUM_141"
     ],
-    "spatial_data_type_ap": "Visium",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "dorsolateral prefrontal cortex",
-    "disease": "schizophrenia and autism spectrum disorder"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_68",
@@ -28374,14 +27021,12 @@
     "associated_data_ids": [
       "D_ST_142"
     ],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "lymph node",
-    "disease": "cutaneous malignant melanoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_69",
@@ -28425,15 +27070,12 @@
     "associated_data_ids": [
       "D_MULTI_143.1"
     ],
-    "spatial_data_type_ap": "spatial transcriptomics and multiplexed ion beam imaging",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "skin",
-    "disease": "cutaneous squamous cell carcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_70",
@@ -28464,14 +27106,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Fullscope-seq",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "macaque",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_71",
@@ -28512,10 +27152,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "PDAC",
-    "tissue": "pancreas",
-    "disease": "pancreatic ductal adenocarcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_72",
@@ -28549,18 +27189,16 @@
     ],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_SPATIALTRA_1",
-    "associated_data_ids": [
-      "D_ST_SPATIALTRA_1"
-    ],
+    "associated_data": "",
+    "associated_data_ids": [],
     "spatial_data_type_ap": "spatial transcriptomics",
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "PDAC",
-    "tissue": "pancreas",
-    "disease": "pancreatic ductal adenocarcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_73",
@@ -28589,20 +27227,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_GEOMXWTA_1; D_ST_GEOMXCTA_1",
-    "associated_data_ids": [
-      "D_ST_GEOMXWTA_1",
-      "D_ST_GEOMXCTA_1"
-    ],
-    "spatial_data_type_ap": "spatial proteomics, spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_proteomics",
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "non-small cell lung cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_74",
@@ -28633,14 +27265,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Digital Spatial Profiling",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "small cell lung cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_75",
@@ -28671,14 +27301,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "mIF",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "non-small cell lung cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_76",
@@ -28709,14 +27337,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial proteomics",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "melanoma",
-    "disease": "metastatic melanoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_77",
@@ -28745,23 +27371,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_NEW_16; D_ST_NEW_17; D_ST_NEW_18; D_ST_NEW_19; D_ST_NEW_20; D_ST_NEW_21",
-    "associated_data_ids": [
-      "D_ST_NEW_16",
-      "D_ST_NEW_17",
-      "D_ST_NEW_18",
-      "D_ST_NEW_19",
-      "D_ST_NEW_20",
-      "D_ST_NEW_21"
-    ],
-    "spatial_data_type_ap": "spatial RNA sequencing",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "intestine",
-    "disease": "intestinal neoplasia"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_78",
@@ -28798,14 +27415,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tumor",
-    "disease": "cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_79",
@@ -28836,14 +27451,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatially resolved transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "kidney",
-    "disease": "systemic lupus erythematosus"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_80",
@@ -28874,14 +27487,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "multiplexed imaging",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_83",
@@ -29026,11 +27637,9 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "MERFISH",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
     "tissue": "",
     "disease": ""
@@ -29070,14 +27679,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "RNA sequencing",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "nervous system",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_88",
@@ -29114,10 +27721,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "kidney",
-    "disease": "fibrosis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_89",
@@ -29150,10 +27757,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "primary visual cortex",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_90",
@@ -29229,10 +27836,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "pancreas",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_93",
@@ -29265,10 +27872,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "blood and bone marrow",
-    "disease": "leukemia"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_94",
@@ -29303,8 +27910,8 @@
     "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "peripheral blood",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_95",
@@ -29337,10 +27944,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tonsil",
-    "disease": "autoimmune disease"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_96",
@@ -29373,10 +27980,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "retina",
-    "disease": "age-related macular degeneration, glaucoma, diabetic retinopathy, myopia, type 2 macular telangiectasia"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_97",
@@ -29409,10 +28016,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "mouse",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "spleen and lymph nodes",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_98",
@@ -29569,10 +28176,10 @@
     "associated_data_ids": [],
     "spatial_data_type_ap": "",
     "spatial_modality_ap": [],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "colorectal tumor",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_102",
@@ -30302,14 +28909,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Select-seq",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "triple-negative breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_119",
@@ -30338,20 +28943,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_SPATIALTRA_2; D_ST_INSITURNAP_1",
-    "associated_data_ids": [
-      "D_ST_SPATIALTRA_2",
-      "D_ST_INSITURNAP_1"
-    ],
-    "spatial_data_type_ap": "spatial transcriptome sequencing, in situ RNA profiling, Visium, PhenoCycler",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "lung adenocarcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_120",
@@ -30421,14 +29020,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "ISS",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_122",
@@ -30455,18 +29052,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_MULTI_NEW_20260925295",
-    "associated_data_ids": [
-      "D_MULTI_NEW_20260925295"
-    ],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "colorectal",
-    "disease": "colorectal cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_123",
@@ -30497,14 +29090,12 @@
     "associated_data_ids": [
       "VISIUM"
     ],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "kidney",
-    "disease": "kidney disease"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_124",
@@ -30626,15 +29217,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "multiplex immunofluorescence and spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_proteomics",
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast",
-    "disease": "breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_127",
@@ -30666,13 +29254,11 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "in situ sequencing, Xenium",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse and human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -30702,20 +29288,14 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_ST_VISIUM_161; D_SP_CODEX_36",
-    "associated_data_ids": [
-      "D_ST_VISIUM_161",
-      "D_SP_CODEX_36"
-    ],
-    "spatial_data_type_ap": "Visium, CODEX, Xenium",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics",
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "tumour",
-    "disease": "cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_129",
@@ -30748,10 +29328,10 @@
     "spatial_modality_ap": [
       "spatial_transcriptomics"
     ],
-    "animal": "human",
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "skin",
-    "disease": "cutaneous T cell lymphoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_RV_155",
@@ -30808,7 +29388,7 @@
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "cancer"
+    "disease": ""
   },
   {
     "id": "AP_130",
@@ -30843,8 +29423,8 @@
     ],
     "animal": "human",
     "tissue_disease": "lung",
-    "tissue": "lung",
-    "disease": "non-small cell lung cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_131",
@@ -30912,14 +29492,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial transcriptomics",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "glioblastoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_133",
@@ -31075,14 +29653,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "sci-Space",
-    "spatial_modality_ap": [
-      "spatial_transcriptomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "embryo",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_139",
@@ -31119,14 +29695,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial proteomics",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "intestine",
-    "disease": "necrotizing enterocolitis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_140",
@@ -31166,13 +29740,11 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Multiplexed fluorescence imaging (MFI)",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "femur",
+    "tissue": "",
     "disease": ""
   },
   {
@@ -31211,14 +29783,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "3D light-sheet imaging, MACSima Imaging Cyclic Staining",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "glioblastoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_142",
@@ -31249,14 +29819,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "spatial proteomics",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "cynomolgus monkeys",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
     "tissue": "",
-    "disease": "Bundibugyo virus infection"
+    "disease": ""
   },
   {
     "id": "AP_143",
@@ -31287,14 +29855,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Imaging mass cytometry",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "liver",
-    "disease": "intrahepatic cholangiocarcinoma"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_144",
@@ -31330,14 +29896,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "multiplex imaging",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung",
-    "disease": "idiopathic pulmonary fibrosis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_145",
@@ -31375,14 +29939,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "cyclic immunofluorescence imaging",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
-    "tissue": "kidney",
-    "disease": "kidney disease"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_146",
@@ -31419,14 +29981,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "IMC",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "liver",
-    "disease": "Hepatic alveolar echinococcosis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_147",
@@ -31466,14 +30026,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "laser capture microdissection with mass spectrometry",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "atherosclerotic plaques and myocardium",
-    "disease": "atherosclerosis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_148",
@@ -31510,14 +30068,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "hex-MASP",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "brain",
-    "disease": "healthy"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_149",
@@ -31552,14 +30108,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "multiplexed ion beam imaging",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human, mouse, non-human primate, cattle",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "lung / respiratory",
-    "disease": "tuberculosis"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_150",
@@ -31595,14 +30149,12 @@
     "comparison_ids": [],
     "associated_data": "",
     "associated_data_ids": [],
-    "spatial_data_type_ap": "Digital spatial profiling",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human and mouse",
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
     "tissue_disease": "",
-    "tissue": "breast and brain",
-    "disease": "triple negative breast cancer"
+    "tissue": "",
+    "disease": ""
   },
   {
     "id": "AP_151",
@@ -57396,14 +55948,10 @@
     "keywords": [],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_20261005",
-    "associated_data_ids": [
-      "D_SP_20261005"
-    ],
-    "spatial_data_type_ap": "SP - IMC",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
     "animal": "",
     "tissue_disease": "",
     "tissue": "",
@@ -58208,16 +56756,12 @@
     ],
     "data_ids": [],
     "comparison_ids": [],
-    "associated_data": "D_SP_20261005106",
-    "associated_data_ids": [
-      "D_SP_20261005106"
-    ],
-    "spatial_data_type_ap": "spatial proteomics",
-    "spatial_modality_ap": [
-      "spatial_proteomics"
-    ],
-    "animal": "human",
-    "tissue_disease": "skin COVID19",
+    "associated_data": "",
+    "associated_data_ids": [],
+    "spatial_data_type_ap": "",
+    "spatial_modality_ap": [],
+    "animal": "",
+    "tissue_disease": "",
     "tissue": "",
     "disease": ""
   },
@@ -61824,7 +60368,7 @@
     "authors": "Hyun Min Kang; Meena Subramaniam; Sasha Targ; Michelle Nguyen; Lenka Maliskova; Elizabeth McCarthy; Eunice Wan; Simon Wong; Lauren Byrnes; Cristina M Lanata; Rachel E Gate; Sara Mostafavi; Alexander Marson; Noah Zaitlen; Lindsey A Criswell; Chun Jimmie Ye",
     "year": "2017",
     "journal": "Nature Biotechnology",
-    "citations": "1205",
+    "citations": "1210",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -61860,7 +60404,7 @@
     "authors": "Helena L. Crowell; Charlotte Soneson; Pierre-Luc Germain; Daniela Calini; Ludovic Collin; Catarina Raposo; Dheeraj Malhotra; Mark D. Robinson",
     "year": "2020",
     "journal": "Nature Communications",
-    "citations": "482",
+    "citations": "488",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -61896,7 +60440,7 @@
     "authors": "William E. Allen; Timothy R. Blosser; Zuri A. Sullivan; Catherine Dulac; Xiaowei Zhuang",
     "year": "2023",
     "journal": "Cell",
-    "citations": "440",
+    "citations": "442",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -61932,7 +60476,7 @@
     "authors": "Rebecca D. Hodge; Trygve E. Bakken; Jeremy A. Miller; Kimberly A. Smith; Eliza R. Barkan; Lucas T. Graybuck; Jennie L. Close; Brian Long; Nelson Johansen; Osnat Penn; Zizhen Yao; Jeroen Eggermont; Thomas Höllt; Boaz P. Levi; Soraya I. Shehata; Brian Aevermann; Allison Beller; Darren Bertagnolli; Krissy Brouner; Tamara Casper; Charles Cobbs; Rachel Dalley; Nick Dee; Song-Lin Ding; Richard G. Ellenbogen; Olivia Fong; Emma Garren; Jeff Goldy; Ryder P. Gwinn; Daniel Hirschstein; C. Dirk Keene; Mohamed Keshk; Andrew L. Ko; Kanan Lathia; Ahmed Mahfouz; Zoe Maltzer; Medea McGraw; Thuc Nghi Nguyen; Julie Nyhus; Jeffrey G. Ojemann; Aaron Oldre; Sheana Parry; Shannon Reynolds; Christine Rimorin; Nadiya V. Shapovalova; Saroja Somasundaram; Aaron Szafer; Elliot R. Thomsen; Michael Tieu; Gerald Quon; Richard H. Scheuermann; Rafael Yuste; Susan M. Sunkin; Boudewijn Lelieveldt; David Feng; Lydia Ng; Amy Bernard; Michael Hawrylycz; John W. Phillips; Bosiljka Tasic; Hongkui Zeng; Allan R. Jones; Christof Koch; Ed S. Lein",
     "year": "2019",
     "journal": "Nature",
-    "citations": "1832",
+    "citations": "1838",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -61968,7 +60512,7 @@
     "authors": "Hamish W. King; Nara Orban; John C. Riches; Andrew J. Clear; Gary Warnes; Sarah A. Teichmann; Louisa K. James",
     "year": "2021",
     "journal": "Science Immunology",
-    "citations": "287",
+    "citations": "288",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -62040,7 +60584,7 @@
     "authors": "Lichun Ma; Limin Wang; Subreen A. Khatib; Ching-Wen Chang; Sophia Heinrich; Dana A. Dominguez; Marshonna Forgues; Julián Candia; Maria O. Hernandez; Michael Kelly; Yongmei Zhao; Bao Tran; Jonathan M. Hernandez; Jeremy L. Davis; David E. Kleiner; Bradford J. Wood; Tim F. Greten; Xin Wei Wang",
     "year": "2021",
     "journal": "Journal of Hepatology",
-    "citations": "335",
+    "citations": "336",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -62583,7 +61127,7 @@
     "authors": "Yuhan Hao; Stephanie Hao; Erica Andersen-Nissen; William M. Mauck; Shiwei Zheng; Andrew Butler; Maddie J. Lee; Aaron J. Wilk; Charlotte Darby; Michael Zager; Paul Hoffman; Marlon Stoeckius; Efthymia Papalexi; Eleni P. Mimitou; Jaison Jain; Avi Srivastava; Tim Stuart; Lamar M. Fleming; Bertrand Yeung; Angela J. Rogers; Juliana M. McElrath; Catherine A. Blish; Raphael Gottardo; Peter Smibert; Rahul Satija",
     "year": "2021",
     "journal": "Cell",
-    "citations": "15874",
+    "citations": "15937",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -62619,7 +61163,7 @@
     "authors": "Elliott Swanson; Cara Lord; Julian Reading; Alexander T Heubeck; Palak C Genge; Zachary Thomson; Morgan DA Weiss; Xiao-jun Li; Adam K Savage; Richard R Green; Troy R Torgerson; Thomas F Bumol; Lucas T Graybuck; Peter J Skene",
     "year": "2021",
     "journal": "eLife",
-    "citations": "289",
+    "citations": "290",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -62907,7 +61451,7 @@
     "authors": "David R. Glass; Albert G. Tsai; John Paul Oliveria; Felix J. Hartmann; Samuel C. Kimmey; Ariel A. Calderon; Luciene Borges; Marla C. Glass; Lisa E. Wagar; Mark M. Davis; Sean C. Bendall",
     "year": "2020",
     "journal": "Immunity",
-    "citations": "270",
+    "citations": "271",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -62979,7 +61523,7 @@
     "authors": "Guillaume Jaume; Paul Doucet; Andrew Song; Ming Lu; Cristina Almagro-Pérez; Sophia Wagner; Anurag Vaidya; Richard Chen; Drew Williamson; Ahrong Kim; Faisal Mahmood",
     "year": "2024",
     "journal": "Advances in Neural Information Processing Systems 37",
-    "citations": "53",
+    "citations": "56",
     "abstract": "",
     "publication_type": "proceedings-article",
     "keywords": [],
@@ -63203,7 +61747,7 @@
     "authors": "Marie Schott; Daniel León-Periñán; Elena Splendiani; Leon Strenger; Jan Robin Licha; Tancredi Massimo Pentimalli; Simon Schallenberg; Jonathan Alles; Sarah Samut Tagliaferro; Anastasiya Boltengagen; Sebastian Ehrig; Stefano Abbiati; Steffen Dommerich; Massimiliano Pagani; Elisabetta Ferretti; Giuseppe Macino; Nikos Karaiskos; Nikolaus Rajewsky",
     "year": "2024",
     "journal": "Cell",
-    "citations": "227",
+    "citations": "230",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -63427,7 +61971,7 @@
     "authors": "Zizhen Yao; Cindy T. J. van Velthoven; Michael Kunst; Meng Zhang; Delissa McMillen; Changkyu Lee; Won Jung; Jeff Goldy; Aliya Abdelhak; Matthew Aitken; Katherine Baker; Pamela Baker; Eliza Barkan; Darren Bertagnolli; Ashwin Bhandiwad; Cameron Bielstein; Prajal Bishwakarma; Jazmin Campos; Daniel Carey; Tamara Casper; Anish Bhaswanth Chakka; Rushil Chakrabarty; Sakshi Chavan; Min Chen; Michael Clark; Jennie Close; Kirsten Crichton; Scott Daniel; Peter DiValentin; Tim Dolbeare; Lauren Ellingwood; Elysha Fiabane; Timothy Fliss; James Gee; James Gerstenberger; Alexandra Glandon; Jessica Gloe; Joshua Gould; James Gray; Nathan Guilford; Junitta Guzman; Daniel Hirschstein; Windy Ho; Marcus Hooper; Mike Huang; Madie Hupp; Kelly Jin; Matthew Kroll; Kanan Lathia; Arielle Leon; Su Li; Brian Long; Zach Madigan; Jessica Malloy; Jocelin Malone; Zoe Maltzer; Naomi Martin; Rachel McCue; Ryan McGinty; Nicholas Mei; Jose Melchor; Emma Meyerdierks; Tyler Mollenkopf; Skyler Moonsman; Thuc Nghi Nguyen; Sven Otto; Trangthanh Pham; Christine Rimorin; Augustin Ruiz; Raymond Sanchez; Lane Sawyer; Nadiya Shapovalova; Noah Shepard; Cliff Slaughterbeck; Josef Sulc; Michael Tieu; Amy Torkelson; Herman Tung; Nasmil Valera Cuevas; Shane Vance; Katherine Wadhwani; Katelyn Ward; Boaz Levi; Colin Farrell; Rob Young; Brian Staats; Ming-Qiang Michael Wang; Carol L. Thompson; Shoaib Mufti; Chelsea M. Pagan; Lauren Kruse; Nick Dee; Susan M. Sunkin; Luke Esposito; Michael J. Hawrylycz; Jack Waters; Lydia Ng; Kimberly Smith; Bosiljka Tasic; Xiaowei Zhuang; Hongkui Zeng",
     "year": "2023",
     "journal": "Nature",
-    "citations": "1234",
+    "citations": "1242",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -63463,7 +62007,7 @@
     "authors": "Sheel Shah; Eric Lubeck; Wen Zhou; Long Cai",
     "year": "2016",
     "journal": "Neuron",
-    "citations": "743",
+    "citations": "744",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -63499,7 +62043,7 @@
     "authors": "Chun-Seok Cho; Jingyue Xi; Yichen Si; Sung-Rye Park; Jer-En Hsu; Myungjin Kim; Goo Jun; Hyun Min Kang; Jun Hee Lee",
     "year": "2021",
     "journal": "Cell",
-    "citations": "510",
+    "citations": "514",
     "abstract": "Spatial barcoding technologies have the potential to reveal histological details of transcriptomic profiles; however, they are currently limited by their low resolution. Here, we report Seq-Scope, a spatial barcoding technology with a resolution comparable to an optical microscope. Seq-Scope is based on a solid-phase amplification of randomly barcoded single-molecule oligonucleotides using an Illumina sequencing platform. The resulting clusters annotated with spatial coordinates are processed to expose RNA-capture moiety. These RNA-capturing barcoded clusters define the pixels of Seq-Scope that are approximately 0.5-0.8 mum apart from each other. From tissue sections, Seq-Scope visualizes spatial transcriptome heterogeneity at multiple histological scales, including tissue zonation according to the portal-central (liver), crypt-surface (colon) and inflammation-fibrosis (injured liver) axes, cellular components including single-cell types and subtypes, and subcellular architectures of nucleus and cytoplasm. Seq-Scope is quick, straightforward, precise, and easy-to-implement and makes spatial single-cell analysis accessible to a wide group of biomedical researchers.",
     "publication_type": "peer-reviewed",
     "keywords": [
@@ -63652,7 +62196,7 @@
     "authors": "Reuben Moncada; Dalia Barkley; Florian Wagner; Marta Chiodin; Joseph C. Devlin; Maayan Baron; Cristina H. Hajdu; Diane M. Simeone; Itai Yanai",
     "year": "2020",
     "journal": "Nature Biotechnology",
-    "citations": "1034",
+    "citations": "1038",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -63690,7 +62234,7 @@
     "authors": "Christoph Kuppe; Ricardo O. Ramirez Flores; Zhijian Li; Sikander Hayat; Rebecca T. Levinson; Xian Liao; Monica T. Hannani; Jovan Tanevski; Florian Wünnemann; James S. Nagai; Maurice Halder; David Schumacher; Sylvia Menzel; Gideon Schäfer; Konrad Hoeft; Mingbo Cheng; Susanne Ziegler; Xiaoting Zhang; Fabian Peisker; Nadine Kaesler; Turgay Saritas; Yaoxian Xu; Astrid Kassner; Jan Gummert; Michiel Morshuis; Junedh Amrute; Rogier J. A. Veltrop; Peter Boor; Karin Klingel; Linda W. Van Laake; Aryan Vink; Remco M. Hoogenboezem; Eric M. J. Bindels; Leon Schurgers; Susanne Sattler; Denis Schapiro; Rebekka K. Schneider; Kory Lavine; Hendrik Milting; Ivan G. Costa; Julio Saez-Rodriguez; Rafael Kramann",
     "year": "2022",
     "journal": "Nature",
-    "citations": "748",
+    "citations": "753",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -63807,7 +62351,7 @@
     "authors": "Carina Shiau; Jingyi Cao; Dennis Gong; Mark T. Gregory; Nicholas J. Caldwell; Xunqin Yin; Jae-Won Cho; Peter L. Wang; Jennifer Su; Steven Wang; Jason W. Reeves; Tae Kyung Kim; Youngmi Kim; Jimmy A. Guo; Nicole A. Lester; Jung Woo Bae; Ryan Zhao; Nathan Schurman; Jamie L. Barth; Maria L. Ganci; Ralph Weissleder; Tyler Jacks; Motaz Qadan; Theodore S. Hong; Jennifer Y. Wo; Hannah Roberts; Joseph M. Beechem; Carlos Fernandez-del Castillo; Mari Mino-Kenudson; David T. Ting; Martin Hemberg; William L. Hwang",
     "year": "2024",
     "journal": "Nature Genetics",
-    "citations": "89",
+    "citations": "92",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],
@@ -63919,7 +62463,7 @@
     "authors": "John T. Walker; Diane C. Saunders; Vivek Rai; Hung-Hsin Chen; Peter Orchard; Chunhua Dai; Yasminye D. Pettway; Alexander L. Hopkirk; Conrad V. Reihsmann; Yicheng Tao; Simin Fan; Shristi Shrestha; Arushi Varshney; Lauren E. Petty; Jordan J. Wright; Christa Ventresca; Samir Agarwala; Radhika Aramandla; Greg Poffenberger; Regina Jenkins; Shaojun Mei; Nathaniel J. Hart; Sharon Phillips; Hakmook Kang; Dale L. Greiner; Leonard D. Shultz; Rita Bottino; Jie Liu; Jennifer E. Below; ; Stephen C. J. Parker; Alvin C. Powers; Marcela Brissova",
     "year": "2023",
     "journal": "Nature",
-    "citations": "83",
+    "citations": "84",
     "abstract": "",
     "publication_type": "peer-reviewed",
     "keywords": [],

@@ -361,14 +361,14 @@ def run_application_queue(db, budget: int) -> tuple:
         used += 1
 
         if result.get("metadata_exhausted") and not metadata_exhausted:
-            _log(f"  metadata sub-task's provider chain (gemini_lite_first) is now EXHAUSTED - "
+            _log(f"  metadata sub-task's provider chain is now EXHAUSTED - "
                  f"disabling metadata extraction for the rest of this run (dataset detection "
-                 f"continues independently).")
+                 f"continues independently, if its own chain isn't also exhausted).")
             metadata_exhausted = True
         if result.get("dataset_exhausted") and not dataset_exhausted:
-            _log(f"  dataset sub-task's provider chain (gemini_flash_only) is now EXHAUSTED - "
+            _log(f"  dataset sub-task's provider chain is now EXHAUSTED - "
                  f"disabling dataset detection for the rest of this run (metadata extraction "
-                 f"continues independently).")
+                 f"continues independently, if its own chain isn't also exhausted).")
             dataset_exhausted = True
 
     if metadata_exhausted or dataset_exhausted:

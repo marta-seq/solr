@@ -192,7 +192,19 @@ def _find_by_accession(datasets_df, accession: str):
     return None
 
 
-_URL_VERSION_SUFFIX_RE = re.compile(r"/v?\d+/?$")
+# Bare numeric suffix is capped at 3 digits - a real version number (the one
+# documented case this was built for, Mendeley's "/3") is always short.
+# Fixed 2026-10-10 after a real false-positive match found live: the
+# original unbounded "/v?\d+/?$" also stripped Zenodo's OWN record ID
+# (e.g. "/record/17077712"), since for Zenodo the trailing number IS the
+# unique identifier, not a version appended to one - this collapsed EVERY
+# Zenodo link without an extra explicit version segment down to the same
+# "https://.../record" string, falsely matching an AP_323 (IMC) extraction
+# against an unrelated existing entry, D_ST_VISIUM_3 (Visium), that merely
+# happened to also be hosted on Zenodo. An explicit "v" prefix (e.g. "/v12345")
+# is kept unbounded - that's an unambiguous version marker regardless of
+# length, unlike a bare number.
+_URL_VERSION_SUFFIX_RE = re.compile(r"/v\d+/?$|/\d{1,3}/?$")
 
 
 def _normalize_access_link(url: str) -> str:
@@ -203,7 +215,11 @@ def _normalize_access_link(url: str) -> str:
     mention linked to 'https://data.mendeley.com/datasets/d87vg86zd8'
     (no version) didn't match an existing entry already recorded as
     '.../d87vg86zd8/3' - an exact-match comparison alone missed it even
-    though both obviously point at the same dataset."""
+    though both obviously point at the same dataset. See
+    _URL_VERSION_SUFFIX_RE's own comment for the 2026-10-10 fix constraining
+    this to short/explicit-"v" suffixes only, after it was found stripping
+    Zenodo's own record ID and causing false matches between unrelated
+    Zenodo-hosted datasets."""
     return _URL_VERSION_SUFFIX_RE.sub("", str(url or "").strip().rstrip("/"))
 
 

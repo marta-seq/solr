@@ -252,7 +252,7 @@ def _run_metadata_task(db, entry_id: str, row0, abstract: str) -> tuple:
     try:
         parsed, model_used = call_llm_json(
             SYSTEM_PROMPT_METADATA_ONLY, _build_user_prompt(entry_id, abstract),
-            only_provider="gemini_lite_first"
+            only_provider="gemini_lite_only"
         )
     except LLMError as e:
         staging.append_candidate(
@@ -326,7 +326,7 @@ def _run_dataset_task(db, entry_id: str, doi: str, row0, is_review: bool, fetche
     try:
         parsed, model_used = call_llm_json(
             SYSTEM_PROMPT_DATASET_ONLY, _build_user_prompt(entry_id, data_text),
-            only_provider="gemini_flash_only"
+            only_provider="gemini_lite_only"
         )
     except LLMError as e:
         staging.append_candidate(

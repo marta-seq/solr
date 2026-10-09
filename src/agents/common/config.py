@@ -213,6 +213,26 @@ FALLBACK_PROVIDERS = [
         "models": ["gemini-3.5-flash-lite", "gemini-3.5-flash"],
     },
     {
+        # Added 2026-10-09, per Marta's explicit ask: for this pass the goal
+        # is maximum throughput against the free daily quota, not per-call
+        # quality - flash-lite's quota is cheaper/higher than plain flash's
+        # (see pricing comments above), so pinning the whole AP_pub desk
+        # (both metadata AND dataset-detection sub-tasks, not just metadata)
+        # to lite-only lets more application papers get annotated within a
+        # given day's free tier. No flash fallback at all, by design - same
+        # "stop cleanly rather than silently degrade" reasoning as
+        # gemini_flash_only, just the opposite model choice. Known tradeoff,
+        # accepted explicitly: flash-lite showed a real false-positive
+        # problem on the dataset-detection question specifically (42/52
+        # implausible "self-generated" claims in a 75-paper test, see
+        # applications.md) - using this for that sub-task risks creating
+        # WRONG staged dataset links, not just leaving fields blank.
+        "name": "gemini_lite_only",
+        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "api_key_env": "GEMINI_API_KEY",
+        "models": ["gemini-3.5-flash-lite"],
+    },
+    {
         "name": "zhipu",
         # Z.ai (formerly Zhipu AI) - verified 2026-07-13: GLM-4.7-Flash and
         # GLM-4.5-Flash are genuinely free (not trial-limited) to all
@@ -233,7 +253,24 @@ FALLBACK_PROVIDERS = [
 ]
 
 LLM_TIMEOUT_S = 120
-LLM_MAX_RETRIES_PER_MODEL = 2
+
+# ── Retry classification (added 2026-10-09) ──────────────────────────────────
+# Same transient-vs-non-transient split Anthropic's own API error-handling
+# guidance uses (see shared/error-codes.md in the claude-api skill): 429/5xx/
+# network failures are retryable (the request was fine, the server/capacity
+# wasn't), 400/401/402/403/404/413 are not (the exact same request will fail
+# the exact same way every time - a real wait-and-retry just burns the
+# per-model budget for nothing). Found live: a `gemini_flash_only` call hit
+# two consecutive HTTP 503s ("high demand", genuinely transient, cleared
+# within a minute) and because that chain has ZERO fallback by design (see
+# "gemini_flash_only" below), the old flat 2-attempt/~1.5s-backoff retry
+# wasn't enough margin - the whole run_pipeline.py process gave up and
+# stopped early, misreporting it as "LLM fallback chain fully exhausted"
+# (quota-exhaustion language) when it was actually a blip that cleared on its
+# own moments later.
+LLM_TRANSIENT_MAX_RETRIES = 5
+LLM_TRANSIENT_BACKOFF_BASE_S = 5   # first retry waits ~5s
+LLM_TRANSIENT_BACKOFF_CAP_S = 60   # doubles each attempt (5, 10, 20, 40, 60...), capped here
 
 # ── Paper fetching ────────────────────────────────────────────────────────────
 # Reads the env var you already have set up in .venv for Unpaywall/PubMed.

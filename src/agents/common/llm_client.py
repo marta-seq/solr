@@ -28,7 +28,12 @@ from . import config
 
 
 class LLMError(Exception):
-    pass
+    def __init__(self, message, status_code=None):
+        super().__init__(message)
+        # None for errors with no HTTP status at all (connection failure, our
+        # own hard-deadline timeout in _call_model_with_deadline, a malformed
+        # 200 response) - see _is_transient() below for how that's classified.
+        self.status_code = status_code
 
 
 class LLMExhaustedError(LLMError):
@@ -43,6 +48,28 @@ class LLMExhaustedError(LLMError):
     exact same ~multi-minute wait, rather than something worth retrying
     paper-by-paper."""
     pass
+
+
+# Same split Anthropic's own API error-handling guidance uses (see this
+# project's bundled claude-api skill, shared/error-codes.md): 429 (rate
+# limit), 500/502/504 (server-side), 503/529 (overloaded - Gemini and
+# Anthropic spell "temporarily over capacity" differently, same meaning) are
+# retryable; 400/401/402/403/404/413 are not - the exact same request fails
+# the exact same way every time, so retrying just burns time for a
+# predictable no.
+_TRANSIENT_STATUS_CODES = {429, 500, 502, 503, 504, 529}
+
+
+def _is_transient(exc: Exception) -> bool:
+    """A status_code of None means the failure never got an HTTP response at
+    all (connection error, our own hard-deadline timeout, a malformed-200
+    response with no usable content) - treated as transient, same as
+    Anthropic's own default retry behavior lumps network failures in with
+    429/5xx (see shared/error-codes.md's Client config note)."""
+    status = getattr(exc, "status_code", None)
+    if status is None:
+        return True
+    return status in _TRANSIENT_STATUS_CODES
 
 
 # requests' own `timeout=` does NOT enforce a real overall deadline - it
@@ -111,7 +138,8 @@ def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_pro
         timeout=config.LLM_TIMEOUT_S,
     )
     if resp.status_code != 200:
-        raise LLMError(f"{model} returned HTTP {resp.status_code}: {resp.text[:300]}")
+        raise LLMError(f"{model} returned HTTP {resp.status_code}: {resp.text[:300]}",
+                        status_code=resp.status_code)
 
     data = resp.json()
     choices = data.get("choices", [])
@@ -209,15 +237,17 @@ def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = 
             continue
 
         for model in provider["models"]:
-            for attempt in range(config.LLM_MAX_RETRIES_PER_MODEL):
+            attempt = 0
+            while True:
+                attempt += 1
                 call_start = time.time()
                 # Printed the moment the wait STARTS, not just when it resolves -
                 # without this, a genuine (bounded) wait and a real hang look
                 # identical from the console: both are just silence. Now there's
                 # always a most-recent line telling you what's in flight and when
                 # it will give up on its own if nothing comes back.
-                print(f"[llm_client] {provider['name']}/{model} attempt "
-                      f"{attempt + 1}/{config.LLM_MAX_RETRIES_PER_MODEL}: waiting "
+                print(f"[llm_client] {provider['name']}/{model} attempt {attempt} "
+                      f"(up to {config.LLM_TRANSIENT_MAX_RETRIES} if transient): waiting "
                       f"up to {config.LLM_TIMEOUT_S}s...", flush=True)
                 try:
                     raw, actual_model = _call_model_with_deadline(
@@ -233,12 +263,27 @@ def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = 
                 except (LLMError, json.JSONDecodeError, requests.RequestException) as e:
                     elapsed = time.time() - call_start
                     last_error = e
+                    transient = _is_transient(e)
                     print(f"[llm_client] {provider['name']}/{model} failed after "
-                          f"{elapsed:.2f}s (attempt {attempt + 1}/"
-                          f"{config.LLM_MAX_RETRIES_PER_MODEL}): {e}", flush=True)
-                    time.sleep(1.5 * (attempt + 1))
+                          f"{elapsed:.2f}s (attempt {attempt}, "
+                          f"{'transient' if transient else 'NON-transient'}): {e}", flush=True)
+                    if not transient:
+                        # Same request would fail the exact same way again -
+                        # retrying buys nothing, move on immediately instead of
+                        # burning the transient-retry budget on a predictable no.
+                        print(f"[llm_client] {provider['name']}/{model}: non-transient "
+                              f"error, won't retry - trying next model/provider...", flush=True)
+                        break
+                    if attempt >= config.LLM_TRANSIENT_MAX_RETRIES:
+                        print(f"[llm_client] {provider['name']}/{model} exhausted "
+                              f"{config.LLM_TRANSIENT_MAX_RETRIES} transient retries, "
+                              f"trying next model/provider...", flush=True)
+                        break
+                    backoff = min(config.LLM_TRANSIENT_BACKOFF_CAP_S,
+                                  config.LLM_TRANSIENT_BACKOFF_BASE_S * (2 ** (attempt - 1)))
+                    print(f"[llm_client] {provider['name']}/{model}: transient error, "
+                          f"retrying in {backoff:.0f}s...", flush=True)
+                    time.sleep(backoff)
                     continue
-            print(f"[llm_client] {provider['name']}/{model} exhausted all retries, "
-                  f"trying next model/provider...", flush=True)
 
     raise LLMExhaustedError(f"All providers/models failed. Last error: {last_error}")

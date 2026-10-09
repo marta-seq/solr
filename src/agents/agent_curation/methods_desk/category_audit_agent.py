@@ -43,6 +43,11 @@ from ...common.reference_resolver import CONFIDENCE_FLOOR
 # wrong on exactly this judgment. Worth spending OpenRouter's shared quota on
 # this specific task rather than routing it through the same zero-cost chain
 # used for high-volume extraction.
+#
+# process_entry()/audit_entry() also accept an only_provider override (not
+# currently used by any caller) - raised 2026-10-09 as a possible future
+# change to pin this gate to Gemini-only too, same as the desk agents, but
+# NOT decided - left as-is (OpenRouter-first) pending that discussion.
 _SYSTEM_PROMPT = """You are auditing an existing curated database entry that has already been \
 tagged as a "computational analysis - method" paper - i.e. a paper introducing or benchmarking \
 a COMPUTATIONAL/SOFTWARE tool (an algorithm, statistical model, or software pipeline that \
@@ -94,7 +99,7 @@ def _empty_result(skip_reason: str, llm_exhausted: bool = False) -> dict:
             "model_used": "none", "skip_reason": skip_reason, "llm_exhausted": llm_exhausted}
 
 
-def audit_entry(entry_id: str, title: str, abstract: str) -> dict:
+def audit_entry(entry_id: str, title: str, abstract: str, only_provider=None) -> dict:
     """
     Returns {"audited": bool, "flagged": bool, "confidence": float,
     "reason": str, "model_used": str, "skip_reason": str or None,
@@ -113,7 +118,8 @@ def audit_entry(entry_id: str, title: str, abstract: str) -> dict:
         return _empty_result("no title or abstract available to audit")
 
     try:
-        parsed, model_used = call_llm_json(_SYSTEM_PROMPT, _build_user_prompt(entry_id, title, abstract))
+        parsed, model_used = call_llm_json(_SYSTEM_PROMPT, _build_user_prompt(entry_id, title, abstract),
+                                            only_provider=only_provider)
     except LLMError as e:
         return _empty_result(f"LLM WAS called but every provider/model failed: {e}",
                               llm_exhausted=isinstance(e, LLMExhaustedError))
@@ -167,7 +173,7 @@ def is_known_st_only(row) -> bool:
     return known_spatial_modality(row) == ["spatial_transcriptomics"]
 
 
-def process_entry(db, entry_id: str, sheet: str) -> dict:
+def process_entry(db, entry_id: str, sheet: str, only_provider=None) -> dict:
     """Looks up title/abstract from db.methods, runs the audit, and stages a
     needs_review flag only if the category looks wrong - a clean
     "correctly categorized" verdict isn't new information worth writing to
@@ -187,7 +193,7 @@ def process_entry(db, entry_id: str, sheet: str) -> dict:
     title = str(row0.get("title", "") or "")
     abstract = str(row0.get("abstract", "") or "")
 
-    result = audit_entry(entry_id, title, abstract)
+    result = audit_entry(entry_id, title, abstract, only_provider=only_provider)
 
     fields = {}
     if result["flagged"]:
