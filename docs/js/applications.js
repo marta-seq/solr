@@ -50,9 +50,10 @@ function renderApplications() {
     });
   }
   const tb=document.getElementById("apps-tbody");
-  if(!items.length){tb.innerHTML=`<tr><td colspan="7" class="empty-state">No application papers found.</td></tr>`;return;}
+  if(!items.length){tb.innerHTML=`<tr><td colspan="10" class="empty-state">No application papers found.</td></tr>`;return;}
   tb.innerHTML=items.map(m=>{
     const dsIds=(m.associated_data_ids||[]);
+    const dsNames=dsIds.map(id=>{ const ds=DATASETS.find(x=>x.id===id); return ds?(ds.internal_name||id):id; });
     const mod=(m.spatial_modality_ap||[]).map(x=>x.replace(/^spatial_/,"")).join(", ")||"—";
     return `<tr onclick="openInAppGraph('${m.id}')">
       <td class="tid">${m.id}</td>
@@ -60,10 +61,28 @@ function renderApplications() {
       <td>${m.year||"—"}</td>
       <td>${m.journal?m.journal.slice(0,28)+(m.journal.length>28?"…":""):"—"}</td>
       <td>${mod}</td>
-      <td>${dsIds.length?`<span class="cbadge data">${dsIds.length}</span>`:"—"}</td>
-      <td><span class="sdot ${m.review_status==="manual"?"manual":""}" title="${m.review_status||"stub"}"></span></td>
+      <td>${m.animal||"—"}</td>
+      <td>${m.tissue||"—"}</td>
+      <td>${m.disease||"—"}</td>
+      <td>${dsNames.length?dsNames.join(", "):"—"}</td>
+      <td>${reviewStatusLabel(m.review_status)}</td>
     </tr>`;
   }).join("");
+}
+
+// Readable text for REVIEW_STATUS (see config.py's REVIEW_STATUS section):
+// "manual" = a human reviewed this row, "needs_review" = an agent filled it
+// with low confidence, "auto-N" = processed by N automated stages, blank =
+// untouched. Was a bare color dot with a hover tooltip - not visible at a
+// glance, per Marta's ask.
+function reviewStatusLabel(status) {
+  if (!status) return "—";
+  if (status === "manual") return "Manual";
+  if (status === "needs_review") return "Needs review";
+  const autoMatch = /^auto-(\d+)$/.exec(status);
+  if (autoMatch) return `Auto (stage ${autoMatch[1]})`;
+  if (status === "auto") return "Auto";
+  return status;
 }
 
 // ── Applications graph ──

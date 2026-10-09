@@ -197,6 +197,14 @@ SPATIAL_DATA_CATEGORY_MAP_DATA = {
     "check": "check",            # passthrough - unresolved, revisit later
     "spatial_proteomics & spatial transcriptomics": "multi_omics (proteomics+transcriptomics)",
     "protocol of MRNA + IMC": "protocol of MRNA + IMC",  # passthrough - unresolved, revisit later
+    # Added 2026-10-06 - the co-registered multi-modal dataset tag
+    # application_review_agent.py writes when the SAME physical samples/
+    # slides are profiled with multiple techniques (see PIPELINE_OVERVIEW.md/
+    # applications.md) - a real, deliberate value, not a raw user typo, so it
+    # gets a real canonical mapping rather than passthrough. Doesn't assume
+    # which specific modalities are combined (unlike the proteomics+
+    # transcriptomics entry above) since that varies per dataset.
+    "spatial_multi": "multi_omics",
 }
 
 # AP_pub's own "type of spatial data" column - never shares raw values with
@@ -221,6 +229,119 @@ SPATIAL_DATA_CATEGORY_MAP_AP_PUB = {
     "D_SP_IMC12":       None,
     "D_ST_23":          None,
     "dataset LIVECell": None,
+
+    # Added 2026-10-09: application_review_agent.py's "type of spatial data"
+    # extraction returns whatever specific platform/technique phrase the
+    # paper itself uses (free text), not one of the two canonical SP/ST
+    # buckets above - every distinct platform name was previously falling
+    # through _normalize_list_or_warn() unmapped and becoming its own
+    # Applications-tab/-graph filter pill (CODEX, IMC, MERFISH, Visium HD,
+    # Xenium, ... all separately, plus case-variant duplicates of the same
+    # term). Bucketed here by what the platform actually measures - RNA/ISH-
+    # based methods -> spatial_transcriptomics, antibody/protein-imaging
+    # methods -> spatial_proteomics, mass-spec imaging -> spatial_metabolomics
+    # - so the pills collapse back down to the same few categories the rest
+    # of the site already uses. Lookup is now case-insensitive (see
+    # _normalize_list_or_warn() in 03_export_json.py) so case-variant
+    # spellings of an already-mapped term (e.g. "Imaging Mass Cytometry" vs
+    # "imaging mass cytometry") don't need their own separate entry - only
+    # genuinely distinct wording does.
+    "ST":                                  "spatial_transcriptomics",
+    "spatially resolved transcriptomics":  "spatial_transcriptomics",
+    "spatial transcriptomic":              "spatial_transcriptomics",
+    "spatial RNA sequencing":              "spatial_transcriptomics",
+    "sci-Space":                           "spatial_transcriptomics",
+    "Visium":                              "spatial_transcriptomics",
+    "Visium HD":                           "spatial_transcriptomics",
+    "Visium, CosMx single molecule imaging": "spatial_transcriptomics",
+    "MERFISH":                             "spatial_transcriptomics",
+    "Xenium":                              "spatial_transcriptomics",
+    "ISS":                                 "spatial_transcriptomics",
+    "Stereo-seq":                          "spatial_transcriptomics",
+    "Slide-tags":                          "spatial_transcriptomics",
+    "Slide-seqV2":                         "spatial_transcriptomics",
+    "Slide-seq":                           "spatial_transcriptomics",
+    # Confirmed via AP_118's title ("spatial epitranscriptomics") - an RNA
+    # modification-mapping method, still transcriptomics.
+    "Select-seq":                          "spatial_transcriptomics",
+    "STARmap PLUS":                        "spatial_transcriptomics",
+    "ST - MERFISH":                        "spatial_transcriptomics",
+    "ST - GeoMx":                          "spatial_transcriptomics",
+    "ST - Amplified seqFISH":              "spatial_transcriptomics",
+    "in situ sequencing, Xenium":          "spatial_transcriptomics",
+    "in situ hybridization chain reaction": "spatial_transcriptomics",
+    "MERFISH, smFISH, BaristaSeq, ExSeq":  "spatial_transcriptomics",
+    "CosMx Spatial Molecular Imaging":     "spatial_transcriptomics",
+    "CosMx SMI, snPATHO-seq":              "spatial_transcriptomics",
+    # Confirmed via AP_70's title ("Full-length single-cell spatial
+    # transcriptomics...").
+    "Fullscope-seq":                       "spatial_transcriptomics",
+    # Generic phrasing, not necessarily spatial on its own - mapped based on
+    # AP_87's actual content (a spatial transcriptomic mouse-brain atlas),
+    # worth Marta double-checking if this recurs on a genuinely non-spatial
+    # bulk/single-cell RNA-seq paper.
+    "RNA sequencing":                      "spatial_transcriptomics",
+
+    "SP":                                  "spatial_proteomics",
+    "IMC":                                 "spatial_proteomics",
+    "CODEX":                               "spatial_proteomics",
+    "imaging mass cytometry":              "spatial_proteomics",
+    "MIBI-TOF":                            "spatial_proteomics",
+    "t-CyCIF":                             "spatial_proteomics",
+    "multiplexed ion beam imaging":        "spatial_proteomics",
+    "multiplexed ion beam imaging by time-of-flight": "spatial_proteomics",
+    # Generic phrasing - mapped based on the specific paper's actual content
+    # (AP_80: macrophage/T-cell spatial polarity; AP_144: multiplex T-cell
+    # subsets), both protein-panel imaging - confirm if this recurs elsewhere.
+    "multiplexed imaging":                 "spatial_proteomics",
+    "multiplex imaging":                   "spatial_proteomics",
+    "multiplexed IHC":                     "spatial_proteomics",
+    "mass cytometry imaging":              "spatial_proteomics",
+    "mIF":                                 "spatial_proteomics",
+    "cyclic immunofluorescence":           "spatial_proteomics",
+    "cyclic immunofluorescence imaging":   "spatial_proteomics",
+    "Multiplexed fluorescence imaging (MFI)": "spatial_proteomics",
+    "SP - mIF":                            "spatial_proteomics",
+    "SP - MIBI":                           "spatial_proteomics",
+    "SP - IMC":                            "spatial_proteomics",
+    "SP - CODEX":                          "spatial_proteomics",
+    "SP -  multiplex IHC? IF?":            "spatial_proteomics",
+    # Confirmed via AP_148's title ("mapping the whole-tissue spatial
+    # proteome...").
+    "hex-MASP":                            "spatial_proteomics",
+    # Confirmed via AP_147's title ("Spatial Proteomics of the Human
+    # Atherosclerotic Microenvironment...") - LCM-MS here profiles protein,
+    # not metabolites; could be metabolomics in a different paper, confirm
+    # if this recurs.
+    "laser capture microdissection with mass spectrometry": "spatial_proteomics",
+    # GeoMx Digital Spatial Profiler supports both protein and RNA (WTA)
+    # panels - mapped to proteomics as the more common use in this project's
+    # curated set so far, but genuinely ambiguous without reading the paper;
+    # confirm on AP_150/AP_16 if this looks wrong.
+    "Digital spatial profiling":           "spatial_proteomics",
+    "GeoMx, imaging mass cytometry":       "spatial_proteomics",
+    # MACSima is a cyclic-immunofluorescence (protein) imaging platform;
+    # confirmed via AP_141's title ("2D multiplex imaging...").
+    "3D light-sheet imaging, MACSima Imaging Cyclic Staining": "spatial_proteomics",
+
+    "spatial transcriptomics and spatial proteomics": "spatial_transcriptomics;spatial_proteomics",
+    "spatial proteomics, spatial transcriptomics":    "spatial_proteomics;spatial_transcriptomics",
+    "spatial transcriptomics, proteomics, CosMx SMI, 10x Xenium, RNAscope, GeoMx DSP":
+                                                       "spatial_transcriptomics;spatial_proteomics",
+    # PhenoCycler = Akoya's rebrand of CODEX (protein imaging).
+    "spatial transcriptome sequencing, in situ RNA profiling, Visium, PhenoCycler":
+                                                       "spatial_transcriptomics;spatial_proteomics",
+    "multiplex immunofluorescence and spatial transcriptomics": "spatial_proteomics;spatial_transcriptomics",
+    "spatial transcriptomics and multiplexed ion beam imaging": "spatial_transcriptomics;spatial_proteomics",
+    "Visium, CODEX, Xenium":                          "spatial_transcriptomics;spatial_proteomics",
+    "spatial genomic, transcriptomic and proteomic technologies":
+                                                       "spatial_transcriptomics;spatial_proteomics",
+    "spatial multi-omic":                              "spatial_transcriptomics;spatial_proteomics",
+    # Confirmed via AP_29's title ("transcriptomes and metabolomes in
+    # tissues") - mass spectrometry imaging here is metabolomics, not
+    # proteomics (unlike the LCM-MS case above).
+    "Visium, mass spectrometry imaging, spatial transcriptomics":
+                                                       "spatial_transcriptomics;spatial_metabolomics",
 }
 
 # ── REVIEW_STATUS ─────────────────────────────────────────────────────────────

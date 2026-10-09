@@ -167,6 +167,17 @@ def _normalize_list_or_warn(raw: str, mapping: dict, field_name: str, entry_id: 
     if raw in mapping:
         mapped = mapping[raw]
         return [] if mapped is None else [x.strip() for x in re.split(r"[;,]", mapped) if x.strip()]
+    # Case-insensitive fallback - curator/agent input doesn't always match a
+    # map key's exact capitalization (e.g. "Imaging Mass Cytometry" vs
+    # "imaging mass cytometry"), and enumerating every case variant of every
+    # term by hand doesn't scale (added 2026-10-09 alongside the AP_pub
+    # spatial-modality map expansion). Only kicks in once the exact match
+    # above has already failed - never changes behavior for a value that was
+    # already matching.
+    raw_lower = raw.lower()
+    for key, mapped in mapping.items():
+        if key.lower() == raw_lower:
+            return [] if mapped is None else [x.strip() for x in re.split(r"[;,]", mapped) if x.strip()]
     print(f"  WARNING [datasets]: unmapped {field_name} value {raw!r} "
           f"(entry_id: {entry_id}) - not in the {field_name} map, passing "
           f"through unchanged. Add it to the mapping once reviewed.")
@@ -268,8 +279,12 @@ def export_methods(df: pd.DataFrame) -> list:
             # above already picks up AP_pub's own manually-curated title
             # column via the same row.get("title") - no separate handling
             # needed there.
-            "associated_data":       clean(row.get("Associated data")),
-            "associated_data_ids":   parse_id_list(row.get("Associated data")),
+            # Was reading the wrong column name ("Associated data", which
+            # doesn't exist) - silently empty for every AP_pub row since this
+            # field was added. Fixed 2026-10-09 to match the real column name
+            # application_review_agent.py actually writes to.
+            "associated_data":       clean(row.get("Associated data - produced by the paper")),
+            "associated_data_ids":   parse_id_list(row.get("Associated data - produced by the paper")),
             "spatial_data_type_ap":  clean(row.get("type of spatial data")),
             # Canonicalized list version (see category_maps.py's
             # SPATIAL_DATA_CATEGORY_MAP_AP_PUB) - AP_pub never populates the
@@ -278,6 +293,11 @@ def export_methods(df: pd.DataFrame) -> list:
             "spatial_modality_ap":   parse_ap_spatial_list(row.get("type of spatial data"), row.get("entry_id")),
             "animal":                clean(row.get("animal")),
             "tissue_disease":        clean(row.get("tissue/disease")),
+            # New split columns (2026-10-04, see applications.md) - the old
+            # combined tissue_disease field above still exists for whatever
+            # was manually entered before the split, not auto-migrated.
+            "tissue":                clean(row.get("tissue")),
+            "disease":               clean(row.get("disease")),
         })
     return records
 
