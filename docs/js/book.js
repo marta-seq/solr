@@ -43,6 +43,10 @@ async function loadChapterSection(name, section) {
 }
 
 function mdToHtml(md) {
+  // Chapter files may have Windows (CRLF) line endings, which break the
+  // line-anchored rules below (tables, hr, lists)
+  md = md.replace(/\r\n?/g, "\n");
+
   // Remove YAML front matter
   md = md.replace(/^---[\s\S]*?---\n/, "");
 
@@ -70,6 +74,21 @@ function mdToHtml(md) {
 
   // HR
   md = md.replace(/^---$/gm, "<hr>");
+
+  // Pipe tables: header row, |:--|:-:| separator row, body rows. Cell text may
+  // contain inline HTML (<br>) and the inline formatting already applied above.
+  md = md.replace(/((?:^\|.*\|[ \t]*\n?)+)/gm, block => {
+    const rows = block.trim().split("\n").map(r =>
+      r.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
+    if (rows.length < 2 || !rows[1].every(c => /^:?-{2,}:?$/.test(c))) return block;
+    const align = rows[1].map(c =>
+      c.startsWith(":") && c.endsWith(":") ? "center" : c.endsWith(":") ? "right" : "left");
+    const cell = (tag, c, i) => `<${tag} style="text-align:${align[i] || "left"}">${c}</${tag}>`;
+    const head = `<tr>${rows[0].map((c, i) => cell("th", c, i)).join("")}</tr>`;
+    const body = rows.slice(2)
+      .map(r => `<tr>${r.map((c, i) => cell("td", c, i)).join("")}</tr>`).join("");
+    return `<div class="book-table"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>\n`;
+  });
 
   // Unordered lists — collect consecutive list items
   md = md.replace(/((?:^[*-] .+\n?)+)/gm, block => {
