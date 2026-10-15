@@ -116,6 +116,8 @@ tbody td.tname { color: var(--text); font-weight: 500; }
 .cbadge { display: inline-block; padding: 0.1rem 0.38rem; border-radius: 3px; font-size: 0.67rem; font-family: var(--font-m); }
 .cbadge.comp { background: rgba(56,139,253,0.15); color: var(--c-prep); }
 .cbadge.data { background: rgba(63,185,80,0.15); color: var(--c-seg); }
+.nlink { color: var(--c-prep); text-decoration: none; }
+.nlink:hover { text-decoration: underline; }
 .sdot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: var(--border); }
 .sdot.manual { background: var(--c-seg); }
 
@@ -281,6 +283,7 @@ footer a { color: var(--muted); }
         <th onclick="sortT('m','id')">ID</th>
         <th onclick="sortT('m','name')">Name</th>
         <th onclick="sortT('m','pipeline_category')">Pipeline Stage</th>
+        <th onclick="sortT('m','spatial_data_category')">Spatial Data</th>
         <th onclick="sortT('m','year')">Year</th>
         <th onclick="sortT('m','journal')">Journal</th>
         <th onclick="sortT('m','citations')">Citations</th>

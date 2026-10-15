@@ -182,6 +182,28 @@ function sortT(which,col) {
 // longer reliably contain "computational" after the 2026-09-01 cleanup.
 function isComp(m) { return m.paper_type === "method"; }
 
+// "spatial_proteomics;spatial_transcriptomics" -> "Proteomics, Transcriptomics"
+function spatialLabel(v) {
+  const parts=(v||"").split(";").map(x=>x.trim().replace(/^spatial[_ ]/i,"").replace(/_/g," ")).filter(Boolean);
+  return parts.length ? parts.map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join(", ") : "—";
+}
+// Names (not counts) for the Comparisons / Datasets cells. Methods link to the
+// graph; datasets link to their access page when they have one.
+function methodLinks(ids) {
+  return (ids||[]).map(id=>{
+    const x=METHODS.find(m=>m.id===id), n=(x&&(x.name||x.id))||id;
+    return `<a class="nlink" href="#" onclick="event.stopPropagation();event.preventDefault();openInGraph('${id}')">${n}</a>`;
+  }).join(", ");
+}
+function datasetLinks(ids) {
+  return (ids||[]).map(id=>{
+    const d=DATASETS.find(x=>x.id===id), n=(d&&(d.internal_name||d.id))||id;
+    return d&&d.access_link
+      ? `<a class="nlink" href="${d.access_link}" target="_blank" onclick="event.stopPropagation()">${n}</a>`
+      : `<span>${n}</span>`;
+  }).join(", ");
+}
+
 function renderMethods() {
   const q=(document.getElementById("methods-search").value||"").toLowerCase();
   let items=METHODS.filter(m=>!m.is_placeholder&&isComp(m));
@@ -203,19 +225,20 @@ function renderMethods() {
     });
   }
   const tb=document.getElementById("methods-tbody");
-  if(!items.length){tb.innerHTML=`<tr><td colspan="9" class="empty-state">No methods found.</td></tr>`;return;}
+  if(!items.length){tb.innerHTML=`<tr><td colspan="10" class="empty-state">No methods found.</td></tr>`;return;}
   tb.innerHTML=items.map(m=>{
     const info=catInfo(m.pipeline_category), cat=(m.pipeline_category||"—").split(";")[0].trim();
-    const comps=(m.comparison_ids||[]).length, datas=(m.data_ids||[]).length;
+    const comps=methodLinks(m.comparison_ids), datas=datasetLinks(m.data_ids);
     return `<tr onclick="openInGraph('${m.id}')">
       <td class="tid">${m.id}</td>
       <td class="tname">${m.name||m.id}</td>
       <td><span class="cpill" style="border-left:3px solid ${info.color};padding-left:0.4rem;">${cat}</span></td>
+      <td>${spatialLabel(m.spatial_data_category)}</td>
       <td>${m.year||"—"}</td>
       <td>${m.journal?m.journal.slice(0,28)+(m.journal.length>28?"…":""):"—"}</td>
       <td>${m.citations||"—"}</td>
-      <td>${comps?`<span class="cbadge comp">${comps}</span>`:"—"}</td>
-      <td>${datas?`<span class="cbadge data">${datas}</span>`:"—"}</td>
+      <td style="font-size:0.77rem;">${comps||"—"}</td>
+      <td style="font-size:0.77rem;">${datas||"—"}</td>
       <td><span class="sdot ${m.review_status==="manual"?"manual":""}" title="${m.review_status||"stub"}"></span></td>
     </tr>`;
   }).join("");
