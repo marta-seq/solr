@@ -262,6 +262,7 @@ def export_methods(df: pd.DataFrame) -> list:
             "title":             clean(row.get("title")),
             "authors":           clean(row.get("authors")),
             "year":              clean(row.get("year")),
+            "pub_date":          clean(row.get("pub_date")),   # YYYY / YYYY-MM / YYYY-MM-DD, added 2026-10-18
             "journal":           clean(row.get("journal")),
             "citations":         clean(row.get("citations")),
             "abstract":          clean(row.get("abstract")),
@@ -290,7 +291,11 @@ def export_methods(df: pd.DataFrame) -> list:
             # SPATIAL_DATA_CATEGORY_MAP_AP_PUB) - AP_pub never populates the
             # shared spatial_data_category field (0/154 rows), so this is
             # the only source of SP/ST/other modality info for AP_pub.
-            "spatial_modality_ap":   parse_ap_spatial_list(row.get("type of spatial data"), row.get("entry_id")),
+            # 2026-10-13: the sheet now has real spatial_data_category (';'-joined canonical) + spatial_data_method columns - prefer them,
+            # fall back to the old free-text map for rows where they're blank.
+            "spatial_modality_ap":   (parse_id_list(row.get("spatial_data_category"))
+                                      or parse_ap_spatial_list(row.get("type of spatial data"), row.get("entry_id"))),
+            "spatial_method_ap":     [x.strip() for x in clean(row.get("spatial_data_method")).split(";") if x.strip()],
             "animal":                clean(row.get("animal")),
             "tissue_disease":        clean(row.get("tissue/disease")),
             # New split columns (2026-10-04, see applications.md) - the old

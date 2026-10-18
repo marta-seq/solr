@@ -179,6 +179,31 @@ tbody td.tname { color: var(--text); font-weight: 500; }
 footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.73rem; color: var(--muted); }
 footer a { color: var(--muted); }
 .empty-state { text-align: center; padding: 2.5rem; color: var(--muted); font-size: 0.875rem; }
+
+/* Statistics tab */
+.st-kpis { max-width: none; margin: 0 0 1.5rem; }
+.st-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.st-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
+.st-grid .st-card { margin-bottom: 0; }
+.st-card h3 { font-family: var(--font-d); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.9rem; }
+.st-card h4 { font-family: var(--font-m); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 1.1rem 0 0.6rem; }
+.st-row { display: grid; grid-template-columns: minmax(120px, 230px) 1fr 90px; gap: 0.6rem; align-items: center; margin-bottom: 0.35rem; font-size: 0.78rem; }
+.st-lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.st-track { background: var(--bg); border-radius: 4px; height: 10px; overflow: hidden; }
+.st-fill { height: 100%; border-radius: 4px; }
+.st-val { font-family: var(--font-m); font-size: 0.74rem; text-align: right; }
+.st-sub { color: var(--muted); font-size: 0.72rem; }
+.st-up { color: var(--c-seg); } .st-down { color: var(--c-ccc); }
+.st-note { color: var(--muted); font-size: 0.72rem; margin-top: 0.8rem; line-height: 1.5; }
+.st-svg { width: 100%; height: auto; display: block; }
+.st-axis { fill: var(--muted); font-size: 9px; font-family: var(--font-m); }
+.st-legend { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.72rem; color: var(--muted); }
+.st-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 0.35rem; }
+.st-d { font-size: 0.7rem; margin-top: 0.25rem; }
+.st-list { list-style: none; font-size: 0.8rem; }
+.st-list li { padding: 0.45rem 0; border-bottom: 1px solid var(--border); }
+.st-list a { color: var(--c-prep); text-decoration: none; }
+.st-list a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -192,6 +217,7 @@ footer a { color: var(--muted); }
     <li><a href="#" onclick="showSection('apps');return false;"    id="nav-apps">Applications</a></li>
     <li><a href="#" onclick="showSection('graph');return false;"   id="nav-graph">Graph</a></li>
     <li><a href="#" onclick="showSection('appgraph');return false;" id="nav-appgraph">App Graph</a></li>
+    <li><a href="#" onclick="showSection('stats');return false;"   id="nav-stats">Statistics</a></li>
     <li><a href="#" onclick="showSection('book');return false;"    id="nav-book">Book</a></li>
   </ul>
 </nav>
@@ -412,6 +438,12 @@ footer a { color: var(--muted); }
 </div>
 
 <!-- Book -->
+<!-- Statistics -->
+<div id="section-stats" class="main-section">
+  <div class="slabel">Statistics &amp; Trends</div>
+  <div id="stats-body"></div>
+</div>
+
 <div id="section-book" class="main-section" style="max-width:100%;padding:0;">
   <div class="book-layout">
     <aside class="book-sidebar">
@@ -453,6 +485,7 @@ footer a { color: var(--muted); }
 <script src="js/methods.js"></script>
 <script src="js/graph.js"></script>
 <script src="js/applications.js"></script>
+<script src="js/stats.js"></script>
 <script src="js/book.js"></script>
 <script src="js/init.js"></script>
 </body>

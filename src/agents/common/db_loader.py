@@ -250,6 +250,54 @@ class Database:
         if ingested:
             print(f"[db_loader] Ingested {ingested} already-staged candidates "
                   f"from previous unmerged run(s) (avoids duplicate creation on re-run).")
+        self._add_staged_rows_to_tables(staged)
+
+    _STAGING_META_KEYS = {"action", "target_sheet", "curation_agent", "curation_model", "curation_date",
+                          "confidence", "source_paper_entry_id", "notes"}
+
+    def _add_staged_rows_to_tables(self, staged: list):
+        """Make rows that exist ONLY in staging (created by the literature scanner or the citation-chasing desk since the last merge) visible in
+        self.methods / self.datasets, so the queue builders (triage.build_*) see them and the desks annotate them in the SAME cycle. Before this,
+        staged new rows were registered only for duplicate prevention, so a freshly scraped paper kept just its intake fields (category, name,
+        pipeline category) until the next cycle (merge -> promote -> 01/02), and then looked 'not annotated' in the review file (found 2026-10-18).
+        Staged update_field rows for those same new entries are applied in order (later wins, like merge_candidates); updates to rows that already
+        exist in the master snapshot are deliberately NOT applied here (that would change existing queue behaviour)."""
+        created = {"method_pub": {}, "AP_pub": {}, "data": {}}
+        for rec in staged:
+            sheet, eid = rec.get("target_sheet"), rec.get("entry_id")
+            if sheet not in created or not eid:
+                continue
+            fields = {k: v for k, v in rec.items() if k not in self._STAGING_META_KEYS and k != "entry_id" and v not in (None, "")}
+            if rec.get("action") == "create_entry":
+                created[sheet][eid] = fields
+            elif rec.get("action") == "update_field" and eid in created[sheet]:
+                created[sheet][eid].update(fields)
+        n = 0
+        for sheet, rows in created.items():
+            if not rows:
+                continue
+            df = self.datasets if sheet == "data" else self.methods
+            known = set(df["entry_id"].dropna())
+            new_rows = []
+            for eid, fields in rows.items():
+                if eid in known:
+                    continue
+                row = {k: str(v) for k, v in fields.items()}
+                row["entry_id"] = eid
+                if sheet != "data":
+                    row["paper_type"] = "application" if sheet == "AP_pub" else "method"
+                    row["is_placeholder"] = "False"
+                new_rows.append(row)
+            if new_rows:
+                added = pd.DataFrame(new_rows).astype(str).replace({"nan": None})
+                merged = pd.concat([df, added], ignore_index=True, sort=False)
+                if sheet == "data":
+                    self.datasets = merged
+                else:
+                    self.methods = merged
+                n += len(new_rows)
+        if n:
+            print(f"[db_loader] Added {n} staged-only row(s) to the in-memory tables so the desks can annotate them this cycle.")
 
     def real_methods(self) -> pd.DataFrame:
         """Methods rows excluding placeholders (is_placeholder == True)."""

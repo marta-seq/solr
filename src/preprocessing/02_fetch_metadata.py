@@ -80,11 +80,17 @@ def fetch_crossref(doi: str) -> dict:
         authors_str  = "; ".join(authors)
 
         # Year
+        # pub_date keeps the month/day when Crossref has them (YYYY, YYYY-MM or
+        # YYYY-MM-DD) - needed for month-level trends; `year` stays for the
+        # existing consumers. Added 2026-10-18.
         year = ""
+        pub_date = ""
         for date_field in ["published", "published-print", "published-online", "created"]:
             date_parts = data.get(date_field, {}).get("date-parts", [[]])
-            if date_parts and date_parts[0]:
-                year = str(date_parts[0][0])
+            if date_parts and date_parts[0] and date_parts[0][0]:
+                parts = [int(x) for x in date_parts[0][:3] if x]
+                year = str(parts[0])
+                pub_date = "-".join([str(parts[0])] + [f"{x:02d}" for x in parts[1:]])
                 break
 
         # Journal
@@ -114,6 +120,7 @@ def fetch_crossref(doi: str) -> dict:
             "first_author":     first_author,
             "authors":          authors_str,
             "year":             year,
+            "pub_date":         pub_date,
             "journal":          journal,
             # str() explicitly: Crossref returns this as an int, and this
             # column is read/written as pandas' strict StringDtype (not
@@ -263,7 +270,7 @@ def main():
         df = pd.read_csv(METHODS_FILE, dtype=str)
 
     # Add metadata columns if not present
-    meta_cols = ["title", "first_author", "authors", "year",
+    meta_cols = ["title", "first_author", "authors", "year", "pub_date",
                  "journal", "citations", "abstract", "publication_type", "keywords"]
     for col in meta_cols:
         if col not in df.columns:
@@ -309,17 +316,21 @@ def main():
         #      it won't get needlessly overwritten by a re-fetch via the
         #      lower-hit-rate DOI-search method.
         needs_crossref = _is_blank(row.get("publication_type"))
+        # pub_date alone (added 2026-10-18) must NOT trigger the full bundle: that would
+        # overwrite curated title/authors/journal on rows already fetched or hand-fixed.
+        needs_pubdate = (not needs_crossref) and _is_blank(row.get("pub_date"))
         needs_abstract = _is_blank(row.get("abstract"))
         # keywords added 2026-09-18 - a genuinely new field nothing has ever
         # fetched before, so EVERY existing row needs at least one pass to
         # attempt it, same "fetch only what's missing" principle as abstract.
         needs_keywords = _is_blank(row.get("keywords"))
-        if not needs_crossref and not needs_abstract and not needs_keywords:
+        if not needs_crossref and not needs_pubdate and not needs_abstract and not needs_keywords:
             skipped += 1
             continue
 
         print(f"  [{i+1}/{total}] {doi}"
               f"{' (crossref)' if needs_crossref else ''}"
+              f"{' (pub_date)' if needs_pubdate else ''}"
               f"{' (abstract)' if needs_abstract else ''}"
               f"{' (keywords)' if needs_keywords else ''}")
 
@@ -333,6 +344,11 @@ def main():
             for col, val in meta.items():
                 df.at[i, col] = val
             publication_type = meta.get("publication_type", "")
+
+        if needs_pubdate:
+            meta = fetch_crossref(doi)
+            if meta.get("pub_date"):
+                df.at[i, "pub_date"] = meta["pub_date"]
 
         if needs_abstract or needs_keywords:
             # Known trade-off: unlike the Crossref bundle (gated on

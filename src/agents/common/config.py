@@ -40,8 +40,9 @@ for d in (CACHE_DIR, STAGING_DIR):
 # depth 0 = papers already tagged as computational method in the master DB
 # depth 1 = new method papers discovered because a depth-0 paper compared against them
 MAX_HOPS = 1                # how many hops beyond the seed set to recurse into
-MAX_PAPERS_PER_RUN = 40     # hard safety cap on total papers processed in one run,
-                            # independent of depth - protects the LLM/API budget
+MAX_PAPERS_PER_RUN = 5000   # hard safety cap on total papers processed in one run. Was 40 while the agents ran on rate-limited free APIs; with local
+                            # models (2026-10-18) there is no quota to protect, so this is effectively 'everything in the queues' - it only guards
+                            # against a runaway queue. A full run of ~700 papers took ~75 min.
 
 # If True (recommended given free-tier rate limits), agents skip the LLM
 # call ENTIRELY when the target section (methods / data_availability)
@@ -334,6 +335,7 @@ LLM_TRANSIENT_BACKOFF_CAP_S = 60   # doubles each attempt (5, 10, 20, 40, 60...)
 # If your var is named differently, just change the key below.
 CONTACT_EMAIL = os.environ.get("SOLR_EMAIL", "your@email.com")
 FETCH_TIMEOUT_S = 20
+NEGATIVE_CACHE_TTL_DAYS = 6   # a cached 'no text from any source' result is retried after this many days (weekly runs retry paywalled papers)
 
 # ── Section text sent to the LLM ─────────────────────────────────────────────
 # Raised 2026-09-20 (was 12000, ~3000 tokens) - every provider actually in

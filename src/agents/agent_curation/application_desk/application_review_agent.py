@@ -316,6 +316,60 @@ def _stamp_dataset_status(entry_id: str, model_used: str, notes: str) -> None:
     )
 
 
+_TRIAGE_COL = "data_produced_likely"
+_TRIAGE_REASON_COL = "data_produced_likely_reason"
+
+SYSTEM_PROMPT_DATA_TRIAGE = """You read ONLY the title and abstract of an application paper in spatial omics and make a rough guess whether \
+the authors GENERATED NEW spatial data themselves (profiled their own samples/patients/animals/tissue), as opposed to re-analysing \
+data that already exists (public datasets, a previously published cohort, another group's data), reviewing the literature, or presenting \
+a method/tool.
+
+Answer "likely_yes" ONLY if the abstract itself says the authors collected, profiled, imaged or sequenced samples (e.g. "we profiled N \
+patients", "we generated a spatial atlas of ...", "tissue sections from our cohort were imaged"). Answer "likely_no" if the abstract \
+describes a review/perspective, a re-analysis of public or previously published data, or a tool/benchmark without new samples. Answer \
+"unclear" whenever the abstract does not settle it - this is the right answer for most abstracts, do not guess.
+
+This is only a triage hint for a human reviewer; it never creates or links a dataset.
+
+Return ONLY JSON: {"produces_new_data": "likely_yes" | "likely_no" | "unclear", "evidence": "<= 25 words, quote the deciding phrase or say what is missing"}"""
+
+
+def _data_text_usable(fetched: dict) -> bool:
+    data_text, data_source = get_agent_text(fetched, "data_availability")
+    return bool(data_text) and is_probably_real_content(data_text) and (
+        not config.REQUIRE_ISOLATED_SECTION or data_source in ("section:data_availability", "full_text_tail")
+    )
+
+
+def _run_abstract_triage(entry_id: str, row0) -> tuple:
+    """Fallback for papers whose data-availability text cannot be fetched (paywalls): a cheap abstract-only guess whether the paper
+    produced its own data, written to the new `data_produced_likely` column (likely_yes / likely_no / unclear) for the human reviewer.
+    Creates NO dataset rows and does NOT stamp DATASET_REVIEW_STATUS, so the real full-text check still runs once text is available
+    (e.g. after a PDF is dropped in data/manual_papers/). Returns (attempted: bool, llm_exhausted: bool)."""
+    abstract = _clean(row0.get("abstract", ""))
+    if not abstract or not _blank(row0.get(_TRIAGE_COL)):
+        return False, False
+    title = _clean(row0.get("title", ""))
+    try:
+        parsed, model_used = call_llm_json(
+            SYSTEM_PROMPT_DATA_TRIAGE, f"Application paper {entry_id}\nTitle: {title}\n\nAbstract: {abstract}",
+            **config.llm_kwargs("application_desk", only_provider="gemini_lite_only")   # local mode: this stage's model
+        )
+    except LLMError as e:
+        return False, isinstance(e, LLMExhaustedError)
+    verdict = _clean((parsed or {}).get("produces_new_data", "")).lower() if isinstance(parsed, dict) else ""
+    if verdict not in ("likely_yes", "likely_no", "unclear"):
+        return False, False
+    staging.append_candidate(
+        action="update_field", sheet="AP_pub", entry_id=entry_id,
+        fields={_TRIAGE_COL: verdict, _TRIAGE_REASON_COL: _clean(parsed.get("evidence", ""))[:300],
+                "DATA_TRIAGE_MODEL": model_used, "DATA_TRIAGE_DATE": datetime.now(timezone.utc).isoformat()},
+        source_paper_entry_id=entry_id, curation_agent="application_review_agent", curation_model=model_used, confidence=None,
+        notes="Abstract-only triage because the data-availability text could not be fetched. A hint for review, NOT a dataset decision.",
+    )
+    return True, False
+
+
 def _run_dataset_task(db, entry_id: str, doi: str, row0, is_review: bool, fetched: dict) -> tuple:
     """Independent sub-task 2/2: the self-generated-data question,
     gemini_flash_only (see module docstring for why this is NOT on
@@ -328,11 +382,8 @@ def _run_dataset_task(db, entry_id: str, doi: str, row0, is_review: bool, fetche
         return [], 0, 0, False
 
     data_text, data_source = get_agent_text(fetched, "data_availability")
-    data_text_usable = bool(data_text) and is_probably_real_content(data_text) and (
-        not config.REQUIRE_ISOLATED_SECTION or data_source in ("section:data_availability", "full_text_tail")
-    )
-    if not data_text_usable:
-        return [], 0, 0, False  # leave DATASET_REVIEW_STATUS unstamped - a future, better fetch might work
+    if not _data_text_usable(fetched):
+        return [], 0, 0, False  # leave DATASET_REVIEW_STATUS unstamped - a future, better fetch might work (triage is done by the caller)
 
     try:
         parsed, model_used = call_llm_json(
@@ -600,6 +651,10 @@ def process_paper(db, paper_entry: dict, fetched: dict = None,
         )
         if is_review or total_encountered or linked_ids:
             attempted_anything = True
+        elif not dataset_exhausted and not _data_text_usable(fetched):
+            triaged, triage_exhausted = _run_abstract_triage(entry_id, row0)
+            attempted_anything = attempted_anything or triaged
+            dataset_exhausted = dataset_exhausted or triage_exhausted
 
     if not attempted_anything:
         return {**_empty_stats("no usable text available for either enabled sub-task this run "

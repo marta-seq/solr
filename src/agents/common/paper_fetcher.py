@@ -36,14 +36,18 @@ got captured as if it were the real section.
 import hashlib
 import io
 import json
+import logging
 import re
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 
-from . import config
+from . import config, manual_papers
+
+logging.getLogger("pdfminer").setLevel(logging.ERROR)
 from .doi_utils import normalize_doi, bare_doi
 
 HEADERS = {"User-Agent": f"solr-living-review/1.0 (mailto:{config.CONTACT_EMAIL})"}
@@ -368,17 +372,7 @@ def is_probably_real_content(text: str, min_length: int = 200) -> bool:
 
 
 def _extract_pdf_text(pdf_bytes: bytes) -> str:
-    try:
-        import pdfplumber
-    except ImportError:
-        raise RuntimeError("pdfplumber not installed - run: pip install pdfplumber --break-system-packages")
-    text_parts = []
-    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-        for page in pdf.pages:
-            t = page.extract_text()
-            if t:
-                text_parts.append(t)
-    return "\n".join(text_parts)
+    return manual_papers.pdf_bytes_to_text(pdf_bytes)     # pdftotext -> PyMuPDF -> pdfplumber, see manual_papers._pdf_text
 
 
 def _try_unpaywall(doi: str):
@@ -467,6 +461,32 @@ def _try_biorxiv_fulltext(jatsxml_url: str):
         return None
 
 
+_BIORXIV_PDF_MIN_INTERVAL_S = 15      # bioRxiv's Cloudflare answers 429 / error 1015 to quick successive requests (see _try_biorxiv_fulltext)
+_last_biorxiv_pdf = [0.0]
+
+
+def _try_biorxiv_pdf(record: dict, doi: str):
+    """Full text from the preprint's own PDF (https://www.<server>.org/content/<doi>v<N>.full.pdf), used when the JATS XML is missing or
+    blocked. Paced (one request per _BIORXIV_PDF_MIN_INTERVAL_S) because the site rate-limits; any failure just returns None so the caller
+    falls back to the abstract, as before. Added 2026-10-18 (many preprints only had an abstract although the PDF is public)."""
+    try:
+        server = (record.get("server") or "biorxiv").lower()
+        version = record.get("version") or "1"
+        url = f"https://www.{server}.org/content/{bare_doi(doi)}v{version}.full.pdf"
+        wait = _BIORXIV_PDF_MIN_INTERVAL_S - (time.time() - _last_biorxiv_pdf[0])
+        if wait > 0:
+            time.sleep(wait)
+        _last_biorxiv_pdf[0] = time.time()
+        r = requests.get(url, headers={**HEADERS, "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) SOLR-living-review"},
+                         timeout=max(config.FETCH_TIMEOUT_S, 60))
+        if r.status_code != 200 or not r.content.startswith(b"%PDF"):
+            return None
+        text = _extract_pdf_text(r.content)
+        return (text, {}) if text and len(text) > 500 else None
+    except Exception:
+        return None
+
+
 def _try_biorxiv(doi: str):
     """Returns text (str, abstract-only) or (text, sections) tuple if full
     text was recovered via jatsxml - fetch_paper() checks the type, same
@@ -488,6 +508,10 @@ def _try_biorxiv(doi: str):
             full = _try_biorxiv_fulltext(jatsxml_url)
             if full:
                 return full
+
+        pdf = _try_biorxiv_pdf(record, doi)
+        if pdf:
+            return pdf
 
         # No full text (no jatsxml link, or the fetch failed/was
         # rate-limited) - fall back to abstract-only, the pre-2026-09-20
@@ -598,6 +622,16 @@ def was_truncated(paper: dict, section_name: str) -> bool:
     return len(full) > len(text)
 
 
+def _negative_cache_fresh(cached: dict) -> bool:
+    try:
+        when = datetime.fromisoformat(cached["fetched_at"])
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=timezone.utc)
+    except (KeyError, ValueError, TypeError):
+        return False
+    return (datetime.now(timezone.utc) - when).days < config.NEGATIVE_CACHE_TTL_DAYS
+
+
 def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
     """Main entry point. Cached on disk per normalized DOI."""
     doi = normalize_doi(doi)
@@ -605,14 +639,44 @@ def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
         return _empty_result(doi)
 
     cache_file = _cache_path(doi)
+    manual_file = manual_papers.find(doi)        # a file the user dropped into data/manual_papers/ (see manual_papers.py)
     if cache_file.exists() and not force_refetch:
-        return json.loads(cache_file.read_text())
+        cached = json.loads(cache_file.read_text())
+        if manual_file and not (cached.get("source") == "manual_file" and cached.get("manual_mtime") == manual_file.stat().st_mtime):
+            print(f"[paper_fetcher] {doi}: manual file {manual_file.name} found - using it instead of the cached '{cached.get('source')}' result.", flush=True)
+            cached = None
+        # A "nothing retrievable" result expires (config.NEGATIVE_CACHE_TTL_DAYS): it used to be permanent, so one transient failure
+        # (rate limit, outage) locked an open-access paper out forever - found 2026-10-18 (BIDCell had been cached as 'none' but fetched
+        # fine on retry). Real paywalls just fail again and get a fresh timestamp. Positive results stay cached for good.
+        if cached is None:
+            pass                                  # manual file overrides the cache, fall through to the fetch below
+        elif not cached.get("is_full_text") and not _negative_cache_fresh(cached):
+            # covers 'none' AND abstract-only results ('crossref_abstract_only', 'biorxiv_abstract'): e.g. PDF-only open-access copies were
+            # unreadable until pdfplumber was installed (2026-10-18), so abstract-only results are worth another try too.
+            print(f"[paper_fetcher] {doi}: cached '{cached.get('source')}' (no full text) result is older than {config.NEGATIVE_CACHE_TTL_DAYS} days - retrying.", flush=True)
+        else:
+            return cached
 
     result = None
     structured_sections = None  # only set when a source gives real structure (Europe PMC)
 
-    print(f"[paper_fetcher] {doi}: trying Unpaywall...", flush=True)
-    unpaywall_result = _try_unpaywall(doi)
+    if manual_file:
+        try:
+            mtext = manual_papers.read_text(manual_file)
+        except Exception as e:
+            print(f"[paper_fetcher] {doi}: could not read manual file {manual_file.name}: {e}", flush=True)
+            mtext = ""
+        if is_probably_real_content(mtext):
+            print(f"[paper_fetcher] {doi}: using manual file {manual_file.name} ({len(mtext)} chars)", flush=True)
+            result = {"source": "manual_file", "is_full_text": True, "text": mtext,
+                      "manual_file": manual_file.name, "manual_mtime": manual_file.stat().st_mtime}
+        else:
+            print(f"[paper_fetcher] {doi}: manual file {manual_file.name} has no usable text (scanned image PDF?) - trying online sources.", flush=True)
+
+    unpaywall_result = None
+    if result is None:
+        print(f"[paper_fetcher] {doi}: trying Unpaywall...", flush=True)
+        unpaywall_result = _try_unpaywall(doi)
     if unpaywall_result:
         if isinstance(unpaywall_result, tuple):
             text, structured_sections = unpaywall_result
@@ -622,7 +686,7 @@ def fetch_paper(doi: str, force_refetch: bool = False) -> dict:
             text = unpaywall_result
             print(f"[paper_fetcher] {doi}: got full text via Unpaywall (PDF)", flush=True)
         result = {"source": "unpaywall_pdf", "is_full_text": True, "text": text}
-    else:
+    elif result is None:
         print(f"[paper_fetcher] {doi}: Unpaywall had nothing usable, trying Europe PMC...", flush=True)
 
     if result is None:

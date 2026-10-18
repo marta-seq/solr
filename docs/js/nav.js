@@ -7,5 +7,6 @@ function showSection(name) {
   if(name==="graph"&&!cy) renderGraph();
   if(name==="appgraph"&&!appCy) renderAppGraph();
   if(name==="book") loadChapter("index");
+  if(name==="stats") renderStats();
   window.scrollTo(0,0);
 }

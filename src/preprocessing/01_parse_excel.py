@@ -285,7 +285,8 @@ def parse_pub_sheet(xl: pd.ExcelFile, sheet_name: str, paper_type: str) -> pd.Da
             lambda r: _normalize_or_warn(r["pipeline_category"], PIPELINE_CATEGORY_MAP, "pipeline_category", sheet_name, r["entry_id"]),
             axis=1,
         )
-    if "spatial_data_category" in df.columns:
+    # AP_pub (2026-10-13): its spatial_data_category is written already-canonical by spatial_labels.py - not run through the method_pub map
+    if "spatial_data_category" in df.columns and paper_type == "method":
         df["spatial_data_category"] = df.apply(
             lambda r: _normalize_or_warn(r["spatial_data_category"], SPATIAL_DATA_CATEGORY_MAP_METHOD_PUB, "spatial_data_category", sheet_name, r["entry_id"]),
             axis=1,

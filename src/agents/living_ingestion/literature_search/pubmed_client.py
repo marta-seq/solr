@@ -35,6 +35,33 @@ def _sleep_for_rate_limit():
     _last_request_time[0] = time.time()
 
 
+_RETRY_WAITS_S = (5, 15, 45, 90)   # backoff between attempts; 5 attempts in total
+_RETRY_STATUS = {429, 500, 502, 503, 504}
+
+
+def _get_with_retry(url: str, params: dict) -> requests.Response:
+    """GET with retry+backoff for transient failures: HTTP 429 (NCBI rate limit, e.g. when something else is also hitting E-utilities),
+    5xx, timeouts and connection errors. Honours a numeric Retry-After header. Any other 4xx raises immediately (retrying won't help).
+    After the last attempt the error is raised, so the orchestrator still reports the scrape as failed."""
+    for attempt in range(len(_RETRY_WAITS_S) + 1):
+        _sleep_for_rate_limit()
+        try:
+            resp = requests.get(url, params=params, timeout=config.FETCH_TIMEOUT_S)
+            if resp.status_code not in _RETRY_STATUS:
+                resp.raise_for_status()
+                return resp
+            err = requests.HTTPError(f"{resp.status_code} from {url}", response=resp)
+            retry_after = resp.headers.get("Retry-After", "")
+            hint = int(retry_after) if retry_after.isdigit() else 0
+        except (requests.Timeout, requests.ConnectionError) as e:
+            err, hint = e, 0
+        if attempt == len(_RETRY_WAITS_S):
+            raise err
+        wait = max(_RETRY_WAITS_S[attempt], hint)
+        print(f"[pubmed_client] {err} - retry {attempt + 1}/{len(_RETRY_WAITS_S)} in {wait}s...", flush=True)
+        time.sleep(wait)
+
+
 def _common_params() -> dict:
     import os
     params = {"email": config.CONTACT_EMAIL}
@@ -48,8 +75,7 @@ def search(query: str, mindate: str, maxdate: str, retmax: int = 9999) -> list:
     """mindate/maxdate: 'YYYY/MM/DD'. Returns a list of PMID strings.
     Uses datetype=pdat (publication date) - the relevant date for "what's
     new this month", not the (later, variable) date PubMed indexed it."""
-    _sleep_for_rate_limit()
-    resp = requests.get(ESEARCH_URL, params={
+    resp = _get_with_retry(ESEARCH_URL, {
         **_common_params(),
         "db": "pubmed",
         "term": query,
@@ -58,8 +84,7 @@ def search(query: str, mindate: str, maxdate: str, retmax: int = 9999) -> list:
         "maxdate": maxdate,
         "retmax": retmax,
         "retmode": "json",
-    }, timeout=config.FETCH_TIMEOUT_S)
-    resp.raise_for_status()
+    })
     result = resp.json()["esearchresult"]
     count = int(result.get("count", 0))
     if count > retmax:
@@ -135,15 +160,13 @@ def fetch_details(pmids: list) -> list:
     records = []
     for i in range(0, len(pmids), _EFETCH_BATCH_SIZE):
         batch = pmids[i:i + _EFETCH_BATCH_SIZE]
-        _sleep_for_rate_limit()
-        resp = requests.get(EFETCH_URL, params={
+        resp = _get_with_retry(EFETCH_URL, {
             **_common_params(),
             "db": "pubmed",
             "id": ",".join(batch),
             "rettype": "abstract",
             "retmode": "xml",
-        }, timeout=config.FETCH_TIMEOUT_S)
-        resp.raise_for_status()
+        })
         root = ET.fromstring(resp.content)
         for article_el in root.findall(".//PubmedArticle"):
             records.append(_parse_article(article_el))
