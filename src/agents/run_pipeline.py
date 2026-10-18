@@ -41,7 +41,7 @@ sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 # is actually running.
 CODE_VERSION = "2026-10-04-r20-application-desk"
 
-from .common import config, db_loader, staging
+from .common import config, db_loader, llm_client, staging
 from .living_ingestion.mailroom import triage
 from .agent_curation.methods_desk import compared_methods_agent, category_audit_agent
 from .agent_curation.data_desk import data_fetch_agent, intern_agent
@@ -437,10 +437,29 @@ def main():
         help="Override config.MAX_PAPERS_PER_RUN for this run only, without editing config.py "
              "(e.g. --max-papers 15 for a quick test)."
     )
+    parser.add_argument(
+        "--stages", default="papers,applications,datasets",
+        help="Comma-separated stages to run, in this fixed order: papers (method papers: category audit -> methods comparisons -> data "
+             "comparisons), applications (application papers), datasets (dataset-annotation 'data pool'). Default: all three, as before. "
+             "A stage that is not listed is skipped and the whole budget goes to the listed ones (e.g. --stages papers --max-papers 300)."
+    )
     args = parser.parse_args()
+    stages = {x.strip() for x in args.stages.split(",") if x.strip()}
+    unknown = stages - {"papers", "applications", "datasets"}
+    if unknown:
+        parser.error(f"unknown --stages value(s): {sorted(unknown)}; expected papers, applications, datasets")
 
     _log(f"=== CODE_VERSION: {CODE_VERSION} === (if this doesn't match what you expect, "
          f"you're running stale files - re-sync src/agents/ before trusting anything below)")
+    _log(f"LLM mode: {config.LLM_MODE}" + (f" - models per stage: {config.STAGE_MODELS}" if config.LLM_MODE == "local" else
+         " - API providers exactly as configured at each call site (SOLR_LLM_MODE=local switches to the local models)"))
+    problems = llm_client.check_local_models()
+    if problems:
+        for p in problems:
+            _log(f"LOCAL LLM PROBLEM: {p}")
+        _log("Stopping before any paper is touched. Fix the above (start Ollama / run benchmarks/methods_desk/make_variant.sh for the "
+             "missing model) or run with SOLR_LLM_MODE=api.")
+        return 1
     _log("Loading database...")
     db = db_loader.Database()
     _log(f"Loaded {len(db.methods)} papers, {len(db.datasets)} dataset entries, "
@@ -452,10 +471,15 @@ def main():
          f"(paper queue and data pool draw from the same pool, in that order)"
          f"{' [overridden via --max-papers]' if args.max_papers is not None else ''}.")
 
-    paper_summary, papers_used = run_paper_queue(db, budget=total_budget)
-    _log(f"Paper queue done: {len(paper_summary['processed'])} papers processed, "
-         f"{len(paper_summary['new_method_entries'])} new method entries, "
-         f"{len(paper_summary['data_entries_linked'])} dataset entries linked/created.")
+    _log(f"Stages this run: {[x for x in ('papers', 'applications', 'datasets') if x in stages]}")
+    if "papers" in stages:
+        paper_summary, papers_used = run_paper_queue(db, budget=total_budget)
+        _log(f"Paper queue done: {len(paper_summary['processed'])} papers processed, "
+             f"{len(paper_summary['new_method_entries'])} new method entries, "
+             f"{len(paper_summary['data_entries_linked'])} dataset entries linked/created.")
+    else:
+        paper_summary, papers_used = {"processed": [], "new_method_entries": [], "data_entries_linked": [], "llm_exhausted": False}, 0
+        _log("Paper queue: skipped (not in --stages).")
 
     if paper_summary.get("llm_exhausted"):
         _log("Skipping the application queue and data pool this run too - they'd hit the exact "
@@ -463,16 +487,24 @@ def main():
         app_summary, app_used = {"processed": [], "data_entries_linked": [], "llm_exhausted": True}, 0
         data_summary, entries_used = {"filled": [], "skipped": [], "llm_exhausted": True}, 0
     else:
-        app_summary, app_used = run_application_queue(db, budget=total_budget - papers_used)
-        _log(f"Application queue done: {len(app_summary['processed'])} AP_pub papers processed, "
-             f"{len(app_summary['data_entries_linked'])} dataset entries linked/created.")
+        if "applications" in stages:
+            app_summary, app_used = run_application_queue(db, budget=total_budget - papers_used)
+            _log(f"Application queue done: {len(app_summary['processed'])} AP_pub papers processed, "
+                 f"{len(app_summary['data_entries_linked'])} dataset entries linked/created.")
+        else:
+            app_summary, app_used = {"processed": [], "data_entries_linked": [], "llm_exhausted": False}, 0
+            _log("Application queue: skipped (not in --stages).")
 
         if app_summary.get("llm_exhausted"):
             _log("Skipping the data pool this run too - same exhausted-chain reasoning as above.")
             data_summary, entries_used = {"filled": [], "skipped": [], "llm_exhausted": True}, 0
         else:
             remaining_budget = total_budget - papers_used - app_used
-            data_summary, entries_used = run_data_pool(db, budget=remaining_budget)
+            if "datasets" in stages:
+                data_summary, entries_used = run_data_pool(db, budget=remaining_budget)
+            else:
+                data_summary, entries_used = {"filled": [], "skipped": [], "llm_exhausted": False}, 0
+                _log("Data pool: skipped (not in --stages).")
     _log(f"Data pool done: {len(data_summary['filled'])} entries filled, "
          f"{len(data_summary['skipped'])} skipped.")
     if paper_summary.get("llm_exhausted") or app_summary.get("llm_exhausted") or data_summary.get("llm_exhausted"):

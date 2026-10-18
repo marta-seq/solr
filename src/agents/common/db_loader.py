@@ -200,6 +200,9 @@ class Database:
         # ID allocator needs every entry_id seen anywhere, real or placeholder
         all_ids = list(self.methods["entry_id"].dropna()) + list(self.datasets["entry_id"].dropna())
         self.id_allocator.register_existing(all_ids)
+        # next free line in the method_pub sheet = rows already there + header + 1 (new rows are appended at the bottom on merge)
+        n_method_rows = int((self.methods["paper_type"].astype(str).str.lower() != "application").sum())
+        self.id_allocator.set_next_method_line(n_method_rows + 2)
 
         self._ingest_staged_candidates()
 
@@ -224,6 +227,8 @@ class Database:
             if not entry_id:
                 continue
             self.id_allocator.register_existing([entry_id])
+            if rec.get("target_sheet") == "method_pub":
+                self.id_allocator.reserve_method_line()          # that staged row will take a line of its own
 
             if rec.get("target_sheet") in ("method_pub", "AP_pub"):
                 doi = rec.get("DOI", "")

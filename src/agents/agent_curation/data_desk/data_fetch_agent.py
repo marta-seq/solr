@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 
 from ...common import config, staging, audit_log
 from ...common.doi_utils import normalize_doi
+from ...common.dataset_naming import dataset_internal_name
 from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ...common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
 from ...common.reference_list_parser import parse_reference_list
@@ -73,6 +74,9 @@ visible in your response, but it will not be added to the database.
 
 For each dataset, ALSO extract whatever of the following the text explicitly states - leave a \
 field as an empty string (or 0 for numeric fields) if it isn't stated, never guess:
+- dataset_name (the dataset's OWN proper name if it has a clear one - e.g. a named cohort, atlas or \
+trial dataset such as "METABRIC" or "TissueNet" - exactly as the text writes it; an empty string if \
+it has no such name. Never invent one, and never use a repository name like "Zenodo" or "GEO")
 - organism (e.g. "human", "mouse")
 - tissue (the tissue or organ sampled, e.g. "breast", "brain cortex")
 - disease (the disease/condition studied, or "healthy" if explicitly described as healthy controls)
@@ -99,7 +103,7 @@ GEO/ArrayExpress), or empty string",
 'MERFISH', 'Visium', 'Xenium', 'seqFISH'), or empty string if not stated",
   "modality": "spatial_proteomics" | "spatial_transcriptomics" | "spatial_multi" | "non_spatial" | \
 "unknown",
-  "organism": "", "tissue": "", "disease": "", "n_images": 0, "n_patients": 0, "is_in_house": false, \
+  "dataset_name": "", "organism": "", "tissue": "", "disease": "", "n_images": 0, "n_patients": 0, "is_in_house": false, \
 "is_simulated": false,
   "origin_citation_marker": "ONLY if relationship is reused_external and there is a numbered \
 reference (e.g. '15') pointing to the paper that originally generated this data - the number as \
@@ -321,7 +325,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         return _empty_stats(f"text (source: {_source}) failed the content-quality check "
                              f"(looked like navigation/boilerplate, not real article text)")
 
-    if config.REQUIRE_ISOLATED_SECTION and _source != "section:data_availability":
+    if config.REQUIRE_ISOLATED_SECTION and _source not in ("section:data_availability", "full_text_tail"):
         staging.append_candidate(
             action="update_field", sheet=_sheet_for_paper_entry(entry_id), entry_id=entry_id, fields={},
             source_paper_entry_id=entry_id, curation_agent="data_fetch_agent",
@@ -347,7 +351,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         # empty-result rate is more than double plain flash's).
         extracted, model_used = call_llm_json(
             SYSTEM_PROMPT, _build_user_prompt(entry_id, text),
-            only_provider="gemini_flash_only"
+            **config.llm_kwargs("data_desk", only_provider="gemini_flash_only")   # local mode: this stage's model from config.STAGE_MODELS
         )
     except LLMError as e:
         staging.append_candidate(
@@ -372,6 +376,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         technique = (item.get("technique") or "").strip()
         modality = (item.get("modality") or "").strip()
         organism = (item.get("organism") or "").strip()
+        dataset_name = (item.get("dataset_name") or "").strip()
         tissue = (item.get("tissue") or "").strip()
         disease = (item.get("disease") or "").strip()
         n_images = item.get("n_images") or ""
@@ -522,6 +527,9 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 "data_acess_link": access_link,
                 "paper_DOI": paper_doi_field,
                 "paper_ENTRY_ID": paper_entry_id_field,
+                # Marta's rule 2026-10-11 (see common/dataset_naming.py): the dataset's own name + year if it has one, else the source
+                # paper's name, else first-author+year. Stub parents have no name/authors/year yet -> blank unless the dataset is named.
+                "paper_internal_name": dataset_internal_name(db.methods, paper_entry_id_field, dataset_name),
                 "spatial_data_category": modality,
                 "spatial_data_method": technique,
                 "REVIEW_STATUS": review_status,

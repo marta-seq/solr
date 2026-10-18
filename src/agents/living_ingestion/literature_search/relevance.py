@@ -19,6 +19,7 @@ file's own header comment).
 import re
 from pathlib import Path
 
+from ...common import config
 from ...common.llm_client import call_llm_json
 from ...common.reference_resolver import CONFIDENCE_FLOOR
 from ....preprocessing.category_maps import PIPELINE_CATEGORY_TAXONOMY
@@ -238,7 +239,8 @@ def llm_relevance_pass(title: str, abstract: str) -> dict:
     # through OpenRouter's low, account-wide daily free cap and starve every
     # other agent sharing that same account for the rest of the day. Scoped
     # to just this call - other agents still use OpenRouter normally.
-    parsed, model_used = call_llm_json(_SYSTEM_PROMPT, user_prompt, skip_openrouter=True)
+    # local mode: the 'intake' stage's model (config.STAGE_MODELS); api mode: skip_openrouter=True exactly as before (see above).
+    parsed, model_used = call_llm_json(_SYSTEM_PROMPT, user_prompt, **config.llm_kwargs("intake", skip_openrouter=True))
     raw_categories = parsed.get("categories") or []
     valid_categories = [c for c in raw_categories if c in PIPELINE_CATEGORY_TAXONOMY]
     return {

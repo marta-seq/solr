@@ -252,6 +252,63 @@ FALLBACK_PROVIDERS = [
     },
 ]
 
+# ── Local vs API mode + the model for each stage (added 2026-10-11) ───────────
+# Why: the Gemini free-tier quota kept stalling runs (see TODO/SESSION_LOG); the local-LLM benchmark
+# (benchmarks/methods_desk, conclusions in context/LOCAL_LLM_BENCHMARK.md) showed local models on gaia are good enough.
+#
+# LLM_MODE = "local": every stage below runs on the local Ollama server with ITS OWN model from STAGE_MODELS - no Gemini, no OpenRouter,
+#                     no other API is called. If the local model fails persistently the run stops cleanly (LLMExhaustedError), same as before.
+# LLM_MODE = "api":   every call site behaves EXACTLY as it did before this block existed (OpenRouter / gemini_flash_only / gemini_lite_only /
+#                     the default chain - each call site passes its original arguments as the API default). STAGE_MODELS is ignored.
+# Switch for one run without editing this file:   SOLR_LLM_MODE=api python -m src.agents.run_pipeline
+# Change one stage's model without editing it:    SOLR_MODEL_METHODS_DESK=qwen3:30b-32k python -m ...
+#
+# Default model: gpt-oss:20b-32k for EVERY stage (fast, good enough). qwen3:30b-32k is the genuinely better model on quality (higher
+# precision, fewest errors) but ~10x slower - it is the switch target for any stage where gpt-oss shows too many errors / wrong items
+# (rule + numbers: context/LOCAL_LLM_BENCHMARK.md "Decision"). Models are Ollama Modelfile variants with a big enough context window
+# (benchmarks/methods_desk/make_variant.sh creates e.g. gpt-oss:20b-32k, qwen3:30b-32k).
+LLM_MODE = os.environ.get("SOLR_LLM_MODE", "local").strip().lower()
+LOCAL_LLM_URL = os.environ.get("SOLR_LOCAL_LLM_URL", "http://localhost:11434")
+LOCAL_INPUT_ATTEMPTS = 2        # attempts before a local timeout / unparseable-output failure is blamed on the INPUT (skips that paper, run continues)
+LOCAL_LLM_TIMEOUT_S = 300          # local models are slower than APIs, esp. on long methods sections (qwen3:30b ~100-180 s there)
+os.environ.setdefault("OLLAMA_API_KEY", "ollama")   # Ollama ignores the key; llm_client just needs a non-empty one (NOT a secret)
+
+STAGES = ("intake", "audit", "methods_desk", "data_desk", "dataset_annotation", "application_desk")
+STAGE_MODELS = {
+    "intake":             "gpt-oss:20b-32k",   # relevance.llm_relevance_pass: paper_type / tags / method name (literature scan + queue intake)
+    "audit":              "gpt-oss:20b-32k",   # category_audit_agent: wet-lab vs computational / ST-only gate
+    "methods_desk":       "gpt-oss:20b-32k",   # compared_methods_agent: switch to qwen3:30b-32k if too many errors / wrong items
+    "data_desk":          "gpt-oss:20b-32k",   # data_fetch_agent: datasets named in the paper
+    "dataset_annotation": "gpt-oss:20b-32k",   # intern_agent: organism / tissue / disease / method / markers of a dataset row
+    "application_desk":   "gpt-oss:20b-32k",   # application_review_agent: AP_pub metadata + self-generated-data check (not benchmarked)
+}
+for _stage in STAGES:
+    STAGE_MODELS[_stage] = os.environ.get(f"SOLR_MODEL_{_stage.upper()}", STAGE_MODELS[_stage])
+
+# One provider per stage, kept OUT of FALLBACK_PROVIDERS on purpose: that list is also the default fallback chain used in API mode, and
+# local models must never silently appear there. llm_client resolves only_provider names against both lists.
+LOCAL_PROVIDERS = [
+    {"name": f"local_{_stage}", "url": f"{LOCAL_LLM_URL}/v1/chat/completions", "api_key_env": "OLLAMA_API_KEY",
+     "models": [STAGE_MODELS[_stage]], "timeout_s": LOCAL_LLM_TIMEOUT_S}
+    for _stage in STAGES
+]
+
+
+def llm_kwargs(stage: str, **api_kwargs) -> dict:
+    """The call_llm_json keyword arguments for one pipeline stage.
+    local mode -> {"only_provider": "local_<stage>"} (that stage's model from STAGE_MODELS, nothing else is ever tried);
+    api mode   -> api_kwargs unchanged: each call site passes what it used before (e.g. only_provider="gemini_flash_only",
+                  skip_openrouter=True, or nothing for the default chain). Usage: call_llm_json(sys, user, **config.llm_kwargs("methods_desk",
+                  only_provider="gemini_flash_only"))."""
+    if stage not in STAGES:
+        raise ValueError(f"unknown stage {stage!r}; expected one of {STAGES}")
+    if LLM_MODE == "local":
+        return {"only_provider": f"local_{stage}"}
+    if LLM_MODE == "api":
+        return dict(api_kwargs)
+    raise ValueError(f"LLM_MODE must be 'local' or 'api', got {LLM_MODE!r} (env SOLR_LLM_MODE)")
+
+
 LLM_TIMEOUT_S = 120
 
 # ── Retry classification (added 2026-10-09) ──────────────────────────────────

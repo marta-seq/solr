@@ -1,0 +1,144 @@
+entry_id,DOI,category,pipeline_category,name,Date(added_to_dataset),Date(last_change_to_entry),REVIEW_STATUS,"METADATA (citations, year, authors, journal,title …",spatial_data_category,DataID (data_used_in_the_paper),Method_comparison_P_ENTRY_ID,is_placeholder
+M_PR_1,https://doi.org/10.1016/j.cels.2018.02.010,computational analysis - method,Preprocessing,CATALYST,20250705,20260617,manual,to be added automatically,spatial proteomics,D_SP_IMC_1,,False
+M_PR_2,https://doi.org/10.1371/journal.pcbi.1008887,computational analysis - method,Preprocessing,MAUI  part of the pipeline),20250705,,,,spatial proteomics,D_SP_MIBI_2; D_SP_IMC_3; D_SP_CODEX_4,,False
+M_PR_3,https://doi.org/10.1038/s41467-023-37123-6,computational analysis - method,Preprocessing,IMC-Denoise,20250705,20260621,manual,to be added automatically,spatial proteomics,D_SP_IMC_5; D_SP_IF_5; D_SP_IMC_3;  D_SP_MIBI_2; D_SP_IMC_6; D_SP_simulation,"M_PR_5, M_PR_2, M_PH_1",False
+M_PR_4,https://doi.org/10.1038/s41596-023-00881-0,computational analysis - method,Preprocessing,Steinbock,20250705,,,,spatial proteomics,,do not show nay data,False
+M_PR_5,https://doi.org/10.1002/cyto.a.24480,computational analysis - method,Preprocessing,SABR,20250705,20260617,manual,to be added automatically,spatial proteomics,D_PH_IMC_2,M_PH_1,False
+M_PR_6,https://doi.org/10.1016/j.csbj.2024.10.048,computational analysis - method,Preprocessing,PENGUIN,20250705,20260617,manual,to be added automatically,spatial proteomics,"D_SP_IMC_8, D_PH_IF_1","M_PR_5, M_PR_4, M_PR_3, M_PH_1, M_PH_2, M_PH_3",False
+M_PH_1,,Placeholder - method,Preprocessing,"classical filtering methods, including Gaussian, mean, percentile, non-local means, bilateral, total variation, wavelet, anisotropic diffusion, and BM3D filters. Thresholding (for SABR)",2026_06_17,2026_06_17,,,,,,True
+M_PH_2,,Placeholder - method,Preprocessing,Noise2void,2026_06_17,2026_06_17,,,,,,True
+M_PH_3,,Placeholder - method,Preprocessing,denoising autoencoders,2026_06_17,2026_06_17,,,,,,True
+M_SE_7.1,https://doi.org/10.1038/s41592-020-01018-x,computational analysis - method,Cell segmentation - Imaging based,Cellpose v1,20250705,,,,,,majority of datasets are not relevant+ TissueNEt,False
+M_SE_8,https://doi.org/10.1186/gb-2006-7-10-r100,computational analysis - method,Cell segmentation - Imaging based,Cellprofiller,20250705,,,,,,not spatial omics datasets,False
+M_SE_9,https://doi.org/10.1038/s41587-021-01094-0,computational analysis - method,Cell segmentation - Imaging based,Mesmer/Deepcell,20250705,20260704,manual,to be added automatically,spatial proteomics,D_SP_TN13,M_SE_7.1; M_SE_11; M_SE_25;M_SE_26; M_SE_27,False
+M_SE_10,https://doi.org/10.1038/s41467-024-48870-5,computational analysis - method,Cell segmentation - Imaging based,part of the TRACERx-PHLEX,20250705,,,,,IMPORTANT THEREARE A LOT AND SOME PUBLISHED AFTER,,False
+M_SE_11,https://doi.org/10.48550/arXiv.1806.03535,computational analysis - method,Cell segmentation - Imaging based,Stardist,20250705,,,,,,not spatial omics,False
+M_SE_12,https://doi.org/10.1101/2020.10.27.357640,computational analysis - method,Cell segmentation - Imaging based,SPlineDist,20250705,,,,,,not spatial omics,False
+M_SE_13,https://doi.org/10.1186/s12915-021-01043-y,computational analysis - method,Cell segmentation - Imaging based,MATISSE,20250705,,,,,D_SP_IMC15,,False
+M_SE_14,https://doi.org/10.1038/s41592-021-01308-y,computational analysis - method,Cell segmentation - Imaging based,MCMICRO,20250705,,provavelmente sair daqui. Por o modelo. Mas por o mcmicro como software?,,,IMPORTANT SEVERAL,,False
+M_SE_15,https://doi.org/10.1186/s12859-022-04570-9,computational analysis - method,Cell segmentation - Imaging based,CellSeg,20250705,20260704,manual,to be added automatically,spatial proteomics,D_SP_CODEX_4; D_MICRO_18,M_SE_7.1; M_SE_8; M_SE_11;M_SE_28,False
+M_SE_16,https://doi.org/10.1038/s41587-021-01044-w,computational analysis - method,Cell segmentation - Transcript based,Baysor,20250705,20260704,manual,to be added automatically,spatial transcriptomics,D_ST_ISH1; D_ST_ISH2; D_ST_ISH3; D_ST_ISH4; D_ST_ISH5; D_ST_ISH6; D_ST_ISH7; D_ST_ISH8,M_PH_5; M_PH_6 segmentations form the original papers,False
+M_SE_17,https://doi.org/10.1038/s41592-019-0631-4,computational analysis - method,Cell segmentation - Transcript based,pciSeq,20250705,,,,,,,False
+M_SE_18,https://doi.org/10.1038/s41467-021-23807-4,computational analysis - method,Cell segmentation - Transcript based,SSAM,20250705,20260705,manual,to be added automatically,spatial transcriptomics,D_ST_ISH1;  D_ST_ISH2; D_ST_ISH9,M_PH_6,False
+M_SE_19,https://doi.org/10.1038/s41592-024-02415-2,computational analysis - method,Cell segmentation - Transcript based,FICTURE,20250705,20260705,manual,to be added automatically,spatial transcriptomics,D_ST_ISS10; D_ST_ISS11; D_ST_XEN12; D_ST_XEN13; D_ST_ISH14,M_SE_16; M_NI_37,False
+M_SE_20,https://doi.org/10.1038/s41467-021-26044-x,computational analysis - method,Cell segmentation - Transcript based,ClusterMap,20250705,,,,,,,False
+M_SE_21,https://doi.org/10.1093/bioadv/vbac048,computational analysis - method,Cell segmentation - Transcript based,Sparcle,20250705,,,,,,,False
+M_SE_22,https://doi.org/10.1038/s41467-023-44560-w,computational analysis - method,Cell segmentation - Transcript based,BIDCell,20250705,,,,,,,False
+M_SE_23,https://doi.org/10.1038/s42003-024-06480-3,computational analysis - method,Cell segmentation - Transcript based,ComSeg,20250705,,,,,,,False
+M_SE_24,https://doi.org/10.1111/febs.15572,computational analysis - method,Cell segmentation - Transcript based,Spage2vec,20250705,,,,,,,False
+M_SE_25,https://doi.org/10.48550/arXiv.1901.03353,computational analysis - method,segmentation general,RetinaMask,20260704,20260704,manual,to be added automatically,,,,False
+M_SE_26,https://doi.org/10.1371/journal.pcbi.1005177,computational analysis - method,Cell segmentation - Imaging based,deepcell /featureNET,20260704,,,,,,,False
+M_SE_27.1,https://doi.org/10.1109/ISBI.2011.5872394,computational analysis - method,Cell segmentation - Imaging based,Ilastik,20260704,,,,,,,False
+M_SE_28,https://doi.org/10.1016/j.cels.2020.04.003,computational analysis - method,Cell segmentation - Imaging based,nucleAlzer,20260704,,,,,,,False
+M_SE_29,https://doi.org/10.1186/s13059-025-03908-9,computational analysis - method,,RNA2seg,20260705,,,,,,,False
+M_SE_30,https://doi.org/10.1101/2025.03.14.643160,computational analysis - method,,Segger,20260705,,,,,,,False
+mudar estes numeros. Nao devia ser 25 …,,,,,,,,,,,,False
+M_PH_5,,Placeholder - method,Cell segmentation,Watershed,20260705,20260705,,,,,,True
+M_PH_6,,Placeholder - method,Cell segmentation,segmentations from the original papers,,,,,,,,True
+M_PH_25,https://doi.org/10.1038/s41467-017-01689-9,computational analysis - method,Phenotyping,Cytosplore,20250705,,,,,,I think is not available but check,False
+M_PH_26,https://doi.org/10.1016/j.cell.2015.05.047,computational analysis - method,Phenotyping,Phenograph,20250705,,,,,,notspatial omics data,False
+M_PH_27,https://doi.org/10.1002/cyto.a.22625,computational analysis - method,Phenotyping,FlowSOM,20250705,,,,,,notspatial omics data,False
+M_PH_28,https://doi.org/10.1038/s41596-021-00550-0,computational analysis - method,Phenotyping,FlowSOM,20250705,,,,,,notspatial omics data,False
+M_NI_29,https://doi.org/10.1038/nmeth.4391,computational analysis - method,Niche/Neighborhood/domain analysis,histoCAT,20250705,,,,,,don’t know where the data is,False
+M_NI_30,https://doi.org/10.1016/j.cell.2020.07.005,computational analysis - method,Niche/Neighborhood/domain analysis,schurch - coordinated neighborhoods,20250705,20260705,manual,to be added automatically,spatial proteomics,D_SP_CODEX_4,,False
+M_NI_31,https://doi.org/10.1038/s41587-024-02193-4,computational analysis - method,Niche/Neighborhood/domain analysis,COVET,20250705,,,,,,,False
+M_NI_32,https://doi.org/10.1038/s41588-025-02120-6,computational analysis - method,Niche/Neighborhood/domain analysis,NicheCompass,20250705,20260705,manual,to be added automatically,spatial transcriptomics,D_ST_ISH6; D_ST_CAP15; D_ST_simulation;D_ST_COSM16; D_ST_ISH14; D_ST_COSM16; D_ST_XEN17; D_ST_ISS18; D_ST_ISH19; D_ST_20; D_ST_21,M_NI_37;M_NI_39;M_NI_64; M_NI_65;M_NI_66,False
+M_NI_33,https://doi.org/10.1038/nbt.4260,computational analysis - method,Niche/Neighborhood/domain analysis,Zhu et all.,20250705,,,,,,,False
+M_NI_34,https://doi.org/10.1038/s41587-021-00935-2,computational analysis - method,Niche/Neighborhood/domain analysis,BayesSpace,20250705,,,,,,,False
+M_NI_35,https://doi.org/10.1038/s41467-023-43120-6,computational analysis - method,Niche/Neighborhood/domain analysis,stLearn,20250705,,,,,,,False
+M_NI_36,https://doi.org/10.1038/s41592-021-01255-8,computational analysis - method,Niche/Neighborhood/domain analysis,spaGCN,20250705,,,,,,,False
+M_NI_37,https://doi.org/10.1038/s41467-023-36796-3,computational analysis - method,Niche/Neighborhood/domain analysis,GraphST,20250705,,,,,,,False
+M_NI_38,https://doi.org/10.1038/s41467-022-29439-6,computational analysis - method,Niche/Neighborhood/domain analysis,STAGATE,20250705,,,,,,,False
+M_NI_39,https://doi.org/10.1038/s41588-024-01664-3,computational analysis - method,Niche/Neighborhood/domain analysis,Banksy,20250705,,,,,,,False
+M_NI_40,https://doi.org/10.1038/s41467-023-42343-x,computational analysis - method,Niche/Neighborhood/domain analysis,NeST,20250705,,,,,,,False
+M_NI_41,https://doi.org/10.1016/j.cels.2021.09.012,computational analysis - method,Niche/Neighborhood/domain analysis,TissueSchematics,20250705,,,,,,,False
+M_NI_42,https://doi.org/10.1016/j.celrep.2019.08.077,computational analysis - method,Niche/Neighborhood/domain analysis,SVCA,20250705,,,,,,,False
+M_NI_43,https://doi.org/10.1186/s13059-025-03637-z,computational analysis - method,Niche/Neighborhood/domain analysis,spaMGCN:,20250705,,,,,,,False
+M_NI_44,https://doi.org/10.1186/s13059-022-02663-5,computational analysis - method,Niche/Neighborhood/domain analysis,Misty,20250705,,,,,,,False
+M_NI_64,https://doi.org/10.1038/s41588-023-01588-4,computational analysis - method,Niche/Neighborhood/domain analysis,CellCharter,20260705,,,,,,,False
+M_NI_65,https://doi.org/10.1038/s41467-022-35233-1,computational analysis - method,Niche/Neighborhood/domain analysis,STACI,20260705,,,,,,,False
+M_NI_66,https://doi.org/10.1186/s13059-022-02692-0,computational analysis - method,Niche/Neighborhood/domain analysis,DeepLinc,20260705,,,,,,,False
+M_NI_67,https://doi.org/10.1038/s41467-026-71759-4,computational analysis - method,Niche/Neighborhood/domain analysis,CellNiche,20260705,,,,,,,False
+M_NI_68,https://doi.org/10.1038/s41592-025-02814-z,computational analysis - method,Niche/Neighborhood/domain analysis,Nicheformer,20260705,,,,,,,False
+M_SVG_45,https://doi.org/10.1038/nmeth.4636,computational analysis - method,Spatial Variable Genes,SpatialDE,20250705,,,,,,,False
+M_SVG_46,https://doi.org/10.1101/2021.10.27.466045,computational analysis - method,Spatial Variable Genes,SpatialDE2,20250705,,,,,,,False
+M_SVG_47,https://doi.org/10.1038/s41592-019-0701-7,computational analysis - method,Spatial Variable Genes,SPARK,20250705,,,,,,,False
+M_SVG_48,https://doi.org/10.1186/s13059-021-02404-0,computational analysis - method,Spatial Variable Genes,SPARK-X,20250705,,,,,,,False
+M_SVG_49,https://doi.org/10.1093/bioinformatics/btab164,computational analysis - method,Spatial Variable Genes,sepal,20250705,,,,,,,False
+M_SVG_50,https://doi.org/10.1038/s41467-022-33182-3,computational analysis - method,Spatial Variable Genes,scGCO,20250705,,,,,,,False
+M_SVG_51,https://doi.org/10.1038/nmeth.4634,computational analysis - method,Spatial Variable Genes,trendseek,20250705,,,,,,,False
+M_CCC_52,https://doi.org/10.1038/s41556-024-01469-w,computational analysis - method,Cell-Cell-Communication,LIANA+,20250705,,,,,,,False
+M_CCC_53,https://doi.org/10.1038/s41587-022-01467-z,computational analysis - method,Cell-Cell-Communication,NCEM,20250705,,,,,,,False
+M_CCC_54,https://doi.org/10.1038/s41467-022-32111-8,computational analysis - method,Cell-Cell-Communication,SpaTalk,20250705,,,,,,,False
+M_CCC_55,https://doi.org/10.1038/s41592-022-01728-4,computational analysis - method,Cell-Cell-Communication,COMMOT,20250705,,,,,,,False
+M_CCC_56,https://doi.org/10.1038/s41467-023-39608-w,computational analysis - method,Cell-Cell-Communication,SpatialDM,20250705,,,,,,,False
+M_CCC_57,https://doi.org/10.1038/s41596-024-01121-9,computational analysis - method,Cell-Cell-Communication,NicheNEt,20250705,,,,,,,False
+M_CCC_58,https://doi.org/10.1038/s41592-019-0667-5,computational analysis - method,Cell-Cell-Communication,NicheNEt,20250705,,,,,,,False
+M_CCC_59,https://doi.org/10.1038/s41596-024-01137-1,computational analysis - method,Cell-Cell-Communication,CellPhoneDB,20250705,,,,,,,False
+M_CCC_60,https://doi.org/10.1038/s41467-021-21246-9,computational analysis - method,Cell-Cell-Communication,CellChat,20250705,,,,,,,False
+M_CCC_61,https://doi.org/10.1038/s41592-024-02408-1,computational analysis - method,Cell-Cell-Communication,Spacia,20250705,,,,,,,False
+M_CCC_62,https://doi.org/10.1101/2023.06.13.544751,computational analysis - method,Cell-Cell-Communication,MultiNicheNEt,20250705,,,,,,,False
+M_CCC_63,https://doi.org/10.1186/s13059-020-02214-w,computational analysis - method,Cell-Cell-Communication,GCNG,20250705,,,,,,,False
+M_ML_100,https://doi.org/10.1016/j.media.2022.102384,computational analysis - method,Label separation/pattern extraction - ML,NaroNet,20250705,20260706,manual,to be added automatically,spatial proteomics,D_SP_simulation; D_SP_IMC_3; D_SP_IF16,M_CV_1082; M_CV_1083,False
+M_ML_101,https://doi.org/10.1016/j.compbiomed.2023.106576,computational analysis - method,Label separation/pattern extraction - ML,Fu et al.,20250705,20260706,manual,to be added automatically,spatial proteomics,D_SP_IMC_9; D_SP_IMC_3,M_Surv_1084;M_Surv_1085;M_Surv_1086;M_Surv_1087;M_Surv_1088,False
+M_ML_102,https://doi.org/10.1016/j.cell.2021.12.023,computational analysis - method,Label separation/pattern extraction - ML; Application,Risom et al.  RAHBT_MIBI,20250705,20260706,manual,to be added automatically,spatial proteomics,D_SP_MIBI19,,False
+M_ML_103,https://doi.org/10.1016/j.patter.2023.100829,computational analysis - method,Label separation/pattern extraction - ML,S3-CIMA,20250705,,,,,,,False
+M_ML_104,https://doi.org/10.1038/s41592-021-01343-9,computational analysis - method,Label separation/pattern extraction - factor analysis ; spatiotemporal dynamics,MEFISTO,20250705,,,,,,,False
+M_69,https://doi.org/10.1038/s41586-024-08453-2,computational analysis - method,Other; spatiotemporal dynamics,Moscot,20250705,,,,,,,False
+M_70,https://doi.org/10.1186/s13059-025-03588-5,computational analysis - method,spatiotemporal dynamics; other,ONTraC,20250705,,,,,,,False
+M_71,https://doi.org/10.1038/s41592-024-02212-x,computational analysis - method,General Framework,SpatialData,20250705,,,,,,,False
+M_72,https://doi.org/10.1038/s41587-023-01935-0,computational analysis - method,Integration of modalities; Other,,20250705,,,,,,,False
+M_73,https://doi.org/10.1038/s41588-025-02119-z,computational analysis - method,Other,,20250705,,,,,,"called it a better thing. Separate labels, DL for classification. Add NMR F62",False
+M_74,https://doi.org/10.1016/j.cels.2025.101261,computational analysis - method,Integration of modalities; Other,,20250705,,,,,,,False
+M_75,https://doi.org/10.1038/s41592-021-01358-2,computational analysis - method,General Framework,Squidpy,20250705,,,,,,,False
+M_76,https://doi.org/10.1093/bioinformatics/btac299,computational analysis - method,General Framework,SpatialExperiment,20250705,,,,,,,False
+M_77,https://doi.org/10.1186/s13059-021-02286-2,computational analysis - method,General Framework,Giotto,20250705,,,,,,,False
+M_78,https://doi.org/10.1038/s41467-018-06868-w,computational analysis - method,Subcellular localization,,20250705,,,,,,,False
+M_79,https://doi.org/10.1038/s41551-020-0578-x,computational analysis - method,Integration of modalities; Other,,20250705,,,,,,,False
+M_80,https://doi.org/10.1038/s41467-022-30033-z,computational analysis - method,Cell type Deconvolution,Stdeconvolve,20250705,,,,,,,False
+M_81,https://doi.org/10.1016/j.cels.2021.09.012,computational analysis - method,Niche/Neighborhood/domain analysis,TissueSchematics,20250705,,,,,,,False
+M_CV_1082,https://doi.org/10.1038/s41551-020-00682-w,computational analysis - method,Computer Vision H&E,CLAM,20260706,20260706,manual,to be added automatically,histopathological,,,False
+M_CV_1083,https://doi.org/10.1109/TPAMI.2019.2936841,computational analysis - method,Computer Vision H&E,NIC,20260706,20260706,manual,to be added automatically,histopathological,,,False
+M_Surv_1084,https://doi.org/10.1609/aaai.v32i1.11842,computational analysis - method,survival prediction,Deephit,20260706,20260706,manual,to be added automatically,,,,False
+M_Surv_1085,https://doi.org/10.1186/s12874-018-0482-1,computational analysis - method,survival prediction,DeepSurv,20260706,20260706,manual,to be added automatically,,,,False
+M_Surv_1086,https://doi.org/10.1109/ICCSS53909.2021.9721940,computational analysis - method,survival prediction,BroadSurv,20260706,20260706,manual,to be added automatically,,,,False
+M_Surv_1087,https://doi.org/10.48550/arXiv.2111.01482,computational analysis - method,survival prediction,DagSurv,20260706,20260706,manual,to be added automatically,,,,False
+M_Surv_1088,https://doi.org/10.1145/3466782,computational analysis - method,survival prediction,AttentionSurv,20260706,20260706,manual,to be added automatically,,,,False
+AP,Application Paper,,,probably are also technical methods,,,data ssoaciated,,,,,False
+AP_1,https://doi.org/10.1038/s41586-019-1876-x,Application,The single-cell pathology landscape of breast cancer,,20260704,,D_SP_IMC_3,,,,,False
+AP_2,https://doi.org/10.1016/j.cmet.2019.01.003,Application,Multiplexed In Situ Imaging Mass Cytometry Analysis of the Human Endocrine Pancreas and Immune System in Type 1 Diabetes,,20250718,,D_SP_IMC_6,,adicionar alguma coisa sobre a doença que fala? E sobre que métodos usa?,,,False
+AP_3_osmfish,https://doi.org/10.1038/s41592-018-0175-z,Application,Spatial organization of the somatosensory cortex revealed by osmFISH,osmFISH,20250721,,D_ST_ISH1,Protocol for osmfish,,,,False
+AP_4,https://doi.org/10.1126/science.aau5324,Application,"Molecular, spatial, and functional single-cell profiling of the hypothalamic preoptic region","Moffitt et al., 2018",20250721,,D_ST_ISH2,,,,,False
+AP_5,https://doi.org/10.1126/science.aat5691,Application,Three-dimensional intact-tissue sequencing of single-cell transcriptional states,STARMAP,20260704,,D_ST_ISH4,Protocol for STARMAP,,,,False
+AP_6,https://doi.org/10.1038/s41586-019-1049-y,Application,Transcriptome-scale super-resolved imaging in tissues by RNA seqFISH+,seqFISH+,20260705,,D_ST_ISH5,Protocol for seqFISH+,,,,False
+AP_7,https://doi.org/10.1038/s41587-021-01006-2,Application,Integration of spatial and single-cell transcriptomic data elucidates mouse organogenesis,,20260705,,D_ST_ISH6,,,,,False
+AP_8,https://doi.org/10.1038/s41587-020-0739-1,Application,Highly sensitive spatial transcriptomics at near-cellular resolution with Slide-seqV2,Slide-seqV2,20260705,,D_ST_CAP15,,,,,False
+AP_9,https://doi.org/10.1038/s41587-022-01483-z,Application,High-plex imaging of RNA and proteins at subcellular resolution in fixed tissue by spatial molecular imaging,CosMx,20260705,,D_ST_COSM16,,,,,False
+AP_10,https://doi.org/10.1038/s41467-023-43458-x,"Technical Methods, Application","High resolution mapping of the tumor microenvironment using integrated single-cell, spatial and in situ analysis",Xenium,20250705,,D_ST_XEN14,,,,,False
+AP_11,https://doi.org/10.1038/s41586-023-06569-5,Application,Spatial atlas of the mouse central nervous system at molecular resolution,STARmap PLUS,20250705,,D_ST_ISS18,,,,,False
+AP_12,https://doi.org/10.1038/s41586-023-06808-9,Application,Molecularly defined and spatially resolved cell atlas of the whole mouse brain,,20250705,,D_ST_ISH19,,,,,False
+AP_13,https://doi.org/10.1038/s41586-023-05795-1,Application,Spatial epigenome–transcriptome co-profiling of mammalian tissues,Spatial epigenome–transcriptome,20250705,,D_ST_20,,,,,False
+AP_14,https://doi.org/10.1016/j.cell.2024.03.029,Application,Integrative spatial analysis reveals a multi-layered organization of glioblastoma,,20260706,,tem data ver,,,,,False
+AP_15,https://doi.org/10.1016/j.cell.2018.08.039,Application,A Structured Tumor-Immune Microenvironment in Triple Negative Breast Cancer Revealed by Multiplexed Ion Beam Imaging,MIBI TOF breast cancer,20260706,,vai ter MIBI data,,,,,False
+AP_16,https://doi.org/10.1136/gutjnl-2022-327608,Application,Transcriptomic and immunophenotypic profiling reveals molecular and immunological hallmarks of colorectal cancer tumourigenesis,Roelands Gut,20250705,,,,,,,False
+AP_17,https://doi.org/10.1016/j.ccell.2025.01.012,Application,Integrative spatial analysis reveals tumor heterogeneity and immune colony niche related to clinical outcomes in small cell lung cancer,,20250705,,CODEX data lung,,,,,False
+AP_18,https://doi.org/10.1038/s41467-023-36325-2,Application,Dissecting the immune suppressive human prostate tumor microenvironment via integrated single-cell and spatial transcriptomic analyses,,20250705,,ST prostate tumour,,,,,False
+AP_19,https://doi.org/10.1038/s41467-024-54364-1,Application,Single cell and spatial transcriptomics highlight the interaction of club-like cells with immunosuppressive myeloid cells in prostate cancer,,20250705,,ST prostate cancer,,,,,False
+AP_20,https://doi.org/10.1158/0008-5472.CAN-22-1190,Application,Quantitative Spatial Profiling of Immune Populations in Pancreatic Ductal Adenocarcinoma Reveals Tumor Microenvironment Heterogeneity and Prognostic Biomarkers,,20250705,,PDAC IHC,,,,,False
+AP_21,https://doi.org/10.1038/s43856-022-00197-2,Application,Multiplexed imaging mass cytometry reveals distinct tumor-immune microenvironments linked to immunotherapy responses in melanoma,,20250705,,IMC melanoma immunoterapy,,,,,False
+AP_22,https://doi.org/10.1038/s41588-025-02193-3,"Technical Methods, Application",High-definition spatial transcriptomic profiling of immune cell populations in colorectal cancer,VISIUM HD,20250705,,"Visium HD, Xenium CRC",,,,,False
+AP_23,https://doi.org/10.1038/s41467-024-47271-y,Application,Spatial transcriptomics reveals discrete tumour microenvironments and autocrine loops within ovarian cancer subclones,,20250705,,CosMx ovarian,,,,,False
+AP_24,https://doi.org/10.1038/s41467-023-40156-6,Application,Macrophage and neutrophil heterogeneity at single-cell spatial resolution in human inflammatory bowel disease,,20250705,,CosMX BID,,,,,False
+AP_25,https://doi.org/10.1038/s41467-023-43458-x,Application,,,20250705,,,,,,,False
+AP_26,https://doi.org/10.1186/s40364-024-00636-3,Application,"Single-cell, single-nucleus and xenium-based spatial transcriptomics analyses reveal inflammatory activation and altered cell interactions in the hippocampus in mice with temporal lobe epilepsy",,20250705,,Xenium mice hippocampus epilepsia,,,,,False
+AP_27,https://doi.org/10.1038/s43018-021-00301-w,"Technical Methods, Application",Three-dimensional imaging mass cytometry for highly multiplexed molecular and cellular mapping of tissues and the tumor microenvironment,3D IMC breast,20250705,,3D IMC breast,,,,,False
+AP_28,https://doi.org/10.1016/j.cels.2017.12.001,"Technical Methods, Application",Simultaneous Multiplexed Imaging of mRNA and Proteins with Subcellular Resolution in Breast Cancer Tissue Samples by Mass Cytometry,mRNA+protein IMC breast,20250705,,mRNA+protein IMC breast,,,,,False
+AP_29,https://doi.org/10.1038/s41587-023-01937-y,"Technical Methods, Application",,,20250705,,,,,,,False
+AP_30,https://doi.org/10.1038/s41596-021-00556-8,"Technical Methods, Application",CODEX multiplexed tissue imaging with DNA-conjugated antibodies,CODEX,20250705,,,,,,,False
+AP_31,https://doi.org/10.1126/science.aaw1219,"Technical Methods, Application",Slide-seq: A scalable technology for measuring genome-wide expression at high spatial resolution,Slide-seqV2,20250705,,,,,,,False
+AP_32,https://doi.org/10.1016/j.cmet.2018.11.014,Application,A Map of Human Type 1 Diabetes Progression by Imaging Mass Cytometry,,20250718,,IMC diabetes,,,,,False
+AP_33,https://doi.org/10.1038/s43018-020-0026-6,Application,Imaging mass cytometry and multiplatform genomics define the phenogenomic landscape of breast cancer,,20250718,,METABRIC breast?,,,,,False
+AP_34,https://doi.org/10.1136/jitc-2023-008138,Application,Multimodal profiling of chordoma immunity reveals distinct immune contextures,,20250718,,IMC chordoma oost,,,,,False
+AP_35,https://doi.org/10.1007/s00262-025-04123-y,Application,Divergent therapeutic and prognostic impacts of immunogenic features in undifferentiated pleomorphic sarcoma and myxofibrosarcoma,,20250718,,IMC sarcoma oost,,,,,False
+AP_36,https://doi.org/10.1038/s41586-021-03475-6,Application,The spatial landscape of lung pathology during COVID-19 progression,,20250718,,IMC covid,,,,,False
+AP_37,https://doi.org/10.1016/j.celrep.2023.113494,Application,T cell-mediated curation and restructuring of tumor tissue coordinates an effective immune response,,20250719,,CODEX immmunoterapy melanoma,,,,,False

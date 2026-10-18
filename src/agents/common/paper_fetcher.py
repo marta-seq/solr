@@ -359,7 +359,9 @@ def is_probably_real_content(text: str, min_length: int = 200) -> bool:
         return False
     short_line_ratio = sum(1 for l in lines if len(l) < 40) / len(lines)
     avg_words_per_line = sum(len(l.split()) for l in lines) / len(lines)
-    if short_line_ratio > 0.6 and avg_words_per_line < 8:
+    # Only for short captures: a navigation menu is short, a 60k-char methods section is not. On long PDF text with the spaces stripped
+    # (two-column layout, glued words - e.g. scNiche/M_NI_101) this heuristic misfired and the whole section was skipped as 'boilerplate'.
+    if len(text) < 8000 and short_line_ratio > 0.6 and avg_words_per_line < 8:
         return False
 
     return True
@@ -511,6 +513,32 @@ def _try_crossref_abstract(doi: str):
         return None
 
 
+_DA_LOOSE_RE = re.compile(r"data\s*(and\s*(materials|code)\s*)?availab", re.IGNORECASE)
+_DA_WINDOW_CHARS = 3500
+_TAIL_CHARS = 15000
+
+
+def _data_availability_window(text: str) -> str:
+    """Window starting at the LAST 'data availability'-like mention that is followed by real statement text (earlier mentions are
+    usually 'see Data availability' cross-references). '' if the text never says it."""
+    ms = [m for m in _DA_LOOSE_RE.finditer(text)]
+    if not ms:
+        return ""
+    for m in reversed(ms):
+        chunk = text[m.start():m.start() + _DA_WINDOW_CHARS]
+        if len(chunk) > 200:
+            return chunk
+    return ""
+
+
+def _article_tail(text: str) -> str:
+    """Last _TAIL_CHARS characters of the article body, i.e. the text before the reference list when one can be located."""
+    refs = [m.start() for m in re.finditer(r"\n\s*(references|bibliography)\s*\n", text, re.IGNORECASE)]
+    end = refs[-1] if refs and refs[-1] > len(text) // 3 else len(text)
+    return text[max(0, end - _TAIL_CHARS):end]
+
+
+
 def get_agent_text(paper: dict, section_name: str) -> tuple:
     """
     The one function every agent calls to get its input text - handles the
@@ -539,6 +567,16 @@ def get_agent_text(paper: dict, section_name: str) -> tuple:
     if section_name in sections and sections[section_name].strip():
         chunk = sections[section_name]
         source = f"section:{section_name}"
+    elif section_name == "data_availability" and paper.get("is_full_text") and _data_availability_window(text):
+        # Heading not isolated (two-column/PDF text with spaces stripped, or the heading sits mid-line) but the statement IS in
+        # the text - cut a window around it instead of giving up (added 2026-10-13; scNiche/M_NI_101 was skipped for this).
+        chunk = _data_availability_window(text)
+        source = "section:data_availability"
+    elif section_name == "data_availability" and paper.get("is_full_text") and text.strip():
+        # No data-availability wording at all: the statement (if any) is near the END, so send the tail of the article body (before the
+        # reference list), not the unfocused start of the paper the generic fallback below would send.
+        chunk = _article_tail(text)
+        source = "full_text_tail"
     elif paper.get("is_full_text") and text.strip():
         chunk = text
         source = "full_text_fallback"

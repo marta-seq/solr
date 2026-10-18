@@ -84,6 +84,46 @@ _GENERIC_TECHNIQUE_NAMES = {
 }
 
 
+# Abbreviation -> the normalized spelled-out name, so "RF" / "Random Forest" / "random_forest" all resolve to ONE canonical key (added
+# 2026-10-11: the model used to create a new placeholder per spelling). Spelling/punctuation variants already collapse in
+# _normalize_method_name(); this only needs the genuine abbreviations. Both sides of every generic-name comparison go through
+# _canonical_generic_key(), so an existing placeholder named either way is found.
+_GENERIC_ALIASES = {_normalize_method_name(a): _normalize_method_name(full) for a, full in {
+    "SVM": "Support Vector Machine", "Support Vector Machines": "Support Vector Machine",
+    "RF": "Random Forest", "MLP": "Multilayer Perceptron", "Multi-layer Perceptron": "Multilayer Perceptron",
+    "kNN": "k-Nearest Neighbors", "PCA": "Principal Component Analysis", "LGBM": "LightGBM", "Light GBM": "LightGBM",
+    "GCN": "Graph Convolutional Network", "Graph Convolutional Networks": "Graph Convolutional Network",
+    "GAT": "Graph Attention Network", "Graph Attention Networks": "Graph Attention Network",
+    "GIN": "Graph Isomorphism Network",
+}.items()}
+
+# Family tag for generic models (written into the placeholder's "Internal notes", NOT a new column - a schema change needs Marta's
+# sign-off). Anything not listed here (U-Net, ResNet, Watershed, ...) is a generic technique without a family tag.
+_GENERIC_FAMILY = {_normalize_method_name(n): fam for fam, names in {
+    "generic_ml": ["Support Vector Machine", "Random Forest", "Logistic Regression", "Decision Tree", "Naive Bayes", "Gradient Boosting",
+                   "Gradient Boosting Classifier", "AdaBoost", "AdaBoost Classifier", "XGBoost", "LightGBM", "Multilayer Perceptron",
+                   "k-Nearest Neighbors", "K-means", "kmeans", "Principal Component Analysis", "UMAP", "t-SNE"],
+    "generic_graph": ["Graph Convolutional Network", "Graph Attention Network", "Graph Isomorphism Network", "GraphSAGE", "SAGEConv",
+                      "GraphConv"],
+}.items() for n in names}
+
+
+def _canonical_generic_key(name: str) -> str:
+    # A trailing parenthetical is the abbreviation or a qualifier: "Support Vector Machine (SVM)" and "Random Forest (RF)"
+    # (Marta's manual names) must key the same as "SVM" / "Random Forest", or the dedup misses them (2026-10-15 review).
+    paren = re.match(r"^(.*?)\s*\(([^()]*)\)\s*$", str(name or ""))
+    if paren and paren.group(1).strip():
+        main, abbr = _normalize_method_name(paren.group(1)), _normalize_method_name(paren.group(2))
+        return _GENERIC_ALIASES.get(main) or _GENERIC_ALIASES.get(abbr) or main
+    key = _normalize_method_name(name)
+    return _GENERIC_ALIASES.get(key, key)
+
+
+def _generic_family(name: str):
+    """'generic_ml' / 'generic_graph' for a known generic model (any spelling/abbreviation), else None."""
+    return _GENERIC_FAMILY.get(_canonical_generic_key(name))
+
+
 def _is_generic_technique(method_name: str) -> bool:
     return _normalize_method_name(method_name) in _GENERIC_TECHNIQUE_NAMES
 
@@ -139,7 +179,7 @@ def _find_existing_generic_placeholder(db, method_name: str):
        db itself (created on first use), updated by the caller right after
        creating a new generic placeholder.
     """
-    target = _normalize_method_name(method_name)
+    target = _canonical_generic_key(method_name)       # "RF" and "Random Forest" -> the same key
     if not target:
         return None
 
@@ -152,7 +192,7 @@ def _find_existing_generic_placeholder(db, method_name: str):
 
     if "name" in db.methods.columns:
         match = db.methods[db.methods["name"].apply(
-            lambda n: _normalize_method_name(n) == target if isinstance(n, str) else False
+            lambda n: _canonical_generic_key(n) == target if isinstance(n, str) else False
         )]
         if not match.empty:
             return match.iloc[0]["entry_id"]
@@ -197,12 +237,13 @@ include methods that are merely used as a preprocessing step or a component of t
 pipeline, only genuine comparison/benchmark methods.
 
 STRICT RULES:
-- method_name MUST be an actual named algorithm, software tool, or pipeline (e.g. "Cellpose", \
-"StarDist", "Mesmer") - a proper noun for a specific piece of software/method.
-- method_name must NEVER be a generic author-year citation (e.g. "Zeisel et al." or "Smith et \
-al., 2020" is NOT a method name). If a citation doesn't name a specific tool/algorithm - even if \
-it appears in a comparison-like sentence - skip it entirely. Only extract it if the paper itself \
-gives the compared method a proper name.
+- NAMING - method_name: use the name the paper gives the method (e.g. "Cellpose", "StarDist", "Mesmer"). \
+Most methods have a name, but some do not: if an approach is clearly presented as a distinct \
+method that the paper compares against yet gives no name (e.g. the cellular-neighborhoods analysis \
+of Schurch et al.), use a short descriptive label, followed by the first author when the paper \
+gives one (e.g. "Cellular neighborhoods (Schurch et al.)"). Skip a bare author-year citation that \
+does not describe a specific approach (e.g. "Zeisel et al." in a sentence that only cites related \
+work), even if it appears in a comparison-like sentence.
 - Do NOT include datasets, biological findings, or general background citations, even if phrased \
 similarly to a comparison.
 
@@ -243,35 +284,32 @@ challenge/review paper doesn't benchmark ONE baseline, it either discusses many 
 none in the comparison sense at all. Mirrors the same rule already used for pipeline_category \
 tagging at scrape time (relevance.py) - apply it here too.
 
-Generic baseline FAMILIES: sometimes a paper benchmarks against a broad set of standard, \
-off-the-shelf models rather than one specific named published method with its own paper - e.g. \
-several classical ML classifiers (random forest, SVM, logistic regression, AdaBoost, MLP, decision \
-tree, naive Bayes, gradient boosting) or several generic graph-neural-network variants (GCN, GAT, \
-GIN, GraphSAGE, GraphConv). These are real and worth recording, but do NOT create one item per \
-variant and do NOT try to find individual citations for them - instead return ONE item for the \
-whole family, with "is_baseline_group": true and "method_name" set to a short descriptive label \
-built from the actual names mentioned (e.g. "Classical ML baselines (RF, SVM, Logistic Regression, \
-AdaBoost)" or "Graph neural network baselines (GCN, GAT, GIN)"). Leave citation_marker and \
-citation_text empty for these - no per-baseline citation lookup is needed.
+GENERIC MODELS: standard, off-the-shelf models that are not a specific published method with \
+its own paper - classical ML (random forest, SVM, logistic regression, AdaBoost, MLP, decision \
+tree, naive Bayes, gradient boosting, XGBoost, k-means) and generic graph neural networks (GCN, \
+GAT, GIN, GraphSAGE, GraphConv) - are real baselines and worth recording: return ONE item per \
+model, with method_name set to its plain standard name as written in the paper (e.g. "Random \
+Forest", "SVM", "GCN"). Never invent a group label such as "Classical ML baselines (RF, SVM)", and \
+never merge several models into one item. Leave citation_marker and citation_text empty for \
+these - no citation lookup is needed. Do not extract datasets or other comparisons from a \
+mention of a generic model.
 
 Return ONLY a JSON array, nothing else, no markdown fences. Each element:
 {
-  "method_name": "the name of the compared method/tool, as written in the paper - MUST be an \
-actual tool/algorithm proper name per the strict rules above, never an author-year citation. For \
-a generic baseline family (is_baseline_group=true), a short descriptive label instead (see above)",
-  "is_baseline_group": true/false (true ONLY for a generic baseline family as described above - \
-false for every genuinely named, individually-citable method; should be false for the vast \
-majority of items),
+  "method_name": "the name of the compared method/tool, as written in the paper, following the \
+NAMING rule above (a descriptive label only for a clearly distinct method the paper leaves \
+unnamed; never a bare author-year citation). For a generic model, its plain standard name \
+(see GENERIC MODELS)",
   "citation_marker": "ONLY digits, nothing else - e.g. '12' or '41'. Do NOT include the word \
 'ref', brackets, parentheses, periods, or any other character - digits only. If multiple numbers \
 are cited together (e.g. text shows '[12,13]'), return only the FIRST number. Leave this as a \
 genuinely empty string only if there is truly no number anywhere near the mention (the paper \
-uses author-year citations like 'Smith et al., 2020' instead of numbers), or if is_baseline_group \
-is true.",
-  "citation_text": "ONLY fill this in if citation_marker is a genuinely empty string AND \
-is_baseline_group is false - the author-year citation as written near the mention (e.g. 'Smith \
-et al., 2020'). Leave this empty if you filled citation_marker, or if is_baseline_group is true - \
-never fill both."
+uses author-year citations like 'Smith et al., 2020' instead of numbers), or if it is a generic \
+model (see GENERIC MODELS).",
+  "citation_text": "ONLY fill this in if citation_marker is a genuinely empty string AND the item is \
+not a generic model - the author-year citation as written near the mention (e.g. 'Smith et al., \
+2020'). Leave this empty if you filled citation_marker, or if it is a generic model - never fill \
+both."
 }
 If no comparison methods are mentioned, return an empty JSON array: []
 """
@@ -454,7 +492,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         # run rather than degrading further.
         extracted, model_used = call_llm_json(
             SYSTEM_PROMPT, _build_user_prompt(entry_id, methods_text),
-            only_provider="gemini_flash_only"
+            **config.llm_kwargs("methods_desk", only_provider="gemini_flash_only")   # local mode: this stage's model from config.STAGE_MODELS
         )
     except LLMError as e:
         staging.append_candidate(
@@ -529,7 +567,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                                        "matched_by": "name"})
                 continue
 
-            new_id = db.id_allocator.next_id("M_AUTO")
+            new_id = db.id_allocator.next_dated_id("M_AUTO")   # M_AUTO_<seq>_<YYYYMMDD><line> (Marta, 2026-10-11)
             reason = ("Generic baseline family grouped from a single comparison mention"
                       if is_baseline_group else
                       "Well-known generic technique (not spatial-omics-specific)")
@@ -543,14 +581,15 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                     "COMPLETE": "NA",
                     "Date(added_to_dataset)": _today_stamp(),
                     "Internal notes": f"{reason} in {entry_id} - not a specific citable spatial-"
-                                       f"omics method, no DOI resolution attempted.",
+                                       f"omics method, no DOI resolution attempted."
+                                       + (f" Family: {_generic_family(method_name)}." if _generic_family(method_name) else ""),
                 },
                 source_paper_entry_id=entry_id, curation_agent="compared_methods_agent",
                 curation_model=model_used, confidence=None,
                 notes=f"{reason} in {entry_id}: '{method_name}'.",
             )
             db.name_index.add(method_name, new_id)
-            db._generic_name_cache[_normalize_method_name(method_name)] = new_id  # see
+            db._generic_name_cache[_canonical_generic_key(method_name)] = new_id  # see
             # _find_existing_generic_placeholder()'s docstring - covers same-run
             # duplicates of a name too short for NameIndex to index at all.
             embedded_term = _extract_generic_technique_term(method_name)
@@ -560,7 +599,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
                 # the bare term in a different paper this same run still
                 # finds this entry - see _extract_generic_technique_term()'s
                 # docstring for the real case this symmetry closes.
-                db._generic_name_cache[_normalize_method_name(embedded_term)] = new_id
+                db._generic_name_cache[_canonical_generic_key(embedded_term)] = new_id
             comparison_ids_added.append(new_id)
             item_outcomes.append({"outcome": "created_new", "entry_id": new_id,
                                    "confidence": None, "review_status": config.REVIEW_STATUS_AUTO})
@@ -631,7 +670,7 @@ def process_paper(db, paper_entry: dict, fetched: dict = None, reference_map: di
         # silently guessing wrong (caught via testing: SSAM/Baysor, both segmentation
         # methods, got created as M_PR_x when they should've been M_SE_x or matched
         # to their existing entries).
-        new_id = db.id_allocator.next_id("M_AUTO")
+        new_id = db.id_allocator.next_dated_id("M_AUTO")   # M_AUTO_<seq>_<YYYYMMDD><line> (Marta, 2026-10-11)
         review_status = config.REVIEW_STATUS_AUTO if confident else config.REVIEW_STATUS_NEEDS_REVIEW
 
         new_fields = {

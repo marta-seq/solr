@@ -60,13 +60,27 @@ contribution is actually a WET-LAB technique - new chemistry, a labeling/amplifi
 a staining or antibody panel protocol, a tissue-preparation or imaging-hardware technique - even \
 if the paper is a genuinely new and important technique. "Introduces something new" is not \
 sufficient by itself - the new thing must be computational/software, not wet-lab/chemical/\
-hardware, for the tag to be correct.
+hardware, for the tag to be correct. It is ALSO INCORRECT if the paper is an APPLICATION: its \
+main contribution is a biological or clinical finding obtained by applying spatial omics (and \
+existing tools) to a case study - a disease cohort, a tissue atlas, a treatment response, a \
+spatial characterization of a tumor microenvironment - rather than a new or benchmarked \
+computational tool. Using software to analyze data is not enough for the tag; the software \
+itself must be what the paper contributes. Keep the tag CORRECT when a genuinely new or \
+benchmarked tool is the main contribution, even if the paper also demonstrates it on a real \
+biological dataset (most methods papers do).
 
 2. Which spatial omics modality/modalities does this paper's data/method actually concern? \
 Choose one or more from EXACTLY these labels (copy character for character, do not invent \
 others): "spatial_transcriptomics", "spatial_proteomics", "spatial_metabolomics". A paper \
 usually fits exactly one; some genuinely fit more than one (multi-omics). If you cannot tell \
 from the title/abstract, return an empty list rather than guessing.
+
+The modality comes from WHAT IS MEASURED, never from the technique. In particular MALDI-MSI, DESI-MSI, \
+SIMS and other mass spectrometry imaging do NOT imply "spatial_metabolomics": they can image \
+proteins/peptides (spatial_proteomics), metabolites/lipids (spatial_metabolomics), or both. Tag \
+spatial_metabolomics only when the abstract says metabolites, lipids or small molecules were \
+imaged, and spatial_proteomics only when it says proteins/peptides (tryptic digests, microproteomics); \
+if it does not say, return an empty list.
 
 IMPORTANT, found live 2026-10-04 - do NOT default to "spatial_transcriptomics" just because a \
 paper uses generic, platform-agnostic wording like "spatial omics" or "spatially resolved omics \
@@ -118,8 +132,9 @@ def audit_entry(entry_id: str, title: str, abstract: str, only_provider=None) ->
         return _empty_result("no title or abstract available to audit")
 
     try:
-        parsed, model_used = call_llm_json(_SYSTEM_PROMPT, _build_user_prompt(entry_id, title, abstract),
-                                            only_provider=only_provider)
+        # an explicit only_provider (e.g. the benchmark) wins; otherwise local mode -> the 'audit' stage's model, api mode -> default chain
+        llm_kw = {"only_provider": only_provider} if only_provider else config.llm_kwargs("audit")
+        parsed, model_used = call_llm_json(_SYSTEM_PROMPT, _build_user_prompt(entry_id, title, abstract), **llm_kw)
     except LLMError as e:
         return _empty_result(f"LLM WAS called but every provider/model failed: {e}",
                               llm_exhausted=isinstance(e, LLMExhaustedError))

@@ -80,6 +80,8 @@ common.staging.append_candidate().
 from datetime import datetime, timezone
 
 from ...common import config, staging, audit_log
+from ...common.dataset_naming import dataset_internal_name
+from ...common.spatial_labels import classify as classify_spatial
 from ...common.doi_utils import normalize_doi
 from ...common.llm_client import call_llm_json, LLMError, LLMExhaustedError
 from ...common.paper_fetcher import fetch_paper, get_agent_text, is_probably_real_content
@@ -252,7 +254,7 @@ def _run_metadata_task(db, entry_id: str, row0, abstract: str) -> tuple:
     try:
         parsed, model_used = call_llm_json(
             SYSTEM_PROMPT_METADATA_ONLY, _build_user_prompt(entry_id, abstract),
-            only_provider="gemini_lite_only"
+            **config.llm_kwargs("application_desk", only_provider="gemini_lite_only")   # local mode: this stage's model
         )
     except LLMError as e:
         staging.append_candidate(
@@ -274,6 +276,15 @@ def _run_metadata_task(db, entry_id: str, row0, abstract: str) -> tuple:
             if val:
                 metadata_fields[col] = val
                 metadata_filled.append(col)
+
+    # Category + concrete platform, derived from the free-text technique (2026-10-13: `type of spatial data` alone said only
+    # "spatial proteomics" for many rows). Only fills blank cells, like the fields above.
+    raw_type = metadata_fields.get("type of spatial data") or row0.get("type of spatial data")
+    cat, meth = classify_spatial(raw_type, abstract)
+    for col, val in (("spatial_data_category", cat), ("spatial_data_method", meth)):
+        if val and _blank(row0.get(col)):
+            metadata_fields[col] = val
+            metadata_filled.append(col)
 
     metadata_fields.update({
         _METADATA_STATUS_COL: "auto",
@@ -318,7 +329,7 @@ def _run_dataset_task(db, entry_id: str, doi: str, row0, is_review: bool, fetche
 
     data_text, data_source = get_agent_text(fetched, "data_availability")
     data_text_usable = bool(data_text) and is_probably_real_content(data_text) and (
-        not config.REQUIRE_ISOLATED_SECTION or data_source == "section:data_availability"
+        not config.REQUIRE_ISOLATED_SECTION or data_source in ("section:data_availability", "full_text_tail")
     )
     if not data_text_usable:
         return [], 0, 0, False  # leave DATASET_REVIEW_STATUS unstamped - a future, better fetch might work
@@ -326,7 +337,7 @@ def _run_dataset_task(db, entry_id: str, doi: str, row0, is_review: bool, fetche
     try:
         parsed, model_used = call_llm_json(
             SYSTEM_PROMPT_DATASET_ONLY, _build_user_prompt(entry_id, data_text),
-            only_provider="gemini_lite_only"
+            **config.llm_kwargs("application_desk", only_provider="gemini_lite_only")   # local mode: this stage's model
         )
     except LLMError as e:
         staging.append_candidate(
@@ -452,6 +463,8 @@ def _run_dataset_task(db, entry_id: str, doi: str, row0, is_review: bool, fetche
                 "data_acess_link": access_link,
                 "paper_DOI": doi,
                 "paper_ENTRY_ID": entry_id,
+                # naming rule 2026-10-11 (common/dataset_naming.py): this paper's own name, else first-author+year
+                "paper_internal_name": dataset_internal_name(db.methods, entry_id),
                 "spatial_data_category": modality,
                 "spatial_data_method": technique,
                 "REVIEW_STATUS": config.REVIEW_STATUS_AUTO,

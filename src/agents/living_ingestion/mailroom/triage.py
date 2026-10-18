@@ -254,7 +254,7 @@ def build_application_queue(methods_df) -> list:
 # missing "N genes" - it doesn't have genes to begin with).
 _COMMON_METADATA_FIELDS = ["organism", "tissue", "disease", "spatial_data_method", "N samples"]
 _MODALITY_SPECIFIC_FIELDS = {
-    "spatial_proteomics": ["N markers", "Marker"],
+    "spatial_proteomics": ["N markers", "Marker", "N patients", "N images"],     # N patients/N images added 2026-10-11 (intern v2 prompt)
     "spatial_transcriptomics": ["N genes", "Genes"],
     # spatial_multi entries can reasonably need both - handled via fallback below
 }

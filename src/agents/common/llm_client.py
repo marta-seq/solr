@@ -87,7 +87,7 @@ _EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=8)
 
 
 def _call_model_with_deadline(url, api_key, model, system_prompt, user_prompt, deadline_s):
-    future = _EXECUTOR.submit(_call_model, url, api_key, model, system_prompt, user_prompt)
+    future = _EXECUTOR.submit(_call_model, url, api_key, model, system_prompt, user_prompt, deadline_s)
     try:
         return future.result(timeout=deadline_s)
     except concurrent.futures.TimeoutError:
@@ -111,7 +111,7 @@ def _extract_json(raw: str):
     return json.loads(raw)
 
 
-def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_prompt: str) -> tuple:
+def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_prompt: str, timeout_s=None) -> tuple:
     """Generic OpenAI-compatible chat-completions call - works for OpenRouter,
     Groq, Cerebras, Gemini's OpenAI-compatible endpoint, and DeepSeek direct
     alike, since they all share this request/response shape.
@@ -135,7 +135,9 @@ def _call_model(url: str, api_key: str, model: str, system_prompt: str, user_pro
             ],
             "temperature": 0,
         },
-        timeout=config.LLM_TIMEOUT_S,
+        # the read timeout follows the provider's own deadline (local providers wait up to config.LOCAL_LLM_TIMEOUT_S); it used to be
+        # hard-wired to LLM_TIMEOUT_S=120, so a local call that legitimately needed 125 s was cut off while the log said "up to 300s"
+        timeout=timeout_s or config.LLM_TIMEOUT_S,
     )
     if resp.status_code != 200:
         raise LLMError(f"{model} returned HTTP {resp.status_code}: {resp.text[:300]}",
@@ -196,9 +198,9 @@ def _build_provider_chain(skip_openrouter: bool = False, only_provider=None):
         names = [only_provider] if isinstance(only_provider, str) else list(only_provider)
         chain = []
         for name in names:
-            match = next((p for p in config.FALLBACK_PROVIDERS if p["name"] == name), None)
+            match = next((p for p in config.FALLBACK_PROVIDERS + config.LOCAL_PROVIDERS if p["name"] == name), None)
             if match is None:
-                raise ValueError(f"only_provider name {name!r} not found in config.FALLBACK_PROVIDERS")
+                raise ValueError(f"only_provider name {name!r} not found in config.FALLBACK_PROVIDERS / LOCAL_PROVIDERS")
             chain.append(match)
         return chain
 
@@ -212,6 +214,29 @@ def _build_provider_chain(skip_openrouter: bool = False, only_provider=None):
         })
     chain.extend(config.FALLBACK_PROVIDERS)
     return chain
+
+
+def _is_input_specific(e) -> bool:
+    """True for failures caused by THIS input rather than by an outage: the model timed out or returned unparseable output. With
+    temperature 0 the same input fails the same way again, so retrying 5x just wastes ~10 minutes per bad paper."""
+    return (isinstance(e, json.JSONDecodeError) or isinstance(e, requests.exceptions.Timeout)
+            or (isinstance(e, LLMError) and "hard deadline" in str(e)))
+
+
+def check_local_models() -> list:
+    """Local mode only: asks the Ollama server which models exist and returns a list of problems (empty = all good): server unreachable, or
+    a stage's model not pulled/created (e.g. the 32k Modelfile variants from benchmarks/methods_desk/make_variant.sh). Call before a run so a
+    missing model fails in seconds instead of after the whole retry/backoff budget on every paper."""
+    if config.LLM_MODE != "local":
+        return []
+    try:
+        r = requests.get(f"{config.LOCAL_LLM_URL}/api/tags", timeout=10)
+        r.raise_for_status()
+        have = {m["name"] for m in r.json().get("models", [])}
+    except (requests.RequestException, ValueError) as e:
+        return [f"Ollama server not reachable at {config.LOCAL_LLM_URL}: {e}"]
+    return [f"stage '{s}' needs model '{config.STAGE_MODELS[s]}' which is not on the Ollama server (have: {sorted(have)})"
+            for s in config.STAGES if config.STAGE_MODELS[s] not in have]
 
 
 def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = False, only_provider=None):
@@ -246,13 +271,14 @@ def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = 
                 # identical from the console: both are just silence. Now there's
                 # always a most-recent line telling you what's in flight and when
                 # it will give up on its own if nothing comes back.
+                deadline_s = provider.get("timeout_s", config.LLM_TIMEOUT_S)    # local providers set their own, longer, deadline
                 print(f"[llm_client] {provider['name']}/{model} attempt {attempt} "
                       f"(up to {config.LLM_TRANSIENT_MAX_RETRIES} if transient): waiting "
-                      f"up to {config.LLM_TIMEOUT_S}s...", flush=True)
+                      f"up to {deadline_s}s...", flush=True)
                 try:
                     raw, actual_model = _call_model_with_deadline(
                         provider["url"], api_key, model, system_prompt, user_prompt,
-                        deadline_s=config.LLM_TIMEOUT_S,
+                        deadline_s=deadline_s,
                     )
                     elapsed = time.time() - call_start
                     parsed = _extract_json(raw)
@@ -267,6 +293,12 @@ def call_llm_json(system_prompt: str, user_prompt: str, skip_openrouter: bool = 
                     print(f"[llm_client] {provider['name']}/{model} failed after "
                           f"{elapsed:.2f}s (attempt {attempt}, "
                           f"{'transient' if transient else 'NON-transient'}): {e}", flush=True)
+                    if (provider["name"].startswith("local_") and _is_input_specific(e)
+                            and attempt >= config.LOCAL_INPUT_ATTEMPTS):
+                        # A plain LLMError (NOT LLMExhaustedError): the callers record this one paper as failed and the run CONTINUES.
+                        # LLMExhaustedError (-> run stops) stays reserved for a real outage, e.g. Ollama refusing connections.
+                        raise LLMError(f"{provider['name']}/{model} could not process this input after {attempt} attempts "
+                                       f"(timeout or unparseable output - the same input would fail the same way again): {e}")
                     if not transient:
                         # Same request would fail the exact same way again -
                         # retrying buys nothing, move on immediately instead of

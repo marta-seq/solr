@@ -39,7 +39,7 @@ from pathlib import Path
 
 import openpyxl
 
-from ..common import config
+from ..common import config, dataset_naming
 
 _AUTO_LEVEL_COL_RE = re.compile(r"^AUTO_CURATION_DATE_LEVEL(\d+)$")
 
@@ -168,6 +168,33 @@ def _load_staging_records(staging_path: Path) -> list:
     return records
 
 
+def _fill_ap_pub_names(master_wb, touched: set) -> None:
+    """AP_pub `name` convention (Marta, 2026-10-13): lowercase first-author surname + year (smith2024, collision letters). Fills blanks only,
+    and only on rows this merge touched (never edits other/manual rows); all existing names count for collision checks."""
+    if "AP_pub" not in master_wb.sheetnames or not touched:
+        return
+    ws = master_wb["AP_pub"]
+    header_row = _find_header_row(ws)
+    hm = _header_map(ws, header_row)
+    if not all(k in hm for k in ("P_ENTRY_ID", "name", "authors", "year")):
+        return
+    rows = []
+    for r in range(header_row + 1, ws.max_row + 1):
+        pid = ws.cell(r, hm["P_ENTRY_ID"]).value
+        if pid in (None, ""):
+            continue
+        rows.append({"row": r, "id": str(pid), "name": ws.cell(r, hm["name"]).value,
+                     "authors": ws.cell(r, hm["authors"]).value, "year": ws.cell(r, hm["year"]).value})
+    before = {d["row"]: d["name"] for d in rows}
+    dataset_naming.fill_blank_names(rows)
+    filled = 0
+    for d in rows:
+        if d["id"] in touched and d["name"] and not before[d["row"]]:
+            ws.cell(d["row"], hm["name"], d["name"])
+            filled += 1
+    print(f"[merge]   {filled} AP_pub names filled (first-author surname + year)")
+
+
 def merge():
     master_path = _latest_master_file()
     print(f"[merge] Using master file: {master_path.name}")
@@ -185,6 +212,7 @@ def merge():
     master_wb = openpyxl.load_workbook(master_path)
 
     applied = 0
+    touched_ids = {}
     manual_skipped = 0
     needs_manual_placement = []
 
@@ -243,6 +271,16 @@ def merge():
             # literature-search scanner, always level 1) pass through as-is.
             candidate_fields["REVIEW_STATUS"] = config.auto_level_status(next_level)
 
+        # Every agent touch also stamps the audit fields Marta looks at in Excel (2026-10-13): REVIEW_STATUS if the row has none yet
+        # (the application desk's metadata/dataset stamps never set it, leaving ~130 AP_pub rows blank), and the last-change date.
+        status_col = header_map.get("REVIEW_STATUS")
+        current_status = ws.cell(row=existing_row, column=status_col).value if (existing_row and status_col) else None
+        if "REVIEW_STATUS" not in candidate_fields and str(current_status or "").strip() == "":
+            candidate_fields["REVIEW_STATUS"] = config.auto_level_status(next_level)
+        if "Date(last_change_to_entry)" in header_map:
+            candidate_fields["Date(last_change_to_entry)"] = int(date.today().strftime("%Y%m%d"))
+        touched_ids.setdefault(target_sheet, set()).add(entry_id)
+
         if existing_row is None:
             # create_entry (or an update_field that arrived before any
             # create_entry for the same id, which shouldn't normally happen)
@@ -266,6 +304,8 @@ def merge():
                 )
                 ws.cell(row=target_row, column=col_idx, value=rec.get(audit_field))
         applied += 1
+
+    _fill_ap_pub_names(master_wb, touched_ids.get("AP_pub", set()))
 
     if needs_manual_placement:
         ws_manual = master_wb.create_sheet("NEEDS_MANUAL_PLACEMENT")
