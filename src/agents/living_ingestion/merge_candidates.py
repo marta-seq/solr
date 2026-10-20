@@ -195,9 +195,15 @@ def _fill_ap_pub_names(master_wb, touched: set) -> None:
     print(f"[merge]   {filled} AP_pub names filled (first-author surname + year)")
 
 
-def merge():
-    master_path = _latest_master_file()
-    print(f"[merge] Using master file: {master_path.name}")
+def merge(base_path: Path = None, output_path: Path = None, keep_staging: bool = False):
+    """Default call (no arguments) = the original behaviour: master -> datasets_curated_autoreview_<date>.xlsx, staging archived.
+
+    base_path / output_path / keep_staging (added 2026-10-19) are used by src/publish/build_site.py for the weekly site
+    build: apply the accumulated staging onto any base file, write anywhere, and LEAVE staging.xlsx in place so it keeps
+    accumulating until Marta runs the real merge.
+    """
+    master_path = base_path or _latest_master_file()
+    print(f"[merge] Using {'base' if base_path else 'master'} file: {master_path.name}")
 
     staging_path = config.STAGING_DIR / "staging.xlsx"
     if not staging_path.exists():
@@ -315,17 +321,27 @@ def merge():
             ws_manual.append([rec.get(k, "") for k in all_keys])
 
     today = date.today().isoformat()
-    output_path = config.CURATED_DIR / f"datasets_curated_autoreview_{today}.xlsx"
+    output_path = output_path or (config.CURATED_DIR / f"datasets_curated_autoreview_{today}.xlsx")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     master_wb.save(output_path)
     print(f"[merge] Wrote {output_path.name}:")
     print(f"[merge]   {applied} candidates applied")
     print(f"[merge]   {manual_skipped} skipped (manually-reviewed rows protected)")
     print(f"[merge]   {len(needs_manual_placement)} routed to NEEDS_MANUAL_PLACEMENT sheet")
 
+    if keep_staging:
+        print("[merge] staging.xlsx kept in place (keep_staging).")
+        return
     archived_path = config.STAGING_DIR / f"staging_merged_{today}.xlsx"
     shutil.move(str(staging_path), str(archived_path))
     print(f"[merge] Archived staging.xlsx -> {archived_path.name} (next run starts clean)")
 
 
 if __name__ == "__main__":
-    merge()
+    import argparse
+    ap = argparse.ArgumentParser(description="No arguments = the normal merge (master -> autoreview file, staging archived).")
+    ap.add_argument("--base", type=Path, help="apply staging onto this file instead of the master")
+    ap.add_argument("--output", type=Path, help="write the result here instead of data_curated/datasets_curated_autoreview_<date>.xlsx")
+    ap.add_argument("--keep-staging", action="store_true", help="do not archive staging.xlsx afterwards")
+    a = ap.parse_args()
+    merge(a.base, a.output, a.keep_staging)

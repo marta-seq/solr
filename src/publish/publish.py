@@ -1,0 +1,151 @@
+"""
+publish.py - the ONLY thing that ever commits/pushes to the SOLR repo automatically (weekly cron).
+
+A plain script on purpose: no LLM agent has git access (abstracts / full texts are untrusted input).
+Works ONLY inside the bot-only clone (~/solr-publish), never in this working directory.
+
+Flow: verify clone (clean, on main, right remote) -> fast-forward to origin/main -> run the gate
+(src/publish/gate.py) against what is currently published -> copy the 4 JSON files in -> verify the
+diff touches ONLY those files -> commit as solr-bot -> tag a snapshot -> push main + tag.
+
+Default is a DRY RUN (copies, shows the diff, then restores the clone); pass --push to really publish.
+
+    python src/publish/publish.py            # dry run
+    python src/publish/publish.py --push     # real
+
+Exit 0 = published, or nothing to publish / dry run done; 1 = refused or failed (message printed; the clone is
+restored to origin/main). Rollback of a bad publish: `git revert <commit>` (or reset to the previous
+`data-YYYY-MM-DD` tag) from the PC, then push.
+"""
+import argparse
+import datetime as dt
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gate  # noqa: E402
+
+ALLOWED = ("docs/data/methods.json", "docs/data/datasets.json", "docs/data/stats.json", "docs/data/embeddings.json")
+BOT_NAME = "solr-bot"
+BOT_EMAIL = "solr-bot@users.noreply.github.com"
+BRANCH = "main"
+
+
+class Refuse(Exception):
+    pass
+
+
+class Precheck(Refuse):
+    """Refusal BEFORE we touched anything - the clone is left exactly as found (no restore)."""
+
+
+def git(clone: Path, *args, check=True):
+    r = subprocess.run(["git", "-C", str(clone), *args], capture_output=True, text=True)
+    if check and r.returncode != 0:
+        raise Refuse(f"git {' '.join(args)} failed: {r.stderr.strip() or r.stdout.strip()}")
+    return r.stdout.strip()
+
+
+def restore(clone: Path):
+    """Put the clone back exactly on origin/main (it is bot-only, nothing of value lives in it)."""
+    git(clone, "reset", "--hard", f"origin/{BRANCH}", check=False)
+    git(clone, "clean", "-fd", check=False)
+
+
+def publish(candidate: Path, clone: Path, push: bool, expect_remote: str, relaxed: bool = False) -> int:
+    if not (clone / ".git").exists():
+        raise Precheck(f"{clone} is not a git clone")
+    remote = git(clone, "remote", "get-url", "origin")
+    if expect_remote not in remote:
+        raise Precheck(f"origin is {remote!r}, expected it to contain {expect_remote!r}")
+    if git(clone, "rev-parse", "--abbrev-ref", "HEAD") != BRANCH:
+        raise Precheck(f"clone is not on branch {BRANCH}")
+    if git(clone, "status", "--porcelain"):
+        raise Precheck("clone has uncommitted changes (it must be bot-only and clean) - inspect it by hand")
+
+    git(clone, "fetch", "origin", BRANCH)
+    git(clone, "merge", "--ff-only", f"origin/{BRANCH}")      # refuses if the clone has diverged
+    if git(clone, "rev-parse", "HEAD") != git(clone, "rev-parse", f"origin/{BRANCH}"):
+        raise Refuse("clone is not at origin/main after fast-forward")
+
+    fails, warns, info = gate.run(candidate, clone / "docs" / "data", relaxed)
+    for l in info:
+        print("INFO ", l)
+    for l in warns:
+        print("WARN ", l)
+    for l in fails:
+        print("FAIL ", l)
+    if fails:
+        raise Refuse("gate FAILED - nothing published")
+    print("GATE: PASS")
+
+    try:
+        for rel in ALLOWED:
+            src = candidate / Path(rel).name
+            if not src.exists():
+                raise Refuse(f"missing candidate file {src}")
+            shutil.copyfile(src, clone / rel)
+
+        # name-only listings (porcelain output gets mangled by the helper's strip())
+        changed = sorted(set(git(clone, "diff", "--name-only").splitlines())
+                         | set(git(clone, "ls-files", "--others", "--exclude-standard").splitlines()))
+        if not changed:
+            print("Nothing to publish (candidate identical to what is published).")
+            return 0
+        illegal = [c for c in changed if c not in ALLOWED]
+        if illegal:
+            raise Refuse(f"diff touches files outside the allow-list: {illegal}")
+        print("Would change:" if not push else "Changing:", ", ".join(changed))
+        print(git(clone, "diff", "--stat"))
+
+        if not push:
+            print("DRY RUN - restoring the clone, nothing committed or pushed.")
+            return 0
+
+        stats = json.loads((candidate / "stats.json").read_text(encoding="utf-8"))
+        today = dt.date.today().isoformat()
+        msg = (f"data: automated weekly update {today}\n\n"
+               f"{stats['total_papers']} papers, {stats['total_datasets']} datasets; "
+               f"{stats['unreviewed_papers']} papers / {stats['unreviewed_datasets']} datasets not yet manually reviewed "
+               f"(last manual review {stats['last_human_review']}).\n"
+               f"Generated by the SOLR weekly pipeline; passed the publish gate.")
+        git(clone, "add", "--", *changed)
+        git(clone, "-c", f"user.name={BOT_NAME}", "-c", f"user.email={BOT_EMAIL}", "commit",
+            f"--author={BOT_NAME} <{BOT_EMAIL}>", "-m", msg)
+        tag = f"data-{today}"
+        if git(clone, "tag", "-l", tag):
+            tag = f"{tag}-{dt.datetime.now():%H%M}"
+        git(clone, "-c", f"user.name={BOT_NAME}", "-c", f"user.email={BOT_EMAIL}", "tag", "-a", tag, "-m", f"snapshot {today}")
+        git(clone, "push", "origin", BRANCH, tag)
+        print(f"PUBLISHED {git(clone, 'rev-parse', '--short', 'HEAD')} (tag {tag})")
+        return 0
+    except Exception:
+        raise
+    finally:
+        # on dry run, on refusal and on error: leave the clone at origin/main (after a successful push this is a no-op)
+        restore(clone)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    root = Path(__file__).resolve().parents[2]
+    ap.add_argument("--candidate", type=Path, default=root / "docs" / "data")
+    ap.add_argument("--clone", type=Path, default=Path.home() / "solr-publish")
+    ap.add_argument("--expect-remote", default="marta-seq/solr", help="substring the origin url must contain (tests override it)")
+    ap.add_argument("--push", action="store_true", help="really commit+push (default: dry run)")
+    ap.add_argument("--allow-drop", action="store_true", help="after a big deliberate cleanup: let the gate accept up to 25%% fewer rows")
+    a = ap.parse_args()
+    try:
+        sys.exit(publish(a.candidate, a.clone, a.push, a.expect_remote, a.allow_drop))
+    except Refuse as e:
+        print("REFUSED:", e)
+        if not isinstance(e, Precheck) and (a.clone / ".git").exists():
+            restore(a.clone)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -33,4 +33,11 @@ function initStats() {
   animN(document.getElementById("stat-st"),      STATS.st_datasets);
   const mc=document.getElementById("card-mc"); if(mc) mc.textContent=STATS.comp_methods;
   const dc=document.getElementById("card-dc"); if(dc) dc.textContent=STATS.total_datasets;
+  // Freshness line (fields written by 03_export_json.py; absent in older exports -> line stays empty)
+  const ff=document.getElementById("footer-fresh");
+  if(ff && STATS.last_updated) {
+    ff.textContent = "Data updated "+STATS.last_updated
+      + (STATS.last_human_review ? " · last manual review "+STATS.last_human_review : "")
+      + " · "+STATS.unreviewed_papers+" papers and "+STATS.unreviewed_datasets+" datasets not yet manually reviewed";
+  }
 }

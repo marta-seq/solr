@@ -43,9 +43,9 @@ reaches the live site. In order of what actually happens to a paper:
 3. **Manual review**: everything an agent proposes is staged, never applied directly —
    Marta reviews a batch, corrects what's wrong, and only then promotes it to become
    the new source-of-truth spreadsheet.
-4. **Export + publish**: the promoted spreadsheet is parsed, enriched with Crossref/
-   PubMed metadata, exported to JSON, embedded for the semantic graph layer, and
-   pushed live.
+4. **Export + publish**: the spreadsheet is parsed, enriched with Crossref/PubMed
+   metadata, exported to JSON, embedded for the semantic graph layer, checked by an
+   automated gate, and published by a weekly job (see below).
 
 See **[`PIPELINE_OVERVIEW.md`](PIPELINE_OVERVIEW.md)** for the full box-diagram version
 of this flow, file by file.
@@ -53,13 +53,44 @@ of this flow, file by file.
 Hosted as static files on GitHub Pages — no backend, no server, no database; the
 frontend just reads pre-generated JSON.
 
+## Automation (weekly update)
+
+A weekly job on the server that runs the pipeline keeps the site current without
+touching the human-reviewed spreadsheet:
+
+1. **Scrape + agents** (`src/agents/orchestrate.py`) — scan PubMed/bioRxiv/medRxiv since
+   the last run and run the curation desks on the new papers. Output goes to
+   `staging.xlsx` only. All LLM stages run on local models (Ollama).
+2. **Build** (`src/publish/build_site.py`) — apply the accumulated staging rows onto a
+   *copy* of the master, run steps 01–04 on it and write the site JSON to a scratch
+   folder. The master is never modified.
+3. **Gate** (`src/publish/gate.py`) — deterministic checks (no LLM) comparing the new JSON
+   with what is currently published: valid JSON, no duplicate ids, row counts did not
+   drop, no more than a fixed number of new rows, no reviewed row lost, no new dangling
+   links, files did not shrink. If any check fails, nothing is published.
+4. **Publish** (`src/publish/publish.py`) — a plain script (not an LLM) that copies only
+   `docs/data/*.json` into a dedicated clone, commits as `solr-bot`, tags the commit
+   `data-YYYY-MM-DD` and pushes to `main`. It refuses to push if anything else changed.
+5. **Digest** (`src/publish/weekly.py`, `notify.py`) — a status file, plus an optional
+   email, with new/unreviewed row counts and a reminder when the last manual review is
+   old.
+
+Rows added automatically are published flagged as *unreviewed*; the site footer shows the
+last update date and the date of the last human review. To roll back a bad publish,
+revert the `solr-bot` commit (or reset to the previous `data-*` tag).
+
+Manual review is unchanged: merge the staged candidates into an `autoreview` file, review
+it, promote it to the master, then publish with
+`python -m src.publish.build_site --push`.
+
 ## What's next
 
-Open items (always check `context/TODO.md` for the live version of this if you have
-Claude Code context access) include: scheduling the ingestion + agent-curation cycle
-to run on its own on a recurring basis, an API-cost/provider strategy now that free-
-tier quotas are a real constraint at this volume, and exploring alternatives to Excel
-as the master spreadsheet grows past what's comfortable to review by hand.
+- Extending the review beyond spatial proteomics to other spatial modalities
+  (transcriptomics, metabolomics, epigenomics, multi-omics), with per-modality method
+  tables.
+- Email digest for the weekly job.
+- Exploring alternatives to Excel as the master spreadsheet grows past what is
+  comfortable to review by hand.
 
 ## Structure
 
@@ -69,6 +100,9 @@ data/
   data_curated_backup/ ← every superseded version, dated (the real version history)
   processed/           ← cleaned CSVs from the export pipeline
   agent_review/        ← staging.xlsx - agent proposals pending manual review
+  site_build/          ← scratch output of the weekly build (not published directly)
+  weekly/              ← weekly run logs, backups, STATUS.txt, last_digest.txt
+  manual_papers/       ← PDFs of paywalled papers, used as full text on the next run
 src/
   preprocessing/        Phase 1 - the export pipeline
     01_parse_excel.py       clean and export from Excel
@@ -82,7 +116,13 @@ src/
                              (the scanner), merge_candidates.py
     agent_curation/         methods_desk/, data_desk/, application_desk/ -
                              see PIPELINE_OVERVIEW.md for what each does
-    run_pipeline.py         orchestrates all of the above
+    run_pipeline.py         runs the curation desks (shared --max-papers budget)
+    orchestrate.py          one command for a cycle: preflight, scrape, agents -> staging
+  publish/              weekly automation
+    build_site.py           staging + master -> 01..04 -> site JSON (scratch folder)
+    gate.py                 deterministic checks before publishing
+    publish.py              commits/pushes docs/data/*.json as solr-bot
+    weekly.py, notify.py    the cron entry point, status file and digest email
 docs/                  ← static site (GitHub Pages)
   index.html
   data/                     methods.json / datasets.json / stats.json /

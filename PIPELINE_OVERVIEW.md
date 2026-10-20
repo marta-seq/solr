@@ -1,8 +1,8 @@
 # SOLR — pipeline overview
 
 How a paper actually gets from "somewhere on the internet" to a row on the live site.
-A text-box version of the same flow described in more detail in the code and (if
-you have Claude Code context access) `context/ARCHITECTURE.md` / `context/pipeline_steps.md`.
+A text-box version of the same flow, described in more detail in the code docstrings
+(start with `src/agents/orchestrate.py` and `src/publish/weekly.py`).
 
 ## 1. Three ways a paper enters the system
 
@@ -84,18 +84,26 @@ splits by paper type:
              ▼
    Marta reviews the autoreview file row by row
    (this is where judgment calls, corrections, and
-    "actually this isn't self-generated data" catches happen -
-    see notes.md / context/ANNOTATION_REVIEW_LOG.md)
+    "actually this isn't self-generated data" catches happen)
              │
              ▼
    promoted: renamed to become the new master
    (old master archived to data_curated_backup/)
 ```
 
-## 4. Export and publish
+## 4. Export, gate and publish
+
+Two triggers, one producer: `src/publish/build_site.py` is the only thing that builds
+the published data. The weekly cron runs it automatically (section 5); after promoting
+a reviewed master, Marta runs it by hand with `--push`.
 
 ```
-   new master .xlsx
+   base file = newest autoreview file if newer than the master, else the master
+        │
+        ▼
+   merge_candidates --keep-staging
+   (accumulated staging.xlsx applied onto a COPY of the base; staging is kept,
+    master and autoreview files are never modified)
         │
         ▼
    01_parse_excel.py   → cleans/normalizes, writes methods_*.csv / datasets_*.csv
@@ -104,15 +112,23 @@ splits by paper type:
    02_fetch_metadata.py → enriches with Crossref/PubMed (abstract, citations, year)
         │
         ▼
-   03_export_json.py   → writes docs/data/{methods,datasets,stats}.json
+   03_export_json.py   → writes {methods,datasets,stats}.json, incl. last_updated,
+                          last_human_review and the unreviewed row counts
         │
         ▼
    04_compute_embeddings.py (gaia only - needs sentence-transformers/umap-learn)
-                            → docs/data/embeddings.json (positions the
-                              Applications Graph)
-        │
+                            → embeddings.json (positions the Applications Graph);
+                              the published one is kept if methods.json is unchanged
+        │          (all of the above writes to data/site_build/, not to docs/)
         ▼
-   Marta commits + pushes (never done by an AI session - see CLAUDE.md)
+   gate.py  (no LLM) vs the currently published data:
+     valid JSON · no duplicate ids · row count drop ≤ 2% · ≤ 400 new rows per file ·
+     no reviewed row lost · no new dangling links · files not shrunk > 10%
+        │ fail → nothing is pushed, failure notice
+        ▼ pass
+   publish.py  (plain script, no LLM)
+     copies ONLY docs/data/*.json into the bot clone, aborts if the diff touches
+     anything else, commits as solr-bot, tags data-YYYY-MM-DD, pushes to main
         │
         ▼
    GitHub Pages serves docs/ directly (classic branch-deploy, no build step)
@@ -120,7 +136,26 @@ splits by paper type:
         ▼
    marta-seq.github.io/solr/ - Methods tab/graph, Datasets tab, Applications
    tab/graph, Methods Book - all reading the same docs/data/*.json
+   (footer: last update + last human review dates; auto-added rows count as unreviewed)
 ```
+
+Rollback: revert the `solr-bot` commit, or reset to the previous `data-*` tag.
+
+## 5. The weekly job
+
+```
+   cron  →  src/publish/weekly.py
+              │
+              ├─ lock (no two runs at once) + backup of master / autoreview / staging
+              ├─ src/agents/orchestrate.py   preflight → scrape → agents → staging.xlsx
+              │     (a FAILED stage stops the run; degraded continues)
+              ├─ src/publish/build_site.py --push   (section 4)
+              └─ digest: data/weekly/STATUS.txt + last_digest.txt (+ email if configured)
+                 new rows · unreviewed rows · gate result · "last review > 30 days" reminder
+```
+
+Papers without accessible full text are listed in `data/manual_papers/NEEDED.html`;
+PDFs dropped into that folder are used on the next run.
 
 ## Where things actually live
 
@@ -129,9 +164,14 @@ data/data_curated/        the ONE current master .xlsx (source of truth)
 data/data_curated_backup/ every superseded master, dated (the real version history -
                            the Excel itself is never committed to git)
 data/processed/           CSV intermediates from 01/02 (also not committed)
-data/agent_review/        staging.xlsx (pending) + archived merged staging files
+data/agent_review/        staging.xlsx (pending) + archived merged staging files,
+                           runs/ (orchestrator logs, scan state, STATUS.txt)
+data/site_build/          scratch output of build_site.py (not published directly)
+data/weekly/              weekly run logs, backups, STATUS.txt, last_digest.txt
+data/manual_papers/       PDFs of paywalled papers + NEEDED.html
 
 src/preprocessing/        Phase 1 - the 01→02→03→04 export pipeline
+src/publish/              build_site.py, gate.py, publish.py, weekly.py, notify.py
 src/agents/
   common/                 shared infra: LLM client + provider config, paper
                            fetcher/cache, staging writer, DB loader/indexes
@@ -143,8 +183,8 @@ src/agents/
     methods_desk/           category_audit_agent.py, compared_methods_agent.py
     data_desk/              data_fetch_agent.py, intern_agent.py
     application_desk/       application_review_agent.py
-  run_pipeline.py          orchestrates all of the above, one shared
-                           --max-papers budget across phases
+  run_pipeline.py          runs the desks, one shared --max-papers budget
+  orchestrate.py           one command per cycle: preflight, scrape, agents
 
 docs/                     the live site (hand-built SPA, no framework/build step)
   data/                    methods.json / datasets.json / stats.json /

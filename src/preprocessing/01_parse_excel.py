@@ -25,6 +25,7 @@ Usage:
     python src/preprocessing/01_parse_excel.py
 """
 
+import os
 import re
 import shutil
 from datetime import date
@@ -45,7 +46,10 @@ from category_maps import (
 ROOT = Path(__file__).resolve().parents[2]
 CURATED_DIR   = ROOT / "data" / "data_curated"
 BACKUP_DIR    = ROOT / "data" / "data_curated_backup"
-PROCESSED_DIR = ROOT / "data" / "processed"
+# SOLR_PROCESSED_DIR / SOLR_SOURCE_XLSX (added 2026-10-19, used by src/publish/build_site.py for the weekly
+# site build): build from another file into another folder WITHOUT touching data/processed or the master.
+# Unset = the original behaviour below, unchanged.
+PROCESSED_DIR = Path(os.environ.get("SOLR_PROCESSED_DIR") or ROOT / "data" / "processed")
 
 # Exclude "autoreview" outputs from merge_candidates.py - those are pending
 # manual review/merge, not the finalized curated file this script should run
@@ -62,21 +66,30 @@ PROCESSED_DIR = ROOT / "data" / "processed"
 # (caught on gaia: a stale "~$..." lock file that should have been excluded
 # ended up looking "newest"). If there's genuine ambiguity, fail loudly and
 # say exactly what to do about it, rather than silently guessing.
-_candidates = [f for f in CURATED_DIR.glob("*.xlsx")
-               if "autoreview" not in f.name.lower() and not f.name.startswith("~$")]
-if not _candidates:
-    raise FileNotFoundError(
-        f"No usable .xlsx file found in {CURATED_DIR}. "
-        f"(Files containing 'autoreview', or starting with '~$' (Excel lock files), are skipped.)"
-    )
-if len(_candidates) > 1:
-    names = ", ".join(f.name for f in _candidates)
-    raise FileNotFoundError(
-        f"Found {len(_candidates)} candidate curated files in {CURATED_DIR}, can't tell which "
-        f"is current: {names}. Move the stale one(s) into {BACKUP_DIR} and leave exactly one "
-        f"non-autoreview .xlsx in {CURATED_DIR} before re-running."
-    )
-SOURCE_FILE = _candidates[0]
+def _pick_source() -> Path:
+    if os.environ.get("SOLR_SOURCE_XLSX"):
+        f = Path(os.environ["SOLR_SOURCE_XLSX"])
+        if not f.exists():
+            raise FileNotFoundError(f"SOLR_SOURCE_XLSX does not exist: {f}")
+        return f
+    _candidates = [f for f in CURATED_DIR.glob("*.xlsx")
+                   if "autoreview" not in f.name.lower() and not f.name.startswith("~$")]
+    if not _candidates:
+        raise FileNotFoundError(
+            f"No usable .xlsx file found in {CURATED_DIR}. "
+            f"(Files containing 'autoreview', or starting with '~$' (Excel lock files), are skipped.)"
+        )
+    if len(_candidates) > 1:
+        names = ", ".join(f.name for f in _candidates)
+        raise FileNotFoundError(
+            f"Found {len(_candidates)} candidate curated files in {CURATED_DIR}, can't tell which "
+            f"is current: {names}. Move the stale one(s) into {BACKUP_DIR} and leave exactly one "
+            f"non-autoreview .xlsx in {CURATED_DIR} before re-running."
+        )
+    return _candidates[0]
+
+
+SOURCE_FILE = _pick_source()
 
 # ── Backup ───────────────────────────────────────────────────────────────────
 def backup_if_needed(source: Path, backup_dir: Path) -> None:
@@ -339,7 +352,8 @@ def parse_dataset_sheet(xl: pd.ExcelFile, sheet_name: str) -> pd.DataFrame:
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     print(f"Reading {SOURCE_FILE.name} ...")
-    backup_if_needed(SOURCE_FILE, BACKUP_DIR)
+    if not os.environ.get("SOLR_SKIP_BACKUP"):   # the site build reads a throwaway copy - nothing to back up
+        backup_if_needed(SOURCE_FILE, BACKUP_DIR)
 
     xl = pd.ExcelFile(SOURCE_FILE)
     print(f"Sheets found: {xl.sheet_names}")

@@ -20,6 +20,7 @@ Usage:
 """
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -27,7 +28,7 @@ from sentence_transformers import SentenceTransformer
 import umap
 
 ROOT     = Path(__file__).resolve().parents[2]
-OUT_DIR  = ROOT / "docs" / "data"
+OUT_DIR  = Path(os.environ.get("SOLR_OUT_DIR") or ROOT / "docs" / "data")   # override: weekly site build, 2026-10-19
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 # Final coordinate spread, chosen to be roughly comparable to the Methods

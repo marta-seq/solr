@@ -27,8 +27,8 @@ load_dotenv()
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parents[2]
-PROCESSED_DIR = ROOT / "data" / "processed"
-BACKUP_DIR    = ROOT / "data" / "processed_backup"
+PROCESSED_DIR = Path(os.environ.get("SOLR_PROCESSED_DIR") or ROOT / "data" / "processed")   # override: weekly site build, 2026-10-19
+BACKUP_DIR    = PROCESSED_DIR.parent / "processed_backup"   # same as before for the default dir
 
 # Find the most recent methods CSV. Excludes "methods_metadata_*.csv" - that's
 # THIS script's own output, and without the exclusion it matches the same
@@ -60,6 +60,14 @@ OUTPUT_FILE = PROCESSED_DIR / f"methods_metadata_{suffix}.csv"
 # ── Crossref ──────────────────────────────────────────────────────────────────
 CROSSREF_URL = "https://api.crossref.org/works/{doi}"
 HEADERS = {"User-Agent": f"solr-living-review/1.0 (mailto:{os.environ.get('SOLR_EMAIL', 'anonymous')})"}
+
+def _clean_title(t: str) -> str:
+    """Crossref titles may carry markup (<i>...</i>, <sub>), HTML entities and line breaks; a changed title also
+    changes the embedding input of step 04, so keep them plain text. Added 2026-10-19."""
+    import html
+    import re
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", t or ""))).strip()
+
 
 def fetch_crossref(doi: str) -> dict:
     url = CROSSREF_URL.format(doi=doi.replace("https://doi.org/", ""))
@@ -116,7 +124,7 @@ def fetch_crossref(doi: str) -> dict:
             publication_type = pub_type  # keep raw for other types
 
         return {
-            "title":            data.get("title", [""])[0],
+            "title":            _clean_title(data.get("title", [""])[0]),
             "first_author":     first_author,
             "authors":          authors_str,
             "year":             year,
@@ -259,15 +267,72 @@ def backup_existing_output():
     shutil.copy2(OUTPUT_FILE, backup)
     print(f"Backed up existing {OUTPUT_FILE.name} -> {backup.relative_to(ROOT)}")
 
+# ── Persistent metadata cache (added 2026-10-19) ──────────────────────────────
+# The master Excel carries no pub_date/keywords for most rows, so every fresh build (weekly site build uses a new
+# empty processed dir each time) re-fetched ~1000 papers from Crossref/PubMed (~20 min). The cache is keyed by DOI;
+# it only fills cells that are BLANK in the input, never overwrites, and is refreshed at the end of every run.
+CACHE_FILE = Path(os.environ.get("SOLR_METADATA_CACHE") or ROOT / "data" / "metadata_cache.csv")
+CACHE_COLS = ["title", "first_author", "authors", "year", "pub_date", "journal", "citations", "abstract",
+              "publication_type", "keywords"]
+
+def _blank(v) -> bool:
+    return str(v).strip() in ("", "nan", "NA", "None")
+
+def _doi_key(v) -> str:
+    return str(v).strip().lower().replace("https://doi.org/", "")
+
+def _cache_sources():
+    if CACHE_FILE.exists():
+        yield CACHE_FILE
+    elif PROCESSED_DIR != ROOT / "data" / "processed":
+        # first run of the cache: bootstrap from the newest real metadata output
+        real = sorted((ROOT / "data" / "processed").glob("methods_metadata_*.csv"), key=lambda q: q.stat().st_mtime)
+        if real:
+            yield real[-1]
+
+def seed_from_cache(df):
+    cache = {}
+    for src in _cache_sources():
+        c = pd.read_csv(src, dtype=str, keep_default_na=False)
+        for _, r in c.iterrows():
+            if not _blank(r.get("DOI")):
+                cache[_doi_key(r["DOI"])] = r
+    if not cache:
+        return 0
+    filled = 0
+    for i, row in df.iterrows():
+        hit = cache.get(_doi_key(row.get("DOI", "")))
+        if hit is None:
+            continue
+        for col in CACHE_COLS:
+            keep_na = col == "keywords" and str(hit.get(col, "")).strip() == "NA"     # "tried, nothing there" is information
+            if col in hit.index and _blank(df.at[i, col]) and (not _blank(hit[col]) or keep_na):
+                df.at[i, col] = hit[col]
+                filled += 1
+    return filled
+
+def update_cache(df):
+    cols = ["DOI"] + [c for c in CACHE_COLS if c in df.columns]
+    new = df[cols].copy()
+    new = new[~new["DOI"].map(_blank)]
+    new["_k"] = new["DOI"].map(_doi_key)
+    if CACHE_FILE.exists():
+        old = pd.read_csv(CACHE_FILE, dtype=str, keep_default_na=False)
+        old["_k"] = old["DOI"].map(_doi_key)
+        new = pd.concat([new, old[~old["_k"].isin(new["_k"])]], ignore_index=True)
+    CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    new.drop(columns="_k").to_csv(CACHE_FILE, index=False)
+    print(f"Metadata cache updated: {len(new)} DOIs -> {CACHE_FILE}")
+
 def main():
     backup_existing_output()
 
     if OUTPUT_FILE.exists():
         print(f"Resuming from existing {OUTPUT_FILE.name} (partial run found)")
-        df = pd.read_csv(OUTPUT_FILE, dtype=str)
+        df = pd.read_csv(OUTPUT_FILE, dtype=str, keep_default_na=False)
     else:
         print(f"Reading {METHODS_FILE.name} ...")
-        df = pd.read_csv(METHODS_FILE, dtype=str)
+        df = pd.read_csv(METHODS_FILE, dtype=str, keep_default_na=False)
 
     # Add metadata columns if not present
     meta_cols = ["title", "first_author", "authors", "year", "pub_date",
@@ -275,6 +340,10 @@ def main():
     for col in meta_cols:
         if col not in df.columns:
             df[col] = ""
+
+    n_seeded = seed_from_cache(df)
+    if n_seeded:
+        print(f"Filled {n_seeded} blank metadata cells from the cache ({CACHE_FILE.name})")
 
     doi_col = "DOI"
     total   = len(df)
@@ -323,7 +392,10 @@ def main():
         # keywords added 2026-09-18 - a genuinely new field nothing has ever
         # fetched before, so EVERY existing row needs at least one pass to
         # attempt it, same "fetch only what's missing" principle as abstract.
-        needs_keywords = _is_blank(row.get("keywords"))
+        # "NA" = already tried, none on the record -> not retried (cache fix 2026-10-19; it used to be retried on every
+        # run = ~1000 pointless fetches per build). Preprints structurally have no keywords: never attempted.
+        needs_keywords = (str(row.get("keywords", "")).strip() in ("", "nan", "None")
+                          and str(row.get("publication_type", "")).strip() != "preprint")
         if not needs_crossref and not needs_pubdate and not needs_abstract and not needs_keywords:
             skipped += 1
             continue
@@ -379,6 +451,7 @@ def main():
 
     df.to_csv(OUTPUT_FILE, index=False)
     print(f"Output written: {OUTPUT_FILE}")
+    update_cache(df)
 
 if __name__ == "__main__":
     main()

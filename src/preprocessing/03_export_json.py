@@ -9,7 +9,9 @@ Usage:
 """
 
 import json
+import os
 import re
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -20,8 +22,10 @@ import category_maps as cm
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parents[2]
-PROCESSED_DIR = ROOT / "data" / "processed"
-OUT_DIR       = ROOT / "docs" / "data"
+# SOLR_PROCESSED_DIR / SOLR_OUT_DIR (2026-10-19): read/write elsewhere for the weekly site build; unset = original paths.
+PROCESSED_DIR = Path(os.environ.get("SOLR_PROCESSED_DIR") or ROOT / "data" / "processed")
+CURATED_DIR   = ROOT / "data" / "data_curated"
+OUT_DIR       = Path(os.environ.get("SOLR_OUT_DIR") or ROOT / "docs" / "data")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── Find most recent files ────────────────────────────────────────────────────
@@ -465,6 +469,34 @@ def compute_stats(methods: list, datasets: list) -> dict:
         "disease_specifics_counts": disease_specifics_counts,
     }
 
+# ── Freshness fields (added 2026-10-19, for the weekly cron / solr-bot) ───────
+# Shown in the site footer so a visitor can tell how current the data is and
+# how much of it a human has actually checked.
+_MASTER_RE = re.compile(r"^datasets_curated_(\d{4})[-_](\d{2})[-_](\d{2})\.xlsx$")
+
+def last_human_review() -> str:
+    """Date of the promoted master (= the last file Marta reviewed and promoted),
+    taken from its filename (datasets_curated_YYYY-MM-DD.xlsx; autoreview files
+    don't match). The cron never promotes, so this only moves when she does.
+    Empty string if no master is found."""
+    dates = []
+    for f in CURATED_DIR.glob("datasets_curated_*.xlsx"):
+        m = _MASTER_RE.match(f.name)
+        if m:
+            dates.append("-".join(m.groups()))
+    return max(dates) if dates else ""
+
+def freshness(methods: list, datasets: list) -> dict:
+    reviewed = ("manual", "auto_confirmed")
+    papers = [m for m in methods if not m["is_placeholder"]]
+    return {
+        "last_updated":         date.today().isoformat(),
+        "last_human_review":    last_human_review(),
+        # Rows no human has confirmed (review_status auto-N / needs_review / blank).
+        "unreviewed_papers":    sum(1 for m in papers   if m["review_status"] not in reviewed),
+        "unreviewed_datasets":  sum(1 for d in datasets if d["review_status"] not in reviewed),
+    }
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     # Find latest files — prefer metadata version, fall back to plain methods
@@ -483,6 +515,7 @@ def main():
     methods  = export_methods(methods_df)
     datasets = export_datasets(datasets_df)
     stats    = compute_stats(methods, datasets)
+    stats.update(freshness(methods, datasets))
 
     # Write JSON files. Explicit UTF-8 - write_text() otherwise defaults to
     # the platform locale encoding (cp1252 on Windows), which breaks on any
