@@ -1,1 +1,7 @@
 .env
+
+__pycache__/
+*.pyc
+data/weekly/
+data/site_build/
+data/manual_papers/
