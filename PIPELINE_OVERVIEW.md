@@ -118,7 +118,9 @@ a reviewed master, Marta runs it by hand with `--push`.
         ▼
    04_compute_embeddings.py (gaia only - needs sentence-transformers/umap-learn)
                             → embeddings.json (positions the Applications Graph);
-                              the published one is kept if methods.json is unchanged
+                              the published one is kept if no paper text changed, otherwise
+                              unchanged papers keep their position and only new/changed
+                              ones are placed (full refit if >10% changed)
         │          (all of the above writes to data/site_build/, not to docs/)
         ▼
    gate.py  (no LLM) vs the currently published data:

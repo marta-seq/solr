@@ -1,0 +1,2 @@
+# SOLR weekly update: Sundays 03:00 (scrape + agents + build + gate + publish as solr-bot)
+0 3 * * 0 cd /home/martinha/PycharmProjects/phd/live_review && SOLR_LLM_MODE=local /home/martinha/miniconda3/envs/live_review/bin/python -m src.publish.weekly --push --no-email >> data/weekly/cron.out 2>&1

@@ -134,7 +134,9 @@ def main():
         shutil.copyfile(a.clone / "docs" / "data" / "embeddings.json", out_dir / "embeddings.json")
         print("04 embeddings: title/abstract of every paper unchanged -> kept the published embeddings.json")
     elif not a.skip_embeddings:
-        run([py, PRE / "04_compute_embeddings.py"], env, "04 embeddings (inputs changed)")
+        prev = {"SOLR_PREV_EMBEDDINGS": str(a.clone / "docs" / "data" / "embeddings.json"),
+                "SOLR_PREV_METHODS": str(a.clone / "docs" / "data" / "methods.json")}   # stable layout: see 04's docstring
+        run([py, PRE / "04_compute_embeddings.py"], {**env, **prev}, "04 embeddings (inputs changed; published layout reused)")
     else:
         # keep the published embeddings so the gate/publish compare like with like
         prev = a.clone / "docs" / "data" / "embeddings.json"

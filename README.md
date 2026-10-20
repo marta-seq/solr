@@ -79,6 +79,12 @@ Rows added automatically are published flagged as *unreviewed*; the site footer 
 last update date and the date of the last human review. To roll back a bad publish,
 revert the `solr-bot` commit (or reset to the previous `data-*` tag).
 
+The schedule lives in the crontab of the server; a copy of the line is kept in
+[`ops/solr.cron`](ops/solr.cron) (install with `crontab ops/solr.cron`). The graph layout
+of the Applications tab is kept stable between updates: papers that did not change keep
+their position, and only new or changed papers are placed (a full re-layout is forced with
+`SOLR_FULL_EMBEDDINGS=1`).
+
 Manual review is unchanged: merge the staged candidates into an `autoreview` file, review
 it, promote it to the master, then publish with
 `python -m src.publish.build_site --push`.
@@ -123,6 +129,7 @@ src/
     gate.py                 deterministic checks before publishing
     publish.py              commits/pushes docs/data/*.json as solr-bot
     weekly.py, notify.py    the cron entry point, status file and digest email
+ops/                   ← the weekly cron line (documentation; installed on the server)
 docs/                  ← static site (GitHub Pages)
   index.html
   data/                     methods.json / datasets.json / stats.json /
