@@ -98,6 +98,13 @@ def _text_or_none(el):
     return el.text if el is not None else None
 
 
+def _full_text(el) -> str:
+    """ALL the text of an element, including text inside inline markup and after it. `el.text` stops at the first child element, and PubMed marks
+    "CD4<sup>+</sup> T cells", "<i>Mus musculus</i>", "H<sub>2</sub>O" as inline tags - so the title/abstract used to be cut at the first such tag
+    (found 2026-10-23: "Targeting the CD4" instead of "Targeting the CD4+ effector memory T cells ..."). Whitespace is collapsed."""
+    return " ".join("".join(el.itertext()).split()) if el is not None else ""
+
+
 def _parse_article(article_el) -> dict:
     pmid = _text_or_none(article_el.find(".//MedlineCitation/PMID"))
 
@@ -107,7 +114,7 @@ def _parse_article(article_el) -> dict:
             doi = aid.text or ""
             break
 
-    title = _text_or_none(article_el.find(".//Article/ArticleTitle")) or ""
+    title = _full_text(article_el.find(".//Article/ArticleTitle"))
     journal = _text_or_none(article_el.find(".//Article/Journal/Title")) or ""
 
     year = _text_or_none(article_el.find(".//Article/Journal/JournalIssue/PubDate/Year"))
@@ -118,7 +125,7 @@ def _parse_article(article_el) -> dict:
         year = (medline_date or "")[:4] or None
 
     abstract_parts = [
-        (el.text or "") for el in article_el.findall(".//Article/Abstract/AbstractText")
+        _full_text(el) for el in article_el.findall(".//Article/Abstract/AbstractText")
     ]
     abstract = " ".join(p.strip() for p in abstract_parts if p.strip())
 
