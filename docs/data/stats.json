@@ -1,8 +1,8 @@
 {
-  "total_papers": 1711,
-  "placeholders": 28,
-  "curated": 304,
-  "comp_methods": 695,
+  "total_papers": 1691,
+  "placeholders": 29,
+  "curated": 305,
+  "comp_methods": 675,
   "applications": 1016,
   "pipeline_counts": {
     "Preprocessing": 96,
@@ -21,7 +21,7 @@
     "Spatial Variable Genes": 16,
     "Cell-Cell-Communication": 54,
     "spatiotemporal dynamics": 4,
-    "Other": 1215,
+    "Other": 1195,
     "Cell type Deconvolution": 13,
     "inputation": 1,
     "Subcellular localization": 20,
@@ -63,11 +63,11 @@
     "dimensionality reduction?": 1,
     "ML model": 4
   },
-  "total_datasets": 728,
+  "total_datasets": 725,
   "sp_datasets": 285,
   "st_datasets": 188,
   "organism_counts": {
-    "unknown": 319,
+    "unknown": 316,
     "human": 244,
     "mouse": 99,
     "from M_AUTO_151_20260926352": 1,
@@ -94,7 +94,7 @@
     "Human, Mouse": 2
   },
   "disease_counts": {
-    "unknown": 395,
+    "unknown": 392,
     "cancer": 31,
     "cancer - advanced": 1,
     "normal / disease": 2,
@@ -1255,7 +1255,7 @@
     "ovarian cancer": 1
   },
   "last_updated": "2026-10-25",
-  "last_human_review": "2026-10-18",
-  "unreviewed_papers": 1385,
-  "unreviewed_datasets": 628
+  "last_human_review": "2026-10-25",
+  "unreviewed_papers": 1364,
+  "unreviewed_datasets": 625
 }
