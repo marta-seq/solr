@@ -110,6 +110,12 @@ def run_paper_queue(db, budget: int) -> tuple:
         # DataFrame lookup instead of a real request. See
         # category_audit_agent.is_known_st_only()'s own docstring.
         row_match = db.methods.loc[db.methods["entry_id"] == entry_id]
+        # General-purpose tools (PCA, Leiden clustering, Limma ...) are kept as rows tagged not_spatial_omics only so that spatial methods can point at
+        # them: NO desk runs on them (Marta 2026-10-25). The seed queue already drops COMPLETE=NA rows, but a comparison method created in THIS run joins the
+        # queue as a hop and used to get the full audit + methods desk + data desk, which then created more methods/datasets from a non-spatial paper.
+        if not row_match.empty and category_audit_agent.is_known_not_spatial(row_match.iloc[0]):
+            _log("  SKIPPED: tagged not_spatial_omics (general tool, kept only as a comparison target) - no audit, no methods desk, no data desk")
+            continue
         if not row_match.empty and category_audit_agent.is_known_st_only(row_match.iloc[0]):
             _log(f"  category audit: SKIPPED (zero LLM cost) - spatial_data_category already "
                  f"known to be ST-only from a prior pass - stamping COMPLETE so this row is "

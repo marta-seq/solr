@@ -177,6 +177,15 @@ def known_spatial_modality(row) -> list:
     return [m.strip() for m in raw.split(";") if m.strip() in _VALID_MODALITIES]
 
 
+def is_known_not_spatial(row) -> bool:
+    """True when the row's spatial_data_category is exactly not_spatial_omics (a general tool kept as a comparison target): no desk may run on it.
+    A multi-label value such as "spatial_proteomics;not_spatial_omics" is NOT matched."""
+    v = row.get("spatial_data_category") if hasattr(row, "get") else None
+    if v is None or (isinstance(v, float) and v != v):
+        return False
+    return [p.strip().lower() for p in str(v).split(";") if p.strip()] == ["not_spatial_omics"]
+
+
 def is_known_st_only(row) -> bool:
     """True if this row's EXISTING spatial_data_category already says
     ST-only, with zero LLM calls needed to know that. Added 2026-09-21 per
