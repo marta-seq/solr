@@ -444,8 +444,8 @@
       "cancer"
     ],
     "disease_specifics_list": [],
-    "n_images": "",
-    "n_patients": "",
+    "n_images": "718",
+    "n_patients": "353",
     "clinical_data": "yes",
     "n_markers": "35",
     "markers": "Histone H3;H3 (Lys28) trimethylate;Cytokeratin 5;Fibronectin;Cytokeratin 19;Cytokeratin 8/18;Twist;CD68;Keratin 14 (KRT14);SMA;Vimentin;c-Myc;c-erbB-2 - Her2;CD3 epsilon;Histone H3;Slug;Estrogen Receptor Alpha;Rabbit IgG (H+L);Progesterone Receptor A/B;Progesterone Receptor A/B;p53;CD44;CD45;GATA3;CD20;Carbonic Anhydrase IX;E-Cadherin / P-Cadherin;Ki-67;EGFR;p-S6;vWF;CD31;p-mTOR;Cytokeratin 7;pan Cytokeratin;pan Cytokeratin;cleaved PARP;Cleaved Caspase3",
@@ -1318,7 +1318,7 @@
     "tissue_list": [],
     "disease_list": [],
     "disease_specifics_list": [],
-    "n_images": "",
+    "n_images": "6800",
     "n_patients": "",
     "clinical_data": "no",
     "n_markers": "2",
@@ -1633,8 +1633,8 @@
     "disease_specifics_list": [
       "transition to invasive"
     ],
-    "n_images": "",
-    "n_patients": "",
+    "n_images": "79",
+    "n_patients": "79",
     "clinical_data": "yes",
     "n_markers": "37",
     "markers": "TPSAB1;KRT7;VIM;CD44;KRT5;KRT;HIF1A;PTPRC;AR;HLA-DRA;SLC2A1;CDH1;MS4A1;MMP9;FAP;ITGAX;ERBB2;CD3D;CD8A;CD36;MPO;CD68;RPS6KB1;GZMB;TP63;MKI67;IDO1;PECAM1;PDCD1;CD14;CD4;COL1A1;ACTA2;PTGS2;H3C1;ESR1;CD274",
@@ -1902,7 +1902,7 @@
     "disease_specifics_list": [
       "acute lung injury"
     ],
-    "n_images": "",
+    "n_images": "312",
     "n_patients": "13",
     "clinical_data": "yes",
     "n_markers": "1850",
@@ -4788,7 +4788,7 @@
       "TNBC",
       "with treatment"
     ],
-    "n_images": "",
+    "n_images": "176",
     "n_patients": "88",
     "clinical_data": "yes",
     "n_markers": "45",
@@ -4955,7 +4955,7 @@
       "healthy"
     ],
     "disease_specifics_list": [],
-    "n_images": "",
+    "n_images": "72",
     "n_patients": "9",
     "clinical_data": "yes",
     "n_markers": "54",
@@ -5399,7 +5399,7 @@
       "melanoma"
     ],
     "n_images": "",
-    "n_patients": "",
+    "n_patients": "72",
     "clinical_data": "",
     "n_markers": "35",
     "markers": "",
@@ -6006,7 +6006,7 @@
       "on-treatment metastases"
     ],
     "n_images": "548",
-    "n_patients": "",
+    "n_patients": "314",
     "clinical_data": "yes",
     "n_markers": "39",
     "markers": "Calprotectin; Mast Cell Chymase; Mast Cell Tryptase; SMA; Vimentin; CD4; CD69; FAP; FOXP3; PD1; CD31; Ecadherin; CD56; CD38; TCF1 TCF7; TBET; CD45RB; CD68; CD11c; CD8; CD3e; IDO1; CD45RO; TIM-3; CD163; CD20; FN1; Glut1; HLADR; CD14; CD45; Cytokeratin17; COL1A1; H3K27me3; CD57; H3K9ac; Ki67; HLA1 class ABC; PDL1",
@@ -6090,7 +6090,7 @@
       "on-treatment metastases"
     ],
     "n_images": "",
-    "n_patients": "",
+    "n_patients": "142",
     "clinical_data": "yes",
     "n_markers": "39",
     "markers": "Calprotectin; Mast Cell Chymase; Mast Cell Tryptase; SMA; Vimentin; CD4; CD69; FAP; FOXP3; PD1; CD31; Ecadherin; CD56; CD38; TCF1 TCF7; TBET; CD45RB; CD68; CD11c; CD8; CD3e; IDO1; CD45RO; TIM-3; CD163; CD20; FN1; Glut1; HLADR; CD14; CD45; Cytokeratin17; COL1A1; H3K27me3; CD57; H3K9ac; Ki67; HLA1 class ABC; PDL1",
@@ -6168,8 +6168,8 @@
     "disease_specifics_list": [
       "LUAD"
     ],
-    "n_images": "",
-    "n_patients": "",
+    "n_images": "536",
+    "n_patients": "346",
     "clinical_data": "yes",
     "n_markers": "35",
     "markers": "αSMA; CD16; Ki-67; CD14; MPO; BCL2; CD31; TTF1; HIF1α; PD-L1; M-CSF-R; CD45; CD117; CD11c; FOXP3; CD4; ARG1; CD68; MMP9; CD20; CD8α; pSTAT3; CD163; PD1; B7-H4; CD39; CD40; CD94; CD3; pERK; CC3; B7-H3; HLA-DR; PanCK; Histone H3",
@@ -6318,7 +6318,7 @@
       "Black vs white women cohort"
     ],
     "n_images": "98",
-    "n_patients": "",
+    "n_patients": "57",
     "clinical_data": "yes",
     "n_markers": "26",
     "markers": "Vimentin; PLK1; AR; CD16; CD163; PanCK; CD31; PD-L1; PD-1; CD45; CD11c; Foxp3; CD4; E-Cadherin; CD68; CD152; CD8a; VEGF; MPO; HIF1a; CD45RA; GranzymeB; Ki67; CD3; CD45RO; KIFC1; pHH3;191Ir; 193Ir",
@@ -6458,7 +6458,7 @@
       "Black vs white women cohort"
     ],
     "n_images": "46",
-    "n_patients": "",
+    "n_patients": "46",
     "clinical_data": "yes",
     "n_markers": "32",
     "markers": "CD8a; CD20; Vimentin; PLK1; AR; CD16; CD163; PanCK; CD31; PD-L1; PD-1; CD45; CD11c; Foxp3; CD4; E-Cadherin; CD68; CD14; CD152; NOS2; VEGF; MPO; HIF1a; CD45RA; GranzymeB; Ki67; Arginase-1; CD3; CD45RO; KIFC1; pHH3; 191Ir; 193Ir",
@@ -6674,7 +6674,7 @@
       "LUAD",
       "LUSC"
     ],
-    "n_images": "",
+    "n_images": "4672",
     "n_patients": "1168",
     "clinical_data": "",
     "n_markers": "12",
